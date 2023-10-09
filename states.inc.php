@@ -50,6 +50,22 @@
 //    !! It is not a good idea to modify this file when a game is running !!
 
  
+ 
+/***
+SIMPLE States DIAGRAM :
+
+    SETUP --> newRound --> newTurn --> playerTurn  --> endTurn --> endRound --> END
+                ^           ^                            |           |
+                |           |                            |           |
+                |           \----------------------------/           |
+                |                                                    |
+                \----------------------------------------------------/ 
+
+*/
+
+ 
+ 
+ 
 $machinestates = array(
 
     // The initial state. Please do not modify.
@@ -60,40 +76,57 @@ $machinestates = array(
         "action" => "stGameSetup",
         "transitions" => array( "" => 2 )
     ),
-    
-    // Note: ID=2 => your first state
-
+     
     2 => array(
-    		"name" => "playerTurn",
-    		"description" => clienttranslate('${actplayer} must play a card or pass'),
-    		"descriptionmyturn" => clienttranslate('${you} must play a card or pass'),
-    		"type" => "activeplayer",
-    		"possibleactions" => array( "playCard", "pass" ),
-    		"transitions" => array( "playCard" => 2, "pass" => 2 )
-    ),
-    
-/*
-    Examples:
-    
-    2 => array(
-        "name" => "nextPlayer",
-        "description" => '',
+        "name" => "newRound",
+        "description" => clienttranslate('New round'),
         "type" => "game",
-        "action" => "stNextPlayer",
-        "updateGameProgression" => true,   
-        "transitions" => array( "endGame" => 99, "nextPlayer" => 10 )
+        "action" => "stNewRound",
+        "updateGameProgression" => true,
+        "transitions" => array( "next" => 10  )
     ),
     
-    10 => array(
-        "name" => "playerTurn",
-        "description" => clienttranslate('${actplayer} must play a card or pass'),
-        "descriptionmyturn" => clienttranslate('${you} must play a card or pass'),
-        "type" => "activeplayer",
-        "possibleactions" => array( "playCard", "pass" ),
-        "transitions" => array( "playCard" => 2, "pass" => 2 )
-    ), 
-
-*/    
+        // -----------------------------------------------------------------------------------
+        // --------------------------------  TURN                   --------------------------
+        // -----------------------------------------------------------------------------------
+        
+        10 => array(
+            "name" => "newTurn",
+            "description" => clienttranslate('Start turn'),
+            "type" => "game",
+            "action" => "stNewTurn",
+            "transitions" => array( "next" => 12)
+        ),    
+        
+        12 => array(
+            "name" => "playerTurn",
+            "description" => clienttranslate('Players may use the cards for loading or moving trucks'),
+            "descriptionmyturn" => clienttranslate('${you} may use the cards for loading or moving trucks'),
+            "type" => "multipleactiveplayer",
+            "action" => "stPlayerturn",
+            "args" => "argPlayerTurn",
+            "possibleactions" => array( "loadTruck", "moveTruck", "cancelActions" ),
+            "transitions" => array( "next" => 15)
+        ),
+        
+        15 => array(
+            "name" => "endTurn",
+            "description" => clienttranslate('End turn'),
+            "updateGameProgression" => true,
+            "type" => "game",
+            "action" => "stEndTurn",
+            "transitions" => array( "endRound" => 20, "newTurn" => 10)
+        ),
+        // -----------------------------------------------------------------------------------
+        // -----------------------------------------------------------------------------------
+    
+    20 => array(
+        "name" => "endRound",
+        "description" => clienttranslate('End round'),
+        "type" => "game",
+        "action" => "stEndRound",
+        "transitions" => array( "endGame" => 99, "newRound" => 2 )
+    ),
    
     // Final state.
     // Please do not modify (and do not overload action/args methods).

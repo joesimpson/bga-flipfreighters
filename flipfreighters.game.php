@@ -194,23 +194,14 @@ class FlipFreighters extends Table
         These methods function is to return some additional information that is specific to the current
         game state.
     */
-
-    /*
     
-    Example for game state "MyGameState":
-    
-    function argMyGameState()
-    {
-        // Get some values from the current game situation in database...
-    
-        // return values:
+    function argPlayerTurn(){
+        $privateDatas = array ();
+        
         return array(
-            'variable1' => $value1,
-            'variable2' => $value2,
-            ...
+            '_private' => $privateDatas,
         );
-    }    
-    */
+    }
 
 //////////////////////////////////////////////////////////////////////////////
 //////////// Game state actions
@@ -220,19 +211,41 @@ class FlipFreighters extends Table
         Here, you can create methods defined as "game state actions" (see "action" property in states.inc.php).
         The action method of state X is called everytime the current game state is set to X.
     */
-    
-    /*
-    
-    Example for game state "MyGameState":
 
-    function stMyGameState()
-    {
-        // Do some stuff ...
+    function stNewRound()
+    { 
+        self::trace("stNewRound()");
         
-        // (very often) go to another gamestate
-        $this->gamestate->nextState( 'some_gamestate_transition' );
-    }    
-    */
+        $this->gamestate->nextState( 'next' );
+    }
+    
+    function stNewTurn()
+    { 
+        self::trace("stNewTurn()");
+        
+        $this->gamestate->nextState( 'next' );
+    }
+    
+    function stPlayerTurn()
+    { 
+        self::trace("stPlayerTurn()");
+        
+        $this->gamestate->setAllPlayersMultiactive();
+    }
+    
+    function stEndTurn()
+    { 
+        self::trace("stEndTurn()");
+    
+        $this->gamestate->nextState( 'newTurn' );
+    }
+     
+    
+    function stEndRound()
+    {  
+        self::trace("stEndRound()");
+        $this->gamestate->nextState( 'newRound' );
+    }
 
 //////////////////////////////////////////////////////////////////////////////
 //////////// Zombie
