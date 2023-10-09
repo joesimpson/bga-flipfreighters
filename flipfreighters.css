@@ -48,25 +48,72 @@
 
 /********* You can start writing your CSS below this line: **********/
 
-
-/*
-    Example of CSS sprites (a black token and a white token, 20x20px each, embedded in the same "tokens.png" 40x20px image):
-
-    .white_token {
-        background-image: url('img/tokens.png');
-        background-position: 0px 0px;
-    }
-    .black_token {
-        background-image: url('img/tokens.png');
-        background-position: -20px 0px;
-    }
-    .token {
-        width: 20px;
-        height: 20px;
-        background-repeat: none;
-    }
+/**
+    PREFIX FOR THIS GAME PROJECT : "ffg"
 */
 
+:root {
+  --ffg_card_display_width: 120px;
+  --ffg_card_display_height: 180px;
+}
 
+#ffg_game_zone{
+    text-align: center;
+}
 
+/* 
+---------------------------- ----------------------------   ---------------------------- 
+----------------------------  LEFT ZONE  : CARDS            ---------------------------- 
+---------------------------- ----------------------------   ---------------------------- 
+*/
 
+.ffg_card{
+    background-image: url('img/FULLREZ_CARDS.jpg');
+    background-size: 700% 400%;
+    width: var(--ffg_card_display_width);
+    height: var(--ffg_card_display_height);
+    margin: 10px;
+    outline: 2px solid black;
+    border-radius: 5%;
+}
+
+.ffg_card[data_value='2']{
+    background-position-x: 000%;
+}
+.ffg_card[data_value='3']{
+    background-position-x: -100%;
+}
+.ffg_card[data_value='4']{
+    background-position-x: -200%;
+}
+.ffg_card[data_value='5']{
+    background-position-x: -300%;
+}
+.ffg_card[data_value='6']{
+    background-position-x: -400%;
+}
+.ffg_card[data_value='1']{ /** ACE */
+    background-position-x: -500%;
+}
+.ffg_card[data_value='15']{ /** JOKER */
+    background-position-x: -600% !important;
+    background-position-y: -100% !important;
+}
+.ffg_card_back{ 
+    /** BACK of flipped card */
+    background-position-x: -600%;
+    background-position-y: 000%;
+}
+
+.ffg_card[data_suit='1']{/** SPADE */
+    background-position-y: 000%;
+}
+.ffg_card[data_suit='2']{/** HEART */
+    background-position-y: -100%;
+}
+.ffg_card[data_suit='3']{/** CLUB */
+    background-position-y: -200%;
+}
+.ffg_card[data_suit='4']{/** DIAMOND */
+    background-position-y: -300%;
+}
