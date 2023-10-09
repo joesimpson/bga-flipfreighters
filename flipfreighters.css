@@ -55,10 +55,18 @@
 :root {
   --ffg_card_display_width: 120px;
   --ffg_card_display_height: 180px;
+  
+  --ffg_board_display_width: 1400px;
+  --ffg_board_display_height: 1080px;
+  
+    /* TODO JSA LATER : add a slider */
+  --ffg_board_display_scale: 0.5;
 }
 
 #ffg_game_zone{
     text-align: center;
+    display: flex;
+    flex-flow: row;
 }
 
 /* 
@@ -66,6 +74,10 @@
 ----------------------------  LEFT ZONE  : CARDS            ---------------------------- 
 ---------------------------- ----------------------------   ---------------------------- 
 */
+
+#ffg_cards{
+    position: relative;
+}
 
 .ffg_card{
     background-image: url('img/FULLREZ_CARDS.jpg');
@@ -116,4 +128,30 @@
 }
 .ffg_card[data_suit='4']{/** DIAMOND */
     background-position-y: -300%;
+}
+
+/* 
+---------------------------- ----------------------------   ---------------------------- 
+----------------------------  CENTRAL ZONE  : BOARD         ---------------------------- 
+---------------------------- ----------------------------   ---------------------------- 
+*/
+
+.ffg_board{
+    background-image: url('img/board.jpg');
+    background-size: 100%;
+    background-repeat: no-repeat;
+    width: var(--ffg_board_display_width);
+    height: var(--ffg_board_display_height);
+}
+
+#ffg_board_current_player{
+    margin-left: 20px;
+    margin-top: 10px;
+    position: relative;
+}
+#ffg_board_current_player_container{
+    transform: scale(var(--ffg_board_display_scale));
+    transform-origin: top left;
+    width: calc(var(--ffg_board_display_width) * var(--ffg_board_display_scale)  );
+    height: calc(var(--ffg_board_display_height) * var(--ffg_board_display_scale)  );
 }
