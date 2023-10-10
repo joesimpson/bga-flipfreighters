@@ -19,6 +19,18 @@
 
 require_once( APP_GAMEMODULE_PATH.'module/table/table.game.php' );
 
+//TODO JSA constants file
+const JOKER_TYPE = 5;
+const JOKER_VALUE = 15;
+
+const NB_CARDS_BY_WEEK = 15;
+const NB_CARDS_BY_ROUND = 3;
+
+const DECK_LOCATION_WEEK_1 = "WEEK_1";
+const DECK_LOCATION_WEEK_2 = "WEEK_2";
+const DECK_LOCATION_WEEK_3 = "WEEK_3";
+//For cards we flip over the table :
+const DECK_LOCATION_DAY = "DAY";
 
 class FlipFreighters extends Table
 {
@@ -40,6 +52,9 @@ class FlipFreighters extends Table
             //    "my_second_game_variant" => 101,
             //      ...
         ) );        
+        
+        $this->cards = self::getNew( "module.common.deck" );
+        $this->cards->init( "card" );
 	}
 	
     protected function getGameName( )
@@ -88,6 +103,7 @@ class FlipFreighters extends Table
         //self::initStat( 'player', 'player_teststat1', 0 );  // Init a player statistics (for all players)
 
         // TODO: setup the initial game situation here
+        $this->initDeck();
        
 
         // Activate first player (which is in general a good idea :) )
@@ -117,6 +133,8 @@ class FlipFreighters extends Table
         $result['players'] = self::getCollectionFromDb( $sql );
   
         // TODO: Gather all information about current game situation (visible by player $current_player_id).
+        
+        $result['dayCards'] = $this->getCurrentDayCards();
   
         return $result;
     }
@@ -146,9 +164,67 @@ class FlipFreighters extends Table
     /*
         In this space, you can put any utility methods useful for your game logic
     */
+    
+    
+    /**
+    Init the deck component with  52 cards:
+        + 2->6 + Ace of each suit (color)
+        + 2 Joker
+        x2 physical decks
+    */
+    function initDeck()
+    {
+        // Create cards
+        $cards = array();
+        foreach( $this->card_types as  $color_id => $color ) // spade, heart, club, diamond
+        {
+            for( $value=1; $value<=6; $value++ )   //  A,2, 3, 4,5,6
+            {
+                $cards[] = array( 'type' => $color_id, 'type_arg' => $value, 'nbr' => 2);
+            }
+        }
+        
+        //We don't have any need to distinguish jokers :
+        $cards[] = array( 'type' => JOKER_TYPE, 'type_arg' => JOKER_VALUE, 'nbr' => 4);
 
+        $this->cards->createCards( $cards, 'deck' );
+        
+        $this->cards->shuffle( 'deck' );
+        
+        // then deal out three piles with 15 cards each :
+        
+        $this->cards->pickCardsForLocation( NB_CARDS_BY_WEEK, 'deck', DECK_LOCATION_WEEK_1,0, true );
+        $this->cards->pickCardsForLocation( NB_CARDS_BY_WEEK, 'deck', DECK_LOCATION_WEEK_2,0, true );
+        $this->cards->pickCardsForLocation( NB_CARDS_BY_WEEK, 'deck', DECK_LOCATION_WEEK_3,0, true );
 
+        //The extra 7 cards may be removed from the table
+        $this->cards->moveAllCardsInLocation( 'deck', 'discard', null, 0 );
+        
+    }
 
+    function getCurrentWeekLocation()
+    { 
+        $round = 1;
+        
+        //TODO JSA GET ROund number
+        
+        switch($round){
+            default:
+            case 1: return DECK_LOCATION_WEEK_1;
+            case 2: return DECK_LOCATION_WEEK_2;
+            case 3: return DECK_LOCATION_WEEK_3;
+        }
+    }
+    
+    /**
+    Return current turn (day) cards ordered by card id 
+    */
+    function getCurrentDayCards()
+    { 
+        $dayCards = $this->cards->getCardsInLocation( DECK_LOCATION_DAY,null,'card_id' );
+        return $dayCards;
+    }
+    
 //////////////////////////////////////////////////////////////////////////////
 //////////// Player actions
 //////////// 
@@ -216,12 +292,20 @@ class FlipFreighters extends Table
     { 
         self::trace("stNewRound()");
         
+        //TODO JSA INCREASE ROund number
+        
         $this->gamestate->nextState( 'next' );
     }
     
     function stNewTurn()
     { 
         self::trace("stNewTurn()");
+        
+        //Flip three cards face up from the draw deck  :
+        $weekLocation = $this->getCurrentWeekLocation();
+        $newCards = $this->cards->pickCardsForLocation( NB_CARDS_BY_ROUND, $weekLocation, DECK_LOCATION_DAY,0, true );
+        
+        //TODO JSA NOTIF ALL about new cards
         
         $this->gamestate->nextState( 'next' );
     }
@@ -236,6 +320,8 @@ class FlipFreighters extends Table
     function stEndTurn()
     { 
         self::trace("stEndTurn()");
+        
+        //TODO JSA Discard cards from board
     
         $this->gamestate->nextState( 'newTurn' );
     }

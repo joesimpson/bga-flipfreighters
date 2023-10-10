@@ -79,11 +79,7 @@ class view_flipfreighters_flipfreighters extends game_view
         
         */
         
-        //TODO JSA get cards from MODEL
-        $cards = array( );
-        $cards[] = array( "id" => "789", "type" => 2, "value" => 6 );
-        $cards[] = array( "id" => "456", "type" => 1, "value" => 15 );
-        $cards[] = array( "id" => "123", "type" => 4, "value" => 1 );
+        $cards = $this->game->getCurrentDayCards();
         
         $this->page->begin_block( "flipfreighters_flipfreighters", "ffg_cards" );
         foreach( $cards as $card )
@@ -91,7 +87,7 @@ class view_flipfreighters_flipfreighters extends game_view
             $this->page->insert_block( "ffg_cards", array( 
                                                     "CARD_ID" => $card['id'],
                                                     "CARD_SUIT" => $card['type'],
-                                                    "CARD_VALUE" => $card['value'],
+                                                    "CARD_VALUE" => $card['type_arg'],
                                                      ) );
         }
 
