@@ -45,8 +45,8 @@ class FlipFreighters extends Table
         parent::__construct();
         
         self::initGameStateLabels( array( 
-            //    "my_first_global_variable" => 10,
-            //    "my_second_global_variable" => 11,
+                "round_number" => 10,
+                "turn_number" => 11,
             //      ...
             //    "my_first_game_variant" => 100,
             //    "my_second_game_variant" => 101,
@@ -95,7 +95,8 @@ class FlipFreighters extends Table
         /************ Start the game initialization *****/
 
         // Init global values with their initial values
-        //self::setGameStateInitialValue( 'my_first_global_variable', 0 );
+        self::setGameStateInitialValue( 'round_number', 0 );
+        self::setGameStateInitialValue( 'turn_number', 0 );
         
         // Init game statistics
         // (note: statistics used in this file must be defined in your stats.inc.php file)
@@ -134,6 +135,8 @@ class FlipFreighters extends Table
   
         // TODO: Gather all information about current game situation (visible by player $current_player_id).
         
+        $result['round_number'] = self::getGameStateValue( 'round_number');
+        $result['turn_number'] = self::getGameStateValue( 'turn_number');
         $result['dayCards'] = $this->getCurrentDayCards();
   
         return $result;
@@ -198,15 +201,13 @@ class FlipFreighters extends Table
         $this->cards->pickCardsForLocation( NB_CARDS_BY_WEEK, 'deck', DECK_LOCATION_WEEK_3,0, true );
 
         //The extra 7 cards may be removed from the table
-        $this->cards->moveAllCardsInLocation( 'deck', 'discard', null, 0 );
+        $this->cards->moveAllCardsInLocation( 'deck', 'discard' );
         
     }
 
     function getCurrentWeekLocation()
     { 
-        $round = 1;
-        
-        //TODO JSA GET ROund number
+        $round = self::getGameStateValue( 'round_number');
         
         switch($round){
             default:
@@ -292,7 +293,18 @@ class FlipFreighters extends Table
     { 
         self::trace("stNewRound()");
         
-        //TODO JSA INCREASE ROund number
+        //INCREASE ROund number
+        $round = self::getGameStateValue( 'round_number');
+        $round++;
+        self::setGameStateValue( 'round_number', $round );
+        
+        //Reset days of week :
+        self::setGameStateValue( 'turn_number', 0 );
+        
+        //NOTIF ALL about new round
+        self::notifyAllPlayers( "newRound", clienttranslate( 'The game starts week number ${nb} !' ), array( 
+            'nb' => $round,
+        ) );
         
         $this->gamestate->nextState( 'next' );
     }
@@ -301,11 +313,20 @@ class FlipFreighters extends Table
     { 
         self::trace("stNewTurn()");
         
+        $turn = self::incGameStateValue( 'turn_number',1 );
+        
         //Flip three cards face up from the draw deck  :
         $weekLocation = $this->getCurrentWeekLocation();
         $newCards = $this->cards->pickCardsForLocation( NB_CARDS_BY_ROUND, $weekLocation, DECK_LOCATION_DAY,0, true );
         
-        //TODO JSA NOTIF ALL about new cards
+        $maxTurn = NB_CARDS_BY_WEEK / NB_CARDS_BY_ROUND;
+        
+        //NOTIF ALL about new cards
+        self::notifyAllPlayers( "newTurn", clienttranslate( 'Day ${day}/${max} : the game draws new cards' ), array( 
+            'newCards' => $newCards,
+            'day' => $turn,
+            'max' => $maxTurn,
+        ) );
         
         $this->gamestate->nextState( 'next' );
     }
@@ -321,7 +342,16 @@ class FlipFreighters extends Table
     { 
         self::trace("stEndTurn()");
         
-        //TODO JSA Discard cards from board
+        //Discard cards from board
+        $this->cards->moveAllCardsInLocation( DECK_LOCATION_DAY, 'discard' );
+    
+        $week = $this->getCurrentWeekLocation();
+        $weekSize = $this->cards->countCardInLocation( $week );
+        if($weekSize == 0){
+            //END WEEK = END round
+            $this->gamestate->nextState( 'endRound' );
+            return;
+        }
     
         $this->gamestate->nextState( 'newTurn' );
     }
@@ -330,6 +360,9 @@ class FlipFreighters extends Table
     function stEndRound()
     {  
         self::trace("stEndRound()");
+        
+        //TODO JSA CHECK round_number and end if >=MAX
+        
         $this->gamestate->nextState( 'newRound' );
     }
 

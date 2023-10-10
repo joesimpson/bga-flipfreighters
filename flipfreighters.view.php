@@ -82,13 +82,16 @@ class view_flipfreighters_flipfreighters extends game_view
         $cards = $this->game->getCurrentDayCards();
         
         $this->page->begin_block( "flipfreighters_flipfreighters", "ffg_cards" );
+        $index =0;
         foreach( $cards as $card )
         {
             $this->page->insert_block( "ffg_cards", array( 
+                                                    "INDEX" => $index,
                                                     "CARD_ID" => $card['id'],
                                                     "CARD_SUIT" => $card['type'],
                                                     "CARD_VALUE" => $card['type_arg'],
                                                      ) );
+            $index++;
         }
 
 

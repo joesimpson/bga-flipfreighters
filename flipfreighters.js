@@ -78,19 +78,14 @@ function (dojo, declare) {
             
             switch( stateName )
             {
-            
-            /* Example:
-            
-            case 'myGameState':
-            
-                // Show some HTML block at this game state
-                dojo.style( 'my_html_block_id', 'display', 'block' );
-                
+            case 'newTurn':
+                //Prepare to flip all cards :
+                dojo.query(".ffg_card").forEach("dojo.removeClass(item,'ffg_card_back');"); 
                 break;
-           */
-           
-           
-            case 'dummmy':
+                
+            case 'endTurn':
+                //Unflip all cards :
+                dojo.query(".ffg_card").forEach("item.setAttribute('data_id',0); item.setAttribute('data_value',0); item.setAttribute('data_suit',0); dojo.addClass(item,'ffg_card_back');"); 
                 break;
             }
         },
@@ -158,6 +153,22 @@ function (dojo, declare) {
         
         */
 
+        playCardOnTable: function( row,card_id, color, value )
+        {            
+            console.log( "playCardOnTable ... " ,row,card_id, color, value);
+            
+            let div = dojo.query("#ffg_card_"+row)[0];
+            if(div == undefined) {
+                console.log( "playCardOnTable ...ERROR undefined row", row );
+                return;
+            }
+            //UPDATE div datas :
+            div.setAttribute("data_id",card_id);
+            div.setAttribute("data_suit",color);
+            div.setAttribute("data_value",value);
+            
+            //TODO JSA ADD some animation ?
+        },
 
         ///////////////////////////////////////////////////
         //// Player's action
@@ -235,6 +246,8 @@ function (dojo, declare) {
             // dojo.subscribe( 'cardPlayed', this, "notif_cardPlayed" );
             // this.notifqueue.setSynchronous( 'cardPlayed', 3000 );
             // 
+            
+            dojo.subscribe( 'newTurn', this, "notif_newTurn" );
         },  
         
         // TODO: from this point and below, you can write your game notifications handling methods
@@ -253,5 +266,20 @@ function (dojo, declare) {
         },    
         
         */
+        
+        notif_newTurn: function( notif )
+        {
+            console.log( 'notif_newTurn',notif );
+            
+            for ( let i in notif.args.newCards) {
+                let card = notif.args.newCards[i];
+                let color = card.type;
+                let value = card.type_arg;     
+                this.playCardOnTable(i,card.id, color, value );
+            }
+        },    
+        
    });             
 });
+
+//# sourceURL=flipfreighters.js

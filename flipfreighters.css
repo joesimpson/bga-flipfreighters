@@ -113,8 +113,8 @@
 }
 .ffg_card_back{ 
     /** BACK of flipped card */
-    background-position-x: -600%;
-    background-position-y: 000%;
+    background-position-x: -600% !important;
+    background-position-y: 000% !important;
 }
 
 .ffg_card[data_suit='1']{/** SPADE */

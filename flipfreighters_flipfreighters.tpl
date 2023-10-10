@@ -17,7 +17,7 @@
     <div id="ffg_cards">
         <!-- BEGIN ffg_cards -->
     
-            <div id="ffg_card_{CARD_ID}" class="ffg_card" data_suit="{CARD_SUIT}" data_value="{CARD_VALUE}"></div>
+            <div id="ffg_card_{INDEX}" class="ffg_card" data_id="{CARD_ID}" data_suit="{CARD_SUIT}" data_value="{CARD_VALUE}"></div>
             
         <!-- END ffg_cards -->
     </div>
