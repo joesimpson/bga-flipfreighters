@@ -32,6 +32,7 @@ function (dojo, declare) {
             this.dayCards = [];
             this.possibleCards = [];
             this.selectedCard = null;
+            this.selectedAmount = null;//Not always the card value, with overtime hours
 
         },
         
@@ -58,13 +59,16 @@ function (dojo, declare) {
                 let player = gamedatas.players[player_id];
                          
                 // Setting up players boards if needed
-                
+            
+                let playerContainers = dojo.query(".ffg_container[data_player='"+player_id+"']");
+                    
                 if(this.player_id == player_id){ //CURRENT player
-                    let playerContainers = dojo.query(".ffg_container[data_player='"+player_id+"']");
                     playerContainers.connect( 'onclick', this, 'onSelectLoadTarget' );
                 }
                 else {
-                    //TODO JSA update other players
+                    //TODO JSA update other players, instead of destroying them (destroy for now because it is displayed in the same place for every one)
+                    playerContainers.forEach(dojo.destroy);
+                    
                 }
             }
             
@@ -176,7 +180,19 @@ function (dojo, declare) {
             script.
         
         */
+ 
+        ajaxcallwrapper: function(action, args, handler) {
+            if (!args) {
+                args = {};
+            }
+            //Beware of "Move recorded, waiting for update...." when lock enabled
+            args.lock = true;
 
+            if (this.checkAction(action)) {
+                this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/" + action + ".html", args, this, (result) => { }, handler);
+            }
+        },
+        
         playCardOnTable: function( row,card_id, color, value )
         {            
             console.log( "playCardOnTable ... " ,row,card_id, color, value);
@@ -282,10 +298,12 @@ function (dojo, declare) {
             
             let div_id = evt.currentTarget.id;
             let card_id= evt.currentTarget.getAttribute("data_id") ;
+            let data_value= evt.currentTarget.getAttribute("data_value") ;
             
             if(this.selectedCard == card_id ){
                 //IF ALREADY DISPLAYED , hide
                 this.selectedCard = null;
+                this.selectedAmount = null;
                 console.log("onSelectCard() => Hide :",card_id);
                 this.displayPossibleLoading( null);
                 return;
@@ -294,6 +312,7 @@ function (dojo, declare) {
             dojo.addClass(div_id,"ffg_selected") ;
                 
             this.selectedCard = card_id;
+            this.selectedAmount = data_value;
             this.displayPossibleLoading( card_id);
             
         },        
@@ -307,7 +326,18 @@ function (dojo, declare) {
             // Preventing default browser reaction
             dojo.stopEvent( evt );
             
-            //TODO JSA call server Action LOAD
+            let div_id = evt.currentTarget.id;
+            let container_id = evt.currentTarget.getAttribute("data_id") ;
+            let cardId = this.selectedCard;
+            let amount = this.selectedAmount;
+            
+            if( ! dojo.hasClass( div_id, 'ffg_selectable' ) )
+            {
+                // This is not a possible action => the click does nothing
+                return ;
+            }
+            
+            this.ajaxcallwrapper("loadTruck", {'cardId': cardId, 'containerId': container_id, 'amount': amount});
         },        
 
         
@@ -340,24 +370,10 @@ function (dojo, declare) {
             // 
             
             dojo.subscribe( 'newTurn', this, "notif_newTurn" );
+            dojo.subscribe( 'loadTruck', this, "notif_loadTruck" );
         },  
         
-        // TODO: from this point and below, you can write your game notifications handling methods
-        
-        /*
-        Example:
-        
-        notif_cardPlayed: function( notif )
-        {
-            console.log( 'notif_cardPlayed' );
-            console.log( notif );
-            
-            // Note: notif.args contains the arguments specified during you "notifyAllPlayers" / "notifyPlayer" PHP call
-            
-            // TODO: play the card in the user interface.
-        },    
-        
-        */
+        //  from this point and below, you can write your game notifications handling methods
         
         notif_newTurn: function( notif )
         {
@@ -369,7 +385,46 @@ function (dojo, declare) {
                 let value = card.type_arg;     
                 this.playCardOnTable(i,card.id, color, value );
             }
-        },    
+        },  
+
+        notif_loadTruck: function( notif )
+        {
+            console.log( 'notif_loadTruck',notif );
+            
+            let containerDivId = "ffg_container_"+this.player_id+"_"+notif.args.containerId;
+            let div = dojo.query("#"+containerDivId)[0];
+            if(div == undefined) {
+                console.log( "notif_loadTruck ...ERROR not found truck container", containerDivId );
+                return;
+            }
+            //UPDATE div datas :
+            div.setAttribute("data_amount",notif.args.amount);
+            div.setAttribute("data_state",notif.args.state);
+            div.setAttribute("data_card",notif.args.card_id);
+            
+            //ffg_container_number
+            let numberDiv = dojo.query("#"+containerDivId+">.ffg_container_number")[0];
+            numberDiv.innerHTML=notif.args.amount;
+            
+            //Remove possible selection of this place
+            dojo.removeClass(containerDivId,"ffg_selectable") ;
+            
+            //unselect card
+            this.selectedCard = null;
+            this.selectedAmount = null;
+            dojo.query(".ffg_card").removeClass("ffg_selected") ;
+            dojo.query(".ffg_container").removeClass("ffg_selectable") ;
+            
+            //TODO JSA DISABLE THIS CARD FOR FURTHER ACTIONS
+            
+            //Update possible loads by removing the one we did
+            for(let i in this.possibleCards){
+                let pcard = this.possibleCards[i];
+                let indexOfLoad = pcard.indexOf(notif.args.containerId);
+                pcard.splice(indexOfLoad, 1);
+            }
+            
+        },         
         
    });             
 });

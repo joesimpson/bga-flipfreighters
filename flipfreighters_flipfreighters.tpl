@@ -29,7 +29,9 @@
             <div id="ffg_board_trucks_wrapper">
                 <!-- BEGIN ffg_player_trucks -->
             
-                    <div id="ffg_container_{PLAYER_ID}_{CONTAINER_ID}" class="ffg_container" data_id="{CONTAINER_ID}"  data_player="{PLAYER_ID}" data_truck="{TRUCK_ID}" data_amount="{AMOUNT}" data_state="{STATE}"></div>
+                    <div id="ffg_container_{PLAYER_ID}_{CONTAINER_ID}" class="ffg_container" data_id="{CONTAINER_ID}"  data_player="{PLAYER_ID}" data_truck="{TRUCK_ID}" data_amount="{AMOUNT}" data_state="{STATE}"data_card="{CARD_ID}">
+                        <span class="ffg_container_number">{AMOUNT}</span> 
+                    </div>
                     
                 <!-- END ffg_player_trucks -->
             </div>

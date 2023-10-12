@@ -108,6 +108,7 @@ class view_flipfreighters_flipfreighters extends game_view
                                                         "TRUCK_ID" => $truck_loading['truck_id'],
                                                         "AMOUNT" => $truck_loading['amount'],
                                                         "STATE" => $truck_loading['state'],
+                                                        "CARD_ID" => $truck_loading['card_id'],
                                                          ) );
             }
         }

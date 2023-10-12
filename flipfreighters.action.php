@@ -62,6 +62,21 @@
     }
     
     */
+    public function loadTruck()
+    {
+        self::setAjaxMode();     
+
+        // Retrieve arguments
+        // Note: these arguments correspond to what has been sent through the javascript "ajaxcall" method
+        $containerId = self::getArg( "containerId", AT_alphanum, true );
+        $amount = self::getArg( "amount", AT_posint, true );
+        $cardId = self::getArg( "cardId", AT_posint, true );
+
+        // Then, call the appropriate method in your game logic 
+        $this->game->loadTruck($cardId, $containerId, $amount );
+
+        self::ajaxResponse( );
+    }
 
   }
   

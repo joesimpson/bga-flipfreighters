@@ -32,6 +32,10 @@ const DECK_LOCATION_WEEK_3 = "WEEK_3";
 //For cards we flip over the table :
 const DECK_LOCATION_DAY = "DAY";
 
+const STATE_LOAD_INITIAL = 0;
+const STATE_LOAD_TO_CONFIRM = 1;
+const STATE_LOAD_CONFIRMED = 2;
+
 class FlipFreighters extends Table
 {
 	function __construct( )
@@ -242,21 +246,29 @@ class FlipFreighters extends Table
     { 
         $possibles = array();
         
-        $card_id = $card['id'];
-        
         //Loop over each container 
         foreach( $playerBoard as $container_id => $container )
         {
-            //IF Container is not empty KO
-            if($container['amount'] !=null && $container['amount']>0 ) {
+            if($this->isPossibleLoadingWithCard($card,$container) == false ) {
                 continue;
             }
-            //TODO JSA filter other cases
-                
             $possibles[] = $container['id'];
-        
         }
         return $possibles;
+    }
+    
+    function isPossibleLoadingWithCard($card,$container)
+    { 
+        
+        $card_id = $card['id'];
+        self::dump("isPossibleLoadingWithCard($card_id)", $container);
+        //IF Container is not empty KO
+        if( array_key_exists('amount',$container) && $container['amount']>0 ) {
+            return false;
+        }
+        //TODO JSA filter other cases
+             
+        return true;
     }
     
     //TODO JSA separate module for player board / truck
@@ -318,6 +330,23 @@ class FlipFreighters extends Table
         return $trucks_loading;
     }
     
+    //TODO JSA FACTORIZE
+    function getTruckContainer($player_id,$container_id){
+        $datas = $this->getObjectFromDB("SELECT loading_key id,loading_amount  amount, loading_state state,loading_card_id card_id,
+            SUBSTRING(loading_key FROM 1 FOR 6) truck_id
+            FROM freighter_loading
+            WHERE loading_player_id ='$player_id' AND loading_key ='$container_id' "
+            );
+
+        self::dump("getTruckContainer($player_id,$container_id)", $datas);            
+        return $datas;    
+    }
+    
+    function updateLoadInTruck($player_id, $containerId, $amount,$state,$cardId = null){
+        
+        $this->DbQuery("UPDATE freighter_loading SET loading_amount= $amount, loading_card_id= $cardId, loading_state= $state WHERE loading_key='$containerId' AND loading_player_id ='$player_id' ");
+    }
+    
 //////////////////////////////////////////////////////////////////////////////
 //////////// Player actions
 //////////// 
@@ -327,32 +356,54 @@ class FlipFreighters extends Table
         (note: each method below must match an input method in flipfreighters.action.php)
     */
 
-    /*
-    
-    Example:
 
-    function playCard( $card_id )
+    function loadTruck($cardId, $containerId, $amount )
     {
         // Check that this is the player's turn and that it is a "possible action" at this game state (see states.inc.php)
-        self::checkAction( 'playCard' ); 
+        self::checkAction( 'loadTruck' ); 
         
-        $player_id = self::getActivePlayerId();
+        $player_id = self::getCurrentPlayerId();
+        $player_name = self::getCurrentPlayerName();
+        self::trace("loadTruck($cardId, $containerId, $amount,$player_id,$player_name )");
         
-        // Add your game logic to play a card there 
-        ...
+        //CHEAT CHECKS :
+        if($amount == null || $amount<=0)
+            throw new BgaVisibleSystemException( ("Incorrect quantity for loading this truck here"));
+        if($cardId == null )
+            throw new BgaVisibleSystemException( ("Unknown card"));
+        $card = $this->cards->getCard($cardId);
+        if($card == null )
+            throw new BgaVisibleSystemException( ("Unknown card"));
+        if($card['location'] != DECK_LOCATION_DAY )
+            throw new BgaVisibleSystemException( ("You cannot play that card know"));
         
-        // Notify all players about the card played
-        self::notifyAllPlayers( "cardPlayed", clienttranslate( '${player_name} plays ${card_name}' ), array(
-            'player_id' => $player_id,
-            'player_name' => self::getActivePlayerName(),
-            'card_name' => $card_name,
-            'card_id' => $card_id
+        if($containerId == null )
+            throw new BgaVisibleSystemException( ("Unknown truck container"));
+        $container = $this->getTruckContainer($player_id,$containerId);
+        if($container == null )
+            throw new BgaVisibleSystemException( ("Unknown truck container"));
+        
+        //LOGIC CHECK :
+        if($this->isPossibleLoadingWithCard($card,$container) == false ) {
+            throw new BgaVisibleSystemException( ("You cannot load at this place"));
+        }
+        
+        //REAL ACTION :
+        $newState = STATE_LOAD_TO_CONFIRM;
+        $this->updateLoadInTruck($player_id,$containerId, $amount, $newState,$cardId);
+        
+        //NOTIFY ACTION :
+        self::notifyPlayer($player_id, "loadTruck", clienttranslate( 'You load a truck with ${amount} goods' ), array(
+            'containerId' => $containerId,
+            'amount' => $amount,
+            'card_id' => $cardId,
+            'state' => $newState,
         ) );
+        
+        //Should not be public but the framework prefers to get minimum 1 notifyAll per action ?...
+        self::notifyAllPlayers("loadTruckPublic", '', '' );
           
     }
-    
-    */
-
     
 //////////////////////////////////////////////////////////////////////////////
 //////////// Game state arguments

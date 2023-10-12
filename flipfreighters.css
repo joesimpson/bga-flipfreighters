@@ -246,3 +246,16 @@
 }
 
 /** TODO JSA FILL WITH other trucks*/
+
+
+.ffg_container_number{
+    align-items: center;
+    display: flex;
+    font-size: var(--ffg_container_width);
+    font-weight: bold;
+    justify-content: center;
+    line-height: var(--ffg_container_width);
+    text-align: center;
+    color: black;
+    text-shadow: 1px 1px 1px black;
+}
