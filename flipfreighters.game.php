@@ -105,7 +105,7 @@ class FlipFreighters extends Table
 
         // TODO: setup the initial game situation here
         $this->initDeck();
-       
+        $this->initPlayerBoard();
 
         // Activate first player (which is in general a good idea :) )
         $this->activeNextPlayer();
@@ -226,6 +226,95 @@ class FlipFreighters extends Table
         return $dayCards;
     }
     
+    /**
+    Return all possibles loading positions for this card according to its color and value, and according to already loaded trucks from player board
+    Example : input : "5 of Hearts" 
+        output  array(
+                truck1_2,
+                truck2_2,
+                truck3_5,
+                truck4_2,
+                truck5_1,truck5_2,truck5_3,truck5_4,truck5_5,truck5_6,
+                truck6_1,truck6_2,truck6_3,truck6_4,
+            )
+    */
+    function getPossibleLoadingWithCard($card,$playerBoard)
+    { 
+        $possibles = array();
+        
+        $card_id = $card['id'];
+        
+        //Loop over each container 
+        foreach( $playerBoard as $container_id => $container )
+        {
+            //IF Container is not empty KO
+            if($container['amount'] !=null && $container['amount']>0 ) {
+                continue;
+            }
+            //TODO JSA filter other cases
+                
+            $possibles[] = $container['id'];
+        
+        }
+        return $possibles;
+    }
+    
+    //TODO JSA separate module for player board / truck
+    function initPlayerBoard()
+    {
+        $players = self::loadPlayersBasicInfos();
+        
+        //CLEAN BEFORE (useful FOR TESTING)
+        self::DbQuery( "DELETE FROM freighter_loading " );
+        
+        //TODO JSA : may be unnecessary if we use material container_ids to retrieve possibles actions, so we insert only when loaded ?
+        //Step 1 : prepare an entry for all possible loading in every players trucks :
+        $sql = "INSERT INTO freighter_loading (loading_player_id, loading_key) VALUES ";
+        $values = array();
+        foreach( $players as $player_id => $player )
+        {
+            //TODO JSA material file with trucks conditions details
+            //$trucks = $this->trucks;
+            $trucks = array(
+                "truck1" => array(
+                    "truck_id" => "truck1",
+                    "containers" => array(
+                        "1" , "2" , "3" ,  "4" 
+                    ),
+                ),
+                "truck2" => array(
+                    "truck_id" => "truck2",
+                    "containers" => array(
+                        "1" , "2" , "3" ,  "4" 
+                    ),
+                ),
+                "truck3" => array(
+                    "truck_id" => "truck3",
+                    "containers" => array(
+                        "1" , "2" , "3" ,  "4" ,  "5" ,  "6" 
+                    ),
+                ),
+            );
+            foreach( $trucks as $truck_id => $truck ) {
+                foreach( $truck['containers'] as $container_id => $container ){
+                    $values[] = "( '$player_id', '".$truck_id."_$container_id' )";
+                }
+            }
+        }
+        $sql .= implode( ',', $values );
+        self::DbQuery( $sql );
+    }
+    
+    function getPlayerBoard($player_id){
+        $trucks_loading = array();
+        
+        //TODO JSA get trucks positions
+        
+       $trucks_loading = $this->getCollectionFromDb("SELECT loading_key id,loading_amount  amount, loading_state state,loading_card_id card_id FROM freighter_loading where loading_player_id ='$player_id' ");
+        
+        return $trucks_loading;
+    }
+    
 //////////////////////////////////////////////////////////////////////////////
 //////////// Player actions
 //////////// 
@@ -273,7 +362,22 @@ class FlipFreighters extends Table
     */
     
     function argPlayerTurn(){
+        $players = self::loadPlayersBasicInfos();
+        $dayCards = $this->getCurrentDayCards();
+        
         $privateDatas = array ();
+        
+        foreach($players as $player_id => $player){
+            $possibleCards = array();
+            $playerBoard = $this->getPlayerBoard($player_id);
+            foreach( $dayCards as $dayCard){
+                $possibleCards[$dayCard['id']] = $this->getPossibleLoadingWithCard($dayCard,$playerBoard);
+                //TODO JSA add possibles MOVE ACTIONs
+            }
+            $privateDatas[$player_id] = array(
+                'possibleCards' => $possibleCards,
+            );
+        }
         
         return array(
             '_private' => $privateDatas,

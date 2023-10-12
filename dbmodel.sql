@@ -33,3 +33,11 @@ CREATE TABLE IF NOT EXISTS `card` (
 -- Example 2: add a custom field to the standard "player" table
 -- ALTER TABLE `player` ADD `player_my_custom_field` INT UNSIGNED NOT NULL DEFAULT '0';
 
+CREATE TABLE IF NOT EXISTS `freighter_loading` (
+  `loading_player_id` int(10) unsigned NOT NULL,
+  `loading_key` varchar(32) NOT NULL,
+  `loading_amount` int(2),
+  `loading_state` int(10) DEFAULT 0,
+  `loading_card_id` int(10) unsigned,
+  PRIMARY KEY (`loading_player_id`, `loading_key`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

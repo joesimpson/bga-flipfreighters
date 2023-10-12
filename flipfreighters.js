@@ -74,7 +74,7 @@ function (dojo, declare) {
         //
         onEnteringState: function( stateName, args )
         {
-            console.log( 'Entering state: '+stateName );
+            console.log( 'Entering state: '+stateName,args.args );
             
             switch( stateName )
             {
