@@ -310,7 +310,10 @@ class FlipFreighters extends Table
         
         //TODO JSA get trucks positions
         
-       $trucks_loading = $this->getCollectionFromDb("SELECT loading_key id,loading_amount  amount, loading_state state,loading_card_id card_id FROM freighter_loading where loading_player_id ='$player_id' ");
+       $trucks_loading = $this->getCollectionFromDb("SELECT loading_key id,loading_amount  amount, loading_state state,loading_card_id card_id,
+            SUBSTRING(loading_key FROM 1 FOR 6) truck_id
+            FROM freighter_loading
+            WHERE loading_player_id ='$player_id' ");
         
         return $trucks_loading;
     }

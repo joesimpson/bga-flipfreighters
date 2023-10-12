@@ -28,6 +28,10 @@ function (dojo, declare) {
             // Here, you can init the global variables of your user interface
             // Example:
             // this.myGlobalValue = 0;
+            
+            this.dayCards = [];
+            this.possibleCards = [];
+            this.selectedCard = null;
 
         },
         
@@ -49,15 +53,26 @@ function (dojo, declare) {
             console.log( "Starting game setup",gamedatas );
             
             // Setting up player boards
-            for( var player_id in gamedatas.players )
+            for( let player_id in gamedatas.players )
             {
-                var player = gamedatas.players[player_id];
+                let player = gamedatas.players[player_id];
                          
-                // TODO: Setting up players boards if needed
+                // Setting up players boards if needed
+                
+                if(this.player_id == player_id){ //CURRENT player
+                    let playerContainers = dojo.query(".ffg_container[data_player='"+player_id+"']");
+                    playerContainers.connect( 'onclick', this, 'onSelectLoadTarget' );
+                }
+                else {
+                    //TODO JSA update other players
+                }
             }
+            
+            this.dayCards = gamedatas.dayCards;
             
             // TODO: Set up your game interface here, according to "gamedatas"
             
+            dojo.query(".ffg_card").connect( 'onclick', this, 'onSelectCard' );
  
             // Setup game notifications to handle (see "setupNotifications" method below)
             this.setupNotifications();
@@ -81,6 +96,15 @@ function (dojo, declare) {
             case 'newTurn':
                 //Prepare to flip all cards :
                 dojo.query(".ffg_card").forEach("dojo.removeClass(item,'ffg_card_back');"); 
+                break;
+               
+            case 'playerTurn':
+                this.possibleCards = [];
+                if(args.args._private !=undefined){
+                    if(args.args._private.possibleCards!=undefined){
+                        this.possibleCards = args.args._private.possibleCards;
+                    }
+                } 
                 break;
                 
             case 'endTurn':
@@ -157,7 +181,8 @@ function (dojo, declare) {
         {            
             console.log( "playCardOnTable ... " ,row,card_id, color, value);
             
-            let div = dojo.query("#ffg_card_"+row)[0];
+            let divId = "#ffg_card_"+row;
+            let div = dojo.query(divId)[0];
             if(div == undefined) {
                 console.log( "playCardOnTable ...ERROR undefined row", row );
                 return;
@@ -166,8 +191,33 @@ function (dojo, declare) {
             div.setAttribute("data_id",card_id);
             div.setAttribute("data_suit",color);
             div.setAttribute("data_value",value);
+            dojo.addClass(divId,"ffg_selectable") ;
             
             //TODO JSA ADD some animation ?
+        },
+        
+        displayPossibleLoading: function( card_id )
+        {            
+            console.log( "displayPossibleLoading ... " ,card_id, this.possibleCards);
+            
+            dojo.query(".ffg_container").removeClass("ffg_selectable") ;
+             
+            if(card_id == null){
+                return;
+            }
+            
+            if(this.possibleCards [ card_id ] == undefined) {
+                console.log( "displayPossibleLoading ... Not possible card :", card_id );
+                return ;
+            }
+            
+            let containersToDisplay = this.possibleCards [ card_id ];//array of container ids
+            for(i in containersToDisplay){
+                let container_id = containersToDisplay[i];
+                let containerDivId = "ffg_container_"+this.player_id+"_"+container_id;
+                //let containerDiv = dojo.query("#"+containerDivId);
+                dojo.addClass(containerDivId,"ffg_selectable") ;
+            }
         },
 
         ///////////////////////////////////////////////////
@@ -217,6 +267,48 @@ function (dojo, declare) {
         },        
         
         */
+        
+        /**
+        Click Handler for choosing a card on the left : 
+        */
+        onSelectCard: function( evt )
+        {
+            console.log( 'onSelectCard',evt );
+            
+            // Preventing default browser reaction
+            dojo.stopEvent( evt );
+            
+            dojo.query(".ffg_card").removeClass("ffg_selected") ;
+            
+            let div_id = evt.currentTarget.id;
+            let card_id= evt.currentTarget.getAttribute("data_id") ;
+            
+            if(this.selectedCard == card_id ){
+                //IF ALREADY DISPLAYED , hide
+                this.selectedCard = null;
+                console.log("onSelectCard() => Hide :",card_id);
+                this.displayPossibleLoading( null);
+                return;
+            } //ELSE continue to SHOW
+            
+            dojo.addClass(div_id,"ffg_selected") ;
+                
+            this.selectedCard = card_id;
+            this.displayPossibleLoading( card_id);
+            
+        },        
+        /**
+        Click Handler for the trucks loading containers : 
+        */
+        onSelectLoadTarget: function( evt )
+        {
+            console.log( 'onSelectLoadTarget',evt );
+            
+            // Preventing default browser reaction
+            dojo.stopEvent( evt );
+            
+            //TODO JSA call server Action LOAD
+        },        
 
         
         ///////////////////////////////////////////////////

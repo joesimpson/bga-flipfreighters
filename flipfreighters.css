@@ -61,6 +61,8 @@
   
     /* TODO JSA LATER : add a slider */
   --ffg_board_display_scale: 0.5;
+  
+  --ffg_container_width: 42px;
 }
 
 #ffg_game_zone{
@@ -87,6 +89,13 @@
     margin: 10px;
     outline: 2px solid black;
     border-radius: 5%;
+}
+
+.ffg_card.ffg_selected{
+    outline: 5px dashed blue;
+}
+.ffg_card.ffg_selectable:hover {
+    scale: 1.15;
 }
 
 .ffg_card[data_value='2']{
@@ -155,3 +164,85 @@
     width: calc(var(--ffg_board_display_width) * var(--ffg_board_display_scale)  );
     height: calc(var(--ffg_board_display_height) * var(--ffg_board_display_scale)  );
 }
+
+
+
+.ffg_container{
+    width: var(--ffg_container_width);
+    height: var(--ffg_container_width);
+    outline: 2px solid blue;/* TODO JSA remove AFTER TESTS */
+    position: absolute;
+    z-index: 1;
+}
+
+.ffg_container.ffg_selectable{
+    outline: 4px dashed red;
+    background-color: #0800ff29;
+    cursor: pointer;
+}
+.ffg_container.ffg_selectable:hover {
+  scale: 1.2;
+  outline-style: solid;
+  outline-color: yellow;
+  z-index: 2;
+}
+
+/** truck1 is the truck "!=" on the top right, containers are valued from LEFT to RIGHT, TOP TO BOTTOM  */
+.ffg_container[data_id='truck1_0']{
+    left: 800px;
+    top: 100px;
+}
+.ffg_container[data_id='truck1_1']{
+    left: 848px;
+    top: 100px;
+}
+.ffg_container[data_id='truck1_2']{
+    left: 800px;
+    top: 148px;
+}
+.ffg_container[data_id='truck1_3']{
+    left: 848px;
+    top: 148px;
+}
+/** truck2 is the truck "=" on the top, containers are valued from LEFT to RIGHT, TOP TO BOTTOM */
+.ffg_container[data_id='truck2_0']{
+    left: 458px;
+    top: 61px;
+}
+.ffg_container[data_id='truck2_1']{
+    left: 505px;
+    top: 61px;
+}
+.ffg_container[data_id='truck2_2']{
+    left: 458px;
+    top: 110px;
+}
+.ffg_container[data_id='truck2_3']{
+    left: 505px;
+    top: 110px;
+}
+
+/** truck3 is the truck "6-1" on the left, containers are valued from LEFT to RIGHT */
+.ffg_container[data_truck='truck3']{
+    top: 162px;
+}
+.ffg_container[data_id='truck3_0']{
+    left: 38px;
+}
+.ffg_container[data_id='truck3_1']{
+    left: 85px;
+}
+.ffg_container[data_id='truck3_2']{
+    left: 132px;
+}
+.ffg_container[data_id='truck3_3']{
+    left: 179px;
+}
+.ffg_container[data_id='truck3_4']{
+    left: 226px;
+}
+.ffg_container[data_id='truck3_5']{
+    left: 273px;
+}
+
+/** TODO JSA FILL WITH other trucks*/
