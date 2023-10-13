@@ -63,6 +63,9 @@
   --ffg_board_display_scale: 0.5;
   
   --ffg_container_width: 42px;
+  
+  --ffg_truck_position_small_size: 31px;
+  --ffg_truck_position_medium_size: 43px;
 }
 
 #ffg_game_zone{
@@ -258,4 +261,103 @@
     text-align: center;
     color: black;
     text-shadow: 1px 1px 1px black;
+}
+
+
+
+.ffg_truck_pos{
+    width: var(--ffg_truck_position_small_size);
+    height: var(--ffg_truck_position_small_size);
+    outline: 2px solid yellow;
+    position: absolute;
+    z-index: 1;
+    border-radius: 100%;
+    background-color: black;
+}
+.ffg_not_confirmed_pos{
+    outline: 5px dashed blue;
+}
+.ffg_not_drawn_pos{
+    visibility: hidden;
+}
+/** 
+    LIST OF ALL 54 Truck positions : 
+    //TODO JSA COMPLETE LIST
+*/
+
+.ffg_truck[data_id='truck2']>.ffg_truck_pos[data_position="1"]{
+    left: 507px;
+    top: 194px;
+}
+.ffg_truck[data_id='truck2']>.ffg_truck_pos[data_position="2"]{
+    width: calc(0.5 * var(--ffg_truck_position_medium_size) );
+    height: var(--ffg_truck_position_medium_size);
+    left: 509px;
+    top: 267px;
+    border-bottom-right-radius: var(--ffg_truck_position_medium_size);
+    border-top-right-radius: var(--ffg_truck_position_medium_size);
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    transform: rotate(17deg);
+}
+.ffg_truck[data_id='truck2']>.ffg_truck_pos[data_position="3"]{
+    left: 476px;
+    top: 358px;
+}
+.ffg_truck[data_id='truck2']>.ffg_truck_pos[data_position="4"]{
+    width: calc(0.5 * var(--ffg_truck_position_medium_size) );
+    height: var(--ffg_truck_position_medium_size);
+    left: 490px;
+    top: 433px;
+    border-bottom-right-radius: var(--ffg_truck_position_medium_size);
+    border-top-right-radius: var(--ffg_truck_position_medium_size);
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+.ffg_truck[data_id='truck2']>.ffg_truck_pos[data_position="5"]{
+    left: 452px;
+    top: 512px;
+}
+
+.ffg_truck[data_id='truck3']>.ffg_truck_pos[data_position="1"]{
+    left: 437px;
+    top: 222px;
+}
+.ffg_truck[data_id='truck3']>.ffg_truck_pos[data_position="2"]{
+    width: calc(0.5 * var(--ffg_truck_position_medium_size) );
+    height: var(--ffg_truck_position_medium_size);
+    left: 482px;
+    top: 260px;
+    border-bottom-right-radius: 0;
+    border-top-right-radius: 0;
+    border-top-left-radius: var(--ffg_truck_position_medium_size);
+    border-bottom-left-radius: var(--ffg_truck_position_medium_size);
+    transform: rotate(17deg);
+}
+.ffg_truck[data_id='truck3']>.ffg_truck_pos[data_position="3"]{
+    left: 579px;
+    top: 286px;
+}
+.ffg_truck[data_id='truck3']>.ffg_truck_pos[data_position="4"]{
+    left: 691px;
+    top: 274px;
+}
+.ffg_truck[data_id='truck3']>.ffg_truck_pos[data_position="5"]{
+    left: 791px;
+    top: 280px;
+}
+.ffg_truck[data_id='truck3']>.ffg_truck_pos[data_position="6"]{
+    width: calc(0.5 * var(--ffg_truck_position_medium_size) );
+    height: var(--ffg_truck_position_medium_size);
+    left: 850px;
+    top: 324px;
+    border-bottom-right-radius: 0;
+    border-top-right-radius: 0;
+    border-top-left-radius: var(--ffg_truck_position_medium_size);
+    border-bottom-left-radius: var(--ffg_truck_position_medium_size);
+    transform: rotate(7deg);
+}
+.ffg_truck[data_id='truck3']>.ffg_truck_pos[data_position="7"]{
+    left: 950px;
+    top: 394px;
 }

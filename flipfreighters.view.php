@@ -96,6 +96,7 @@ class view_flipfreighters_flipfreighters extends game_view
 
         $this->page->begin_block( "flipfreighters_flipfreighters", "ffg_player_trucks_cargo" );
         $this->page->begin_block( "flipfreighters_flipfreighters", "ffg_player_truck_position" );
+        $this->page->begin_block( "flipfreighters_flipfreighters", "ffg_player_truck_positions" );
 
         foreach( $players as $player_id => $player )
         { 
@@ -121,15 +122,42 @@ class view_flipfreighters_flipfreighters extends game_view
             //TODO JSA FILTER PRIVATE DATAS : current player cannot see "NOT_CONFIRMED" datas from other players
             foreach( $trucks_positions as $trucks_position )
             {
-                $this->page->insert_block( "ffg_player_truck_position", array( 
+                
+                $confirmed_pos = $trucks_position['confirmed_position'];
+                $not_confirmed_pos = $trucks_position['not_confirmed_position'];
+                
+                //TODO JSA DEFINE truck_max_position in material file
+                $truck_max_position = 7;
+                $this->page->reset_subblocks( 'ffg_player_truck_position' ); 
+                for ($k =1; $k<= $truck_max_position; $k++ )
+                { //POSITIONS start at 1
+                    $classes = "";
+                    if(isset($confirmed_pos) && $k> $confirmed_pos){
+                        $classes .= " ffg_not_confirmed_pos";
+                    }
+                    if(isset($not_confirmed_pos) && $k> $not_confirmed_pos){
+                        $classes .= " ffg_not_drawn_pos";
+                    }
+                    $this->page->insert_block( "ffg_player_truck_position", array( 
+                                                            "PLAYER_ID" => $player_id,
+                                                            "TRUCK_ID" => $trucks_position['truck_id'],
+                                                            "INDEX" => $k,
+                                                            "CLASSES" => $classes,
+                                                             ) );
+                }
+                
+                $this->page->insert_block( "ffg_player_truck_positions", array( 
                                                         "PLAYER_ID" => $player_id,
                                                         "TRUCK_ID" => $trucks_position['truck_id'],
                                                         "CONFIRMED_STATE" => $trucks_position['confirmed_state'],
-                                                        "CONFIRMED_POSITION" => $trucks_position['confirmed_position'],
+                                                        "CONFIRMED_POSITION" => $confirmed_pos,
                                                         "NOT_CONFIRMED_STATE" => $trucks_position['not_confirmed_state'],
-                                                        "NOT_CONFIRMED_POSITION" => $trucks_position['not_confirmed_position'],
+                                                        "NOT_CONFIRMED_POSITION" => $not_confirmed_pos,
                                                          ) );
+                
             }
+            //TODO JSA use material file to add trucks which are not moved yet
+            
         }
 
         /*********** Do not change anything below this line  ************/
