@@ -61,6 +61,7 @@ function (dojo, declare) {
                 // Setting up players boards if needed
             
                 let playerContainers = dojo.query(".ffg_container[data_player='"+player_id+"']");
+                let playerTrucks = dojo.query(".ffg_truck[data_player='"+player_id+"']");
                     
                 if(this.player_id == player_id){ //CURRENT player
                     playerContainers.connect( 'onclick', this, 'onSelectLoadTarget' );
@@ -68,6 +69,7 @@ function (dojo, declare) {
                 else {
                     //TODO JSA update other players, instead of destroying them (destroy for now because it is displayed in the same place for every one)
                     playerContainers.forEach(dojo.destroy);
+                    playerTrucks.forEach(dojo.destroy);
                     
                 }
             }

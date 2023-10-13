@@ -247,7 +247,8 @@ class FlipFreighters extends Table
         $possibles = array();
         
         //Loop over each container 
-        foreach( $playerBoard as $container_id => $container )
+        $cargos = $playerBoard['trucks_loading'];
+        foreach( $cargos as $container_id => $container )
         {
             if($this->isPossibleLoadingWithCard($card,$container) == false ) {
                 continue;
@@ -320,14 +321,17 @@ class FlipFreighters extends Table
     function getPlayerBoard($player_id){
         $trucks_loading = array();
         
-        //TODO JSA get trucks positions
-        
-       $trucks_loading = $this->getCollectionFromDb("SELECT loading_key id,loading_amount  amount, loading_state state,loading_card_id card_id,
+        $trucks_loading = $this->getCollectionFromDb("SELECT loading_key id,loading_amount  amount, loading_state state,loading_card_id card_id,
             SUBSTRING(loading_key FROM 1 FOR 6) truck_id
             FROM freighter_loading
             WHERE loading_player_id ='$player_id' ");
         
-        return $trucks_loading;
+        $trucks_positions = $this->getObjectListFromDB( $this->getSQLSelectTruckPositions($player_id));
+            
+        return array( 
+            "trucks_loading" => $trucks_loading,
+            "trucks_positions" => $trucks_positions,
+        );
     }
     
     //TODO JSA FACTORIZE
@@ -341,6 +345,45 @@ class FlipFreighters extends Table
         self::dump("getTruckContainer($player_id,$container_id)", $datas);            
         return $datas;    
     }
+    
+    function getSQLSelectTruckPositions($player_id = null){
+        // This request seems complicated but it is not, it is long because we want a "FULL JOIN" equivalent in mySql + because we want to aggregate datas directly
+        $sql = " SELECT a.fmove_player_id player_id, a.fmove_truck_id truck_id, a.confirmed_state,a.confirmed_position, b.not_confirmed_state,b.not_confirmed_position
+            FROM (
+                SELECT fmove_player_id, fmove_truck_id, MAX(fmove_state) 'confirmed_state', MAX(fmove_position_to) 'confirmed_position' FROM `freighter_move`  
+                WHERE fmove_state = 2 or fmove_state = 4
+                GROUP by 1,2
+                ) a
+             left JOIN  (
+                SELECT fmove_player_id, fmove_truck_id, MAX(fmove_state) 'not_confirmed_state', MAX(fmove_position_to) 'not_confirmed_position' FROM `freighter_move`  
+                WHERE fmove_state = 1 or fmove_state = 3
+                GROUP by 1,2
+              ) b 
+              on a.fmove_player_id = b.fmove_player_id AND  a.fmove_truck_id = b.fmove_truck_id 
+            UNION 
+            SELECT b.fmove_player_id player_id, b.fmove_truck_id truck_id, a.confirmed_state,a.confirmed_position, b.not_confirmed_state,b.not_confirmed_position
+            FROM (
+                SELECT fmove_player_id, fmove_truck_id, MAX(fmove_state) 'confirmed_state', MAX(fmove_position_to) 'confirmed_position' FROM `freighter_move`  
+                WHERE fmove_state = 2 or fmove_state = 4
+                GROUP by 1,2
+                ) a
+             right JOIN  (
+                SELECT fmove_player_id, fmove_truck_id, MAX(fmove_state) 'not_confirmed_state', MAX(fmove_position_to) 'not_confirmed_position' FROM `freighter_move`  
+                WHERE fmove_state = 1 or fmove_state = 3
+                GROUP by 1,2
+              ) b 
+              on a.fmove_player_id = b.fmove_player_id AND  a.fmove_truck_id = b.fmove_truck_id 
+            ORDER BY 1,2
+             ";
+             //TODO JSA WHERE fmove_player_id ='$player_id'
+        if(isset($player_id) ){
+            $sql = "SELECT * FROM ( ".$sql.") c WHERE player_id ='$player_id' ";
+        }     
+        return $sql;    
+    }
+    
+    
+    
     
     function updateLoadInTruck($player_id, $containerId, $amount,$state,$cardId = null){
         

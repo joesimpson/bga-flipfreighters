@@ -94,21 +94,40 @@ class view_flipfreighters_flipfreighters extends game_view
             $index++;
         }
 
-        $this->page->begin_block( "flipfreighters_flipfreighters", "ffg_player_trucks" );
+        $this->page->begin_block( "flipfreighters_flipfreighters", "ffg_player_trucks_cargo" );
+        $this->page->begin_block( "flipfreighters_flipfreighters", "ffg_player_truck_position" );
 
         foreach( $players as $player_id => $player )
         { 
-            $trucks_loading = $this->game->getPlayerBoard($player_id);
+            $player_board = $this->game->getPlayerBoard($player_id);
+            $trucks_loading = $player_board['trucks_loading'];
         
+            $this->game->dump("VIEW trucks_loading", $trucks_loading);
+            
             foreach( $trucks_loading as $truck_loading )
             {
-                $this->page->insert_block( "ffg_player_trucks", array( 
+                $this->page->insert_block( "ffg_player_trucks_cargo", array( 
                                                         "PLAYER_ID" => $player_id,
                                                         "CONTAINER_ID" => $truck_loading['id'],
                                                         "TRUCK_ID" => $truck_loading['truck_id'],
                                                         "AMOUNT" => $truck_loading['amount'],
                                                         "STATE" => $truck_loading['state'],
                                                         "CARD_ID" => $truck_loading['card_id'],
+                                                         ) );
+            }
+            
+            $trucks_positions = $player_board['trucks_positions'];
+            $this->game->dump("VIEW trucks_positions", $trucks_positions);
+            //TODO JSA FILTER PRIVATE DATAS : current player cannot see "NOT_CONFIRMED" datas from other players
+            foreach( $trucks_positions as $trucks_position )
+            {
+                $this->page->insert_block( "ffg_player_truck_position", array( 
+                                                        "PLAYER_ID" => $player_id,
+                                                        "TRUCK_ID" => $trucks_position['truck_id'],
+                                                        "CONFIRMED_STATE" => $trucks_position['confirmed_state'],
+                                                        "CONFIRMED_POSITION" => $trucks_position['confirmed_position'],
+                                                        "NOT_CONFIRMED_STATE" => $trucks_position['not_confirmed_state'],
+                                                        "NOT_CONFIRMED_POSITION" => $trucks_position['not_confirmed_position'],
                                                          ) );
             }
         }
