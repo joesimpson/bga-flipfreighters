@@ -229,7 +229,7 @@ function (dojo, declare) {
                 return ;
             }
             
-            let containersToDisplay = this.possibleCards [ card_id ];//array of container ids
+            let containersToDisplay = this.possibleCards [ card_id ]["LOAD"];//array of container ids
             for(i in containersToDisplay){
                 let container_id = containersToDisplay[i];
                 let containerDivId = "ffg_container_"+this.player_id+"_"+container_id;
@@ -252,15 +252,12 @@ function (dojo, declare) {
                 return ;
             }
             
-            //TODO JSA RECEIVE array of possibles moves ids
-            /*
-            let movesToDisplay = this.possibleCards [ card_id ];
+            let movesToDisplay = this.possibleCards [ card_id ]["MOVE"];
             for(i in movesToDisplay){
                 let pos_id = movesToDisplay[i];
-                let pos_DivId = "ffg_truck_pos"+this.player_id+"_"+pos_id;
+                let pos_DivId = "ffg_truck_pos_"+this.player_id+"_"+pos_id;
                 dojo.addClass(pos_DivId,"ffg_selectable") ;
-            }*/
-            dojo.query(".ffg_truck_pos").addClass("ffg_selectable") ;
+            }
         },
 
         ///////////////////////////////////////////////////

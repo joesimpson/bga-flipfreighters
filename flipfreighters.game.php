@@ -278,6 +278,36 @@ class FlipFreighters extends Table
         return true;
     }
     
+    function getPossibleMovesWithCard($card,$playerBoard)
+    { 
+        $possibles = array();
+        
+        $trucks_positions = $playerBoard['trucks_positions'];
+        foreach( $trucks_positions as $truck_position ){
+            $truck_id = $truck_position['truck_id'];
+            $material = $this->trucks_types[$truck_id];
+            $truck_max_position = end($material['path_size']);//TODO JSA GAME RULES
+            
+            for ($k =1; $k<= $truck_max_position; $k++ ) {
+                $position_id = $truck_id."_".$k;
+                if($this->isPossibleMoveWithCard($card,$playerBoard,$truck_id,$k) == false ) {
+                    continue;
+                }
+                $possibles[] = $position_id;
+            }
+        }
+        return $possibles;
+    }
+    function isPossibleMoveWithCard($card,$playerBoard,$truck_id,$k)
+    { 
+        $card_id = $card['id'];
+        self::trace("isPossibleMoveWithCard($card_id,$truck_id,$k)");
+
+        //TODO JSA isPossibleMoveWithCard
+             
+        return true;
+    }
+    
     //TODO JSA separate module for player board / truck
     function initPlayerBoard()
     {
@@ -473,8 +503,10 @@ class FlipFreighters extends Table
             $possibleCards = array();
             $playerBoard = $this->getPlayerBoard($player_id);
             foreach( $dayCards as $dayCard){
-                $possibleCards[$dayCard['id']] = $this->getPossibleLoadingWithCard($dayCard,$playerBoard);
-                //TODO JSA add possibles MOVE ACTIONs
+                $possibleCards[$dayCard['id']] = array(
+                    "LOAD" => $this->getPossibleLoadingWithCard($dayCard,$playerBoard),
+                    "MOVE" => $this->getPossibleMovesWithCard($dayCard,$playerBoard),
+                    );
             }
             $privateDatas[$player_id] = array(
                 'possibleCards' => $possibleCards,
