@@ -237,6 +237,31 @@ function (dojo, declare) {
                 dojo.addClass(containerDivId,"ffg_selectable") ;
             }
         },
+        displayPossibleMoves: function( card_id )
+        {            
+            console.log( "displayPossibleMoves ... " ,card_id, this.possibleCards);
+            
+            dojo.query(".ffg_truck_pos").removeClass("ffg_selectable") ;
+             
+            if(card_id == null){
+                return;
+            }
+            
+            if(this.possibleCards [ card_id ] == undefined) {
+                console.log( "displayPossibleMoves ... Not possible card :", card_id );
+                return ;
+            }
+            
+            //TODO JSA RECEIVE array of possibles moves ids
+            /*
+            let movesToDisplay = this.possibleCards [ card_id ];
+            for(i in movesToDisplay){
+                let pos_id = movesToDisplay[i];
+                let pos_DivId = "ffg_truck_pos"+this.player_id+"_"+pos_id;
+                dojo.addClass(pos_DivId,"ffg_selectable") ;
+            }*/
+            dojo.query(".ffg_truck_pos").addClass("ffg_selectable") ;
+        },
 
         ///////////////////////////////////////////////////
         //// Player's action
@@ -308,6 +333,7 @@ function (dojo, declare) {
                 this.selectedAmount = null;
                 console.log("onSelectCard() => Hide :",card_id);
                 this.displayPossibleLoading( null);
+                this.displayPossibleMoves( null);
                 return;
             } //ELSE continue to SHOW
             
@@ -316,6 +342,7 @@ function (dojo, declare) {
             this.selectedCard = card_id;
             this.selectedAmount = data_value;
             this.displayPossibleLoading( card_id);
+            this.displayPossibleMoves( card_id);
             
         },        
         /**
@@ -416,6 +443,7 @@ function (dojo, declare) {
             this.selectedAmount = null;
             dojo.query(".ffg_card").removeClass("ffg_selected") ;
             dojo.query(".ffg_container").removeClass("ffg_selectable") ;
+            dojo.query(".ffg_truck_pos").removeClass("ffg_selectable") ;
             
             //TODO JSA DISABLE THIS CARD FOR FURTHER ACTIONS
             
