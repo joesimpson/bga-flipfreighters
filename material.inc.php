@@ -34,5 +34,73 @@ $this->card_types  = array(
     //we have two of each label for suits. This is because sometimes we need translated values on the php side and sometimes we don't.
         // In this case nametr will return a translated value in php, which is only useful when you throw exceptions to show the right strings.
 
+/**
+Definition of different trucks of the board, each with different cargos zones inside
 
-
+    TODO JSA : add missing specific rules for trucks & for cargo spaces
+*/
+$this->trucks_types = array(
+    "truck1" => array(
+        "truck_id" => "truck1",
+        "path_size" => array(5), 
+        "containers" => array(
+            "1" , "2" , "3" ,  "4" 
+        ),
+    ),
+    "truck2" => array(
+        "truck_id" => "truck2",
+        "path_size" => array(5),
+        "containers" => array(
+            "1" , "2" , "3" ,  "4" 
+        ),
+    ),
+    "truck3" => array(
+        "truck_id" => "truck3",
+        "path_size" => array(7),
+        "containers" => array(
+            "1" , "2" , "3" ,  "4" ,  "5" ,  "6" 
+        ),
+    ),
+    "truck4" => array(
+        "truck_id" => "truck4",
+        "path_size" => array(7),
+        "containers" => array(
+            6 , 5 , 4 ,  3 ,  2 ,  1
+        ),
+    ),
+    "truck5" => array(
+        "truck_id" => "truck5",
+        "path_size" => array(5),
+        "containers" => array(
+            1,2,3,4,5,6,
+        ),
+    ),
+    "truck6" => array(
+        "truck_id" => "truck6",
+        "path_size" => array(5,8),
+        "containers" => array(
+            1,2,3,4,
+        ),
+    ),
+    "truck7" => array(
+        "truck_id" => "truck7",
+        "path_size" => array(5,8),
+        "containers" => array(
+            1,2,3,4,
+        ),
+    ),
+    "truck8" => array(
+        "truck_id" => "truck8",
+        "path_size" => array(5,8),
+        "containers" => array(
+            1,2,3,4,
+        ),
+    ),
+    "truck9" => array(
+        "truck_id" => "truck9",
+        "path_size" => array(5,8),
+        "containers" => array(
+            1,2,3,4,
+        ),
+    ),
+);

@@ -270,17 +270,20 @@
 .ffg_truck_pos{
     width: var(--ffg_truck_position_small_size);
     height: var(--ffg_truck_position_small_size);
-    outline: 2px solid yellow;
     position: absolute;
     z-index: 1;
     border-radius: 100%;
+}
+.ffg_confirmed_pos{
     background-color: black;
+    outline: 2px solid yellow;
 }
 .ffg_not_confirmed_pos{
+    background-color: black;
     outline: 5px dashed red;
 }
 .ffg_not_drawn_pos{
-    /* Don't hide it because we want to be able to draw it later
+    /* Don't hide it because we want to be able to draw it later for selection
     visibility: hidden;
     */
     background-color: transparent;

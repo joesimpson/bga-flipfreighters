@@ -123,26 +123,29 @@ class view_flipfreighters_flipfreighters extends game_view
             foreach( $trucks_positions as $trucks_position )
             {
                 
-                $confirmed_pos = $trucks_position['confirmed_position'];
-                $not_confirmed_pos = $trucks_position['not_confirmed_position'];
+                $truck_id = $trucks_position['truck_id'];
                 
-                //TODO JSA DEFINE truck_max_position in material file
-                $truck_max_position = 8;
+                $confirmed_pos = $trucks_position['confirmed_position'] ;
+                $not_confirmed_pos = $trucks_position['not_confirmed_position'];
+                $confirmed_state = $trucks_position['confirmed_state'];
+                $not_confirmed_state = $trucks_position['not_confirmed_state']  ;
+                $truck_max_position = end($this->game->trucks_types[$truck_id]['path_size']);
+                
                 $this->page->reset_subblocks( 'ffg_player_truck_position' ); 
+                
                 for ($k =1; $k<= $truck_max_position; $k++ )
                 { //POSITIONS start at 1
-                    $classes = "";
-                    if( isset($not_confirmed_pos) && $k> $not_confirmed_pos
-                     || !isset($not_confirmed_pos) && $k> $confirmed_pos && isset($confirmed_pos)
-                    ){
-                        $classes .= " ffg_not_drawn_pos";
-                    }
-                    else if(isset($confirmed_pos) && $k> $confirmed_pos){
-                        $classes .= " ffg_not_confirmed_pos";
+                    $classes = " ffg_not_drawn_pos";
+                    
+                    if( isset($confirmed_pos) && $k<= $confirmed_pos){
+                        $classes = " ffg_confirmed_pos";
+                    } 
+                    else if(isset($not_confirmed_pos) && $k<= $not_confirmed_pos){
+                        $classes = " ffg_not_confirmed_pos";
                     }
                     $this->page->insert_block( "ffg_player_truck_position", array( 
                                                             "PLAYER_ID" => $player_id,
-                                                            "TRUCK_ID" => $trucks_position['truck_id'],
+                                                            "TRUCK_ID" => $truck_id,
                                                             "INDEX" => $k,
                                                             "CLASSES" => $classes,
                                                              ) );
@@ -150,10 +153,10 @@ class view_flipfreighters_flipfreighters extends game_view
                 
                 $this->page->insert_block( "ffg_player_truck_positions", array( 
                                                         "PLAYER_ID" => $player_id,
-                                                        "TRUCK_ID" => $trucks_position['truck_id'],
-                                                        "CONFIRMED_STATE" => $trucks_position['confirmed_state'],
+                                                        "TRUCK_ID" => $truck_id,
+                                                        "CONFIRMED_STATE" => $confirmed_state,
                                                         "CONFIRMED_POSITION" => $confirmed_pos,
-                                                        "NOT_CONFIRMED_STATE" => $trucks_position['not_confirmed_state'],
+                                                        "NOT_CONFIRMED_STATE" => $not_confirmed_state,
                                                         "NOT_CONFIRMED_POSITION" => $not_confirmed_pos,
                                                          ) );
                 

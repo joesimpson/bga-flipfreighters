@@ -142,6 +142,12 @@ class FlipFreighters extends Table
         $result['round_number'] = self::getGameStateValue( 'round_number');
         $result['turn_number'] = self::getGameStateValue( 'turn_number');
         $result['dayCards'] = $this->getCurrentDayCards();
+        
+        $trucks = $this->trucks_types;
+        $result['material'] = array( 
+            'card_types' =>  $this->card_types,
+            'trucks_types' =>  $this->trucks_types,
+        ); 
   
         return $result;
     }
@@ -280,34 +286,14 @@ class FlipFreighters extends Table
         //CLEAN BEFORE (useful FOR TESTING)
         self::DbQuery( "DELETE FROM freighter_loading " );
         
+        $trucks = $this->trucks_types;
+        
         //TODO JSA : may be unnecessary if we use material container_ids to retrieve possibles actions, so we insert only when loaded ?
         //Step 1 : prepare an entry for all possible loading in every players trucks :
         $sql = "INSERT INTO freighter_loading (loading_player_id, loading_key) VALUES ";
         $values = array();
         foreach( $players as $player_id => $player )
         {
-            //TODO JSA material file with trucks conditions details
-            //$trucks = $this->trucks;
-            $trucks = array(
-                "truck1" => array(
-                    "truck_id" => "truck1",
-                    "containers" => array(
-                        "1" , "2" , "3" ,  "4" 
-                    ),
-                ),
-                "truck2" => array(
-                    "truck_id" => "truck2",
-                    "containers" => array(
-                        "1" , "2" , "3" ,  "4" 
-                    ),
-                ),
-                "truck3" => array(
-                    "truck_id" => "truck3",
-                    "containers" => array(
-                        "1" , "2" , "3" ,  "4" ,  "5" ,  "6" 
-                    ),
-                ),
-            );
             foreach( $trucks as $truck_id => $truck ) {
                 foreach( $truck['containers'] as $container_id => $container ){
                     $values[] = "( '$player_id', '".$truck_id."_$container_id' )";
@@ -326,7 +312,26 @@ class FlipFreighters extends Table
             FROM freighter_loading
             WHERE loading_player_id ='$player_id' ");
         
-        $trucks_positions = $this->getObjectListFromDB( $this->getSQLSelectTruckPositions($player_id));
+        $trucks_positions = $this->getDoubleKeyCollectionFromDB( $this->getSQLSelectTruckPositions($player_id)) [$player_id];
+        
+        self::dump("getPlayerBoard($player_id) trucks_positions BEFORE ",$trucks_positions);
+        
+        //LOOP ON EACH TRUCK to add trucks which are not selected by this player yet
+        foreach ($this->trucks_types as $truck_type_id =>  $truck_type){
+            if( ! array_key_exists($truck_type_id, $trucks_positions ) ){
+                $trucks_positions[$truck_type_id] = array (
+                    "player_id" => $player_id,
+                    "truck_id" => $truck_type_id,
+                    "confirmed_state" => null,
+                    "confirmed_position" => null,
+                    "not_confirmed_state" => null,
+                    "not_confirmed_position" => null,
+                );
+            }
+            
+            //TODO JSA DO the same with cargo load
+        }
+        self::dump("getPlayerBoard($player_id) trucks_positions AFTER ",$trucks_positions);
             
         return array( 
             "trucks_loading" => $trucks_loading,
