@@ -190,6 +190,7 @@
   z-index: 2;
 }
 
+/* ---------------------------- ----------------------------   ---------------------------- */
 /** truck1 is the truck "!=" on the top right, containers are valued from LEFT to RIGHT, TOP TO BOTTOM  */
 .ffg_container[data_id='truck1_0']{
     left: 800px;
@@ -207,6 +208,7 @@
     left: 848px;
     top: 148px;
 }
+/* ---------------------------- ----------------------------   ---------------------------- */
 /** truck2 is the truck "=" on the top, containers are valued from LEFT to RIGHT, TOP TO BOTTOM */
 .ffg_container[data_id='truck2_0']{
     left: 458px;
@@ -224,7 +226,7 @@
     left: 505px;
     top: 110px;
 }
-
+/* ---------------------------- ----------------------------   ---------------------------- */
 /** truck3 is the truck "6-1" on the left, containers are valued from LEFT to RIGHT */
 .ffg_container[data_truck='truck3']{
     top: 162px;
@@ -247,7 +249,7 @@
 .ffg_container[data_id='truck3_5']{
     left: 273px;
 }
-
+/* ---------------------------- ----------------------------   ---------------------------- */
 /** TODO JSA FILL WITH other trucks*/
 
 
@@ -275,16 +277,56 @@
     background-color: black;
 }
 .ffg_not_confirmed_pos{
-    outline: 5px dashed blue;
+    outline: 5px dashed red;
 }
 .ffg_not_drawn_pos{
+    /* Don't hide it because we want to be able to draw it later
     visibility: hidden;
+    */
+    background-color: transparent;
+    outline: 5px solid blue;
 }
-/** 
-    LIST OF ALL 54 Truck positions : 
-    //TODO JSA COMPLETE LIST
-*/
 
+/* 
+---------------------------- ----------------------------   ---------------------------- 
+---------------------------- LIST OF ALL 61 Truck positions ---------------------------- 
+---------------------------- ----------------------------   ---------------------------- 
+*/
+.ffg_truck[data_id='truck1']>.ffg_truck_pos[data_position="1"]{
+    left: 871px;
+    top: 262px;
+}
+.ffg_truck[data_id='truck1']>.ffg_truck_pos[data_position="2"]{
+    width: calc(0.5 * var(--ffg_truck_position_medium_size) );
+    height: var(--ffg_truck_position_medium_size);
+    left: 877px;
+    top: 327px;
+    border-bottom-right-radius: var(--ffg_truck_position_medium_size);
+    border-top-right-radius: var(--ffg_truck_position_medium_size);
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    transform: rotate(7deg);
+}
+.ffg_truck[data_id='truck1']>.ffg_truck_pos[data_position="3"]{
+    width: calc(0.5 * var(--ffg_truck_position_medium_size) );
+    height: var(--ffg_truck_position_medium_size);
+    left: 876px;
+    top: 443px;
+    border-bottom-right-radius: var(--ffg_truck_position_medium_size);
+    border-top-right-radius: var(--ffg_truck_position_medium_size);
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    transform: rotate(10deg);
+}
+.ffg_truck[data_id='truck1']>.ffg_truck_pos[data_position="4"]{
+    left: 837px;
+    top: 522px;
+}
+.ffg_truck[data_id='truck1']>.ffg_truck_pos[data_position="5"]{
+    left: 834px;
+    top: 597px;
+}
+/* ---------------------------- ----------------------------   ---------------------------- */
 .ffg_truck[data_id='truck2']>.ffg_truck_pos[data_position="1"]{
     left: 507px;
     top: 194px;
@@ -318,7 +360,7 @@
     left: 452px;
     top: 512px;
 }
-
+/* ---------------------------- ----------------------------   ---------------------------- */
 .ffg_truck[data_id='truck3']>.ffg_truck_pos[data_position="1"]{
     left: 437px;
     top: 222px;
@@ -361,3 +403,242 @@
     left: 950px;
     top: 394px;
 }
+/* ---------------------------- ----------------------------   ---------------------------- */
+.ffg_truck[data_id='truck4']>.ffg_truck_pos[data_position="1"]{
+    width: calc(0.5 * var(--ffg_truck_position_medium_size) );
+    height: var(--ffg_truck_position_medium_size);
+    left: 464px;
+    top: 433px;
+    border-bottom-right-radius: 0;
+    border-top-right-radius: 0;
+    border-top-left-radius: var(--ffg_truck_position_medium_size);
+    border-bottom-left-radius: var(--ffg_truck_position_medium_size);
+}
+.ffg_truck[data_id='truck4']>.ffg_truck_pos[data_position="2"]{
+    width: calc(0.5 * var(--ffg_truck_position_medium_size) );
+    height: var(--ffg_truck_position_medium_size);
+    left: 555px;
+    top: 427px;
+    border-bottom-right-radius: 0;
+    border-top-right-radius: 0;
+    border-top-left-radius: var(--ffg_truck_position_medium_size);
+    border-bottom-left-radius: var(--ffg_truck_position_medium_size);
+    transform: rotate(7deg);
+}
+.ffg_truck[data_id='truck4']>.ffg_truck_pos[data_position="3"]{
+    left: 735px;
+    top: 477px;
+}
+.ffg_truck[data_id='truck4']>.ffg_truck_pos[data_position="4"]{
+    width: calc(0.5 * var(--ffg_truck_position_medium_size) );
+    height: var(--ffg_truck_position_medium_size);
+    left: 852px;
+    top: 440px;
+    border-bottom-right-radius: 0;
+    border-top-right-radius: 0;
+    border-top-left-radius: var(--ffg_truck_position_medium_size);
+    border-bottom-left-radius: var(--ffg_truck_position_medium_size);
+    transform: rotate(10deg);
+}
+.ffg_truck[data_id='truck4']>.ffg_truck_pos[data_position="5"]{
+    left: 948px;
+    top: 452px;
+}
+.ffg_truck[data_id='truck4']>.ffg_truck_pos[data_position="6"]{
+    left: 1039px;
+    top: 464px;
+}
+.ffg_truck[data_id='truck4']>.ffg_truck_pos[data_position="7"]{
+    left: 1149px;
+    top: 432px;
+}
+/* ---------------------------- ----------------------------   ---------------------------- */
+.ffg_truck[data_id='truck5']>.ffg_truck_pos[data_position="1"]{
+    width: calc(0.5 * var(--ffg_truck_position_medium_size) );
+    height: var(--ffg_truck_position_medium_size);
+    left: 510px;
+    top: 628px;
+    border-bottom-right-radius: 0;
+    border-top-right-radius: 0;
+    border-top-left-radius: var(--ffg_truck_position_medium_size);
+    border-bottom-left-radius: var(--ffg_truck_position_medium_size);
+    transform: rotate(1deg);
+}
+.ffg_truck[data_id='truck5']>.ffg_truck_pos[data_position="2"]{
+    left: 647px;
+    top: 658px;
+}
+.ffg_truck[data_id='truck5']>.ffg_truck_pos[data_position="3"]{
+    width: calc(0.5 * var(--ffg_truck_position_medium_size) );
+    height: var(--ffg_truck_position_medium_size);
+    left: 761px;
+    top: 644px;
+    border-bottom-right-radius: 0;
+    border-top-right-radius: 0;
+    border-top-left-radius: var(--ffg_truck_position_medium_size);
+    border-bottom-left-radius: var(--ffg_truck_position_medium_size);
+    transform: rotate(-3deg);
+}
+.ffg_truck[data_id='truck5']>.ffg_truck_pos[data_position="4"]{
+    left: 911px;
+    top: 664px;
+}
+.ffg_truck[data_id='truck5']>.ffg_truck_pos[data_position="5"]{
+    left: 1048px;
+    top: 517px;
+}
+/* ---------------------------- ----------------------------   ---------------------------- */
+.ffg_truck[data_id='truck6']>.ffg_truck_pos[data_position="1"]{
+    left: 472px;
+    top: 739px;
+}
+.ffg_truck[data_id='truck6']>.ffg_truck_pos[data_position="2"]{
+    left: 531px;
+    top: 743px;
+}
+.ffg_truck[data_id='truck6']>.ffg_truck_pos[data_position="3"]{
+    left: 523px;
+    top: 689px;
+}
+.ffg_truck[data_id='truck6']>.ffg_truck_pos[data_position="4"]{
+    width: calc(0.5 * var(--ffg_truck_position_medium_size) );
+    height: var(--ffg_truck_position_medium_size);
+    left: 537px;
+    top: 628px;
+    border-bottom-right-radius: var(--ffg_truck_position_medium_size);
+    border-top-right-radius: var(--ffg_truck_position_medium_size);
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    transform: rotate(1deg);
+}
+.ffg_truck[data_id='truck6']>.ffg_truck_pos[data_position="5"]{
+    left: 548px;
+    top: 570px;
+}
+.ffg_truck[data_id='truck6']>.ffg_truck_pos[data_position="6"]{
+    left: 544px;
+    top: 507px;
+}
+.ffg_truck[data_id='truck6']>.ffg_truck_pos[data_position="7"]{
+    width: calc(0.5 * var(--ffg_truck_position_medium_size) );
+    height: var(--ffg_truck_position_medium_size);
+    left: 579px;
+    top: 429px;
+    border-bottom-right-radius: var(--ffg_truck_position_medium_size);
+    border-top-right-radius: var(--ffg_truck_position_medium_size);
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    transform: rotate(7deg);
+}
+.ffg_truck[data_id='truck6']>.ffg_truck_pos[data_position="8"]{
+    left: 591px;
+    top: 368px;
+}
+/* ---------------------------- ----------------------------   ---------------------------- */
+.ffg_truck[data_id='truck7']>.ffg_truck_pos[data_position="1"]{
+    left: 741px;
+    top: 853px;
+}
+.ffg_truck[data_id='truck7']>.ffg_truck_pos[data_position="2"]{
+    left: 808px;
+    top: 839px;
+}
+.ffg_truck[data_id='truck7']>.ffg_truck_pos[data_position="3"]{
+    left: 793px;
+    top: 778px;
+}
+.ffg_truck[data_id='truck7']>.ffg_truck_pos[data_position="4"]{
+    left: 719px;
+    top: 758px;
+}
+.ffg_truck[data_id='truck7']>.ffg_truck_pos[data_position="5"]{
+    left: 775px;
+    top: 715px;
+}
+.ffg_truck[data_id='truck7']>.ffg_truck_pos[data_position="6"]{
+    width: calc(0.5 * var(--ffg_truck_position_medium_size) );
+    height: var(--ffg_truck_position_medium_size);
+    left: 786px;
+    top: 644px;
+    border-bottom-right-radius: var(--ffg_truck_position_medium_size);
+    border-top-right-radius: var(--ffg_truck_position_medium_size);
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    transform: rotate(-3deg);
+}
+.ffg_truck[data_id='truck7']>.ffg_truck_pos[data_position="7"]{
+    left: 772px;
+    top: 586px;
+}
+.ffg_truck[data_id='truck7']>.ffg_truck_pos[data_position="8"]{
+    left: 728px;
+    top: 541px;
+}
+
+/* ---------------------------- ----------------------------   ---------------------------- */
+.ffg_truck[data_id='truck8']>.ffg_truck_pos[data_position="1"]{
+    left: 926px;
+    top: 837px;
+}
+.ffg_truck[data_id='truck8']>.ffg_truck_pos[data_position="2"]{
+    left: 879px;
+    top: 794px;
+}
+.ffg_truck[data_id='truck8']>.ffg_truck_pos[data_position="3"]{
+    left: 927px;
+    top: 759px;
+}
+.ffg_truck[data_id='truck8']>.ffg_truck_pos[data_position="4"]{
+    left: 992px;
+    top: 729px;
+}
+.ffg_truck[data_id='truck8']>.ffg_truck_pos[data_position="5"]{
+    left: 1059px;
+    top: 697px;
+}
+.ffg_truck[data_id='truck8']>.ffg_truck_pos[data_position="6"]{
+    left: 1062px;
+    top: 633px;
+}
+.ffg_truck[data_id='truck8']>.ffg_truck_pos[data_position="7"]{
+    left: 1102px;
+    top: 602px;
+}
+.ffg_truck[data_id='truck8']>.ffg_truck_pos[data_position="8"]{
+    left: 1126px;
+    top: 558px;
+}
+/* ---------------------------- ----------------------------   ---------------------------- */
+.ffg_truck[data_id='truck9']>.ffg_truck_pos[data_position="1"]{
+    left: 1165px;
+    top: 862px;
+}
+.ffg_truck[data_id='truck9']>.ffg_truck_pos[data_position="2"]{
+    left: 1126px;
+    top: 821px;
+}
+.ffg_truck[data_id='truck9']>.ffg_truck_pos[data_position="3"]{
+    left: 1102px;
+    top: 774px;
+}
+.ffg_truck[data_id='truck9']>.ffg_truck_pos[data_position="4"]{
+    left: 1100px;
+    top: 717px;
+}
+.ffg_truck[data_id='truck9']>.ffg_truck_pos[data_position="5"]{
+    left: 1145px;
+    top: 673px;
+}
+.ffg_truck[data_id='truck9']>.ffg_truck_pos[data_position="6"]{
+    left: 1189px;
+    top: 638px;
+}
+.ffg_truck[data_id='truck9']>.ffg_truck_pos[data_position="7"]{
+    left: 1210px;
+    top: 584px;
+}
+.ffg_truck[data_id='truck9']>.ffg_truck_pos[data_position="8"]{
+    left: 1205px;
+    top: 517px;
+}
+/* ---------------------------- ----------------------------   ---------------------------- */

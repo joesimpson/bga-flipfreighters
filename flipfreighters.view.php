@@ -127,16 +127,18 @@ class view_flipfreighters_flipfreighters extends game_view
                 $not_confirmed_pos = $trucks_position['not_confirmed_position'];
                 
                 //TODO JSA DEFINE truck_max_position in material file
-                $truck_max_position = 7;
+                $truck_max_position = 8;
                 $this->page->reset_subblocks( 'ffg_player_truck_position' ); 
                 for ($k =1; $k<= $truck_max_position; $k++ )
                 { //POSITIONS start at 1
                     $classes = "";
-                    if(isset($confirmed_pos) && $k> $confirmed_pos){
-                        $classes .= " ffg_not_confirmed_pos";
-                    }
-                    if(isset($not_confirmed_pos) && $k> $not_confirmed_pos){
+                    if( isset($not_confirmed_pos) && $k> $not_confirmed_pos
+                     || !isset($not_confirmed_pos) && $k> $confirmed_pos && isset($confirmed_pos)
+                    ){
                         $classes .= " ffg_not_drawn_pos";
+                    }
+                    else if(isset($confirmed_pos) && $k> $confirmed_pos){
+                        $classes .= " ffg_not_confirmed_pos";
                     }
                     $this->page->insert_block( "ffg_player_truck_position", array( 
                                                             "PLAYER_ID" => $player_id,

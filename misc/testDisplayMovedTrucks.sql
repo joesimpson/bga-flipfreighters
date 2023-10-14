@@ -6,6 +6,7 @@ DELETE FROM freighter_move;
 
 -- INSERT DATA SAMPLES, don't care about the real card_id for now
 
+/* ---------------------------- ----------------------------   ---------------------------- */
 INSERT INTO freighter_move VALUES ((select player_id FROM `player` where player_no = 1), "truck1", 0, 2, 2, 15);
 INSERT INTO freighter_move VALUES ((select player_id FROM `player` where player_no = 1), "truck1", 2, 3, 2, 35);
 INSERT INTO freighter_move VALUES ((select player_id FROM `player` where player_no = 1), "truck1", 3, 4, 1, 45);
@@ -16,8 +17,27 @@ INSERT INTO freighter_move VALUES ((select player_id FROM `player` where player_
 INSERT INTO freighter_move VALUES ((select player_id FROM `player` where player_no = 1), "truck3", 0, 4, 2, 12);
 INSERT INTO freighter_move VALUES ((select player_id FROM `player` where player_no = 1), "truck3", 4, 6, 1, 25);
 
+-- truck 4
+INSERT INTO freighter_move VALUES ((select player_id FROM `player` where player_no = 1), "truck4", 0, 1, 1, 7);
+
 -- truck 5 DELIVERED by player 1
 INSERT INTO freighter_move VALUES ((select player_id FROM `player` where player_no = 1), "truck5", 0, 5, 3, 7);
+
+-- truck 6
+INSERT INTO freighter_move VALUES ((select player_id FROM `player` where player_no = 1), "truck6", 0, 1, 2, 7);
+
+-- truck 7
+INSERT INTO freighter_move VALUES ((select player_id FROM `player` where player_no = 1), "truck7", 0, 2, 2, 7);
+INSERT INTO freighter_move VALUES ((select player_id FROM `player` where player_no = 1), "truck7", 2, 3, 1, 7);
+
+-- truck 8 DELIVERED at "x1" (half path)
+INSERT INTO freighter_move VALUES ((select player_id FROM `player` where player_no = 1), "truck8", 0, 3, 2, 7);
+INSERT INTO freighter_move VALUES ((select player_id FROM `player` where player_no = 1), "truck8", 3, 5, 3, 7);
+
+-- truck 9 DELIVERED at "x2" (full path)
+INSERT INTO freighter_move VALUES ((select player_id FROM `player` where player_no = 1), "truck9", 0, 5, 2, 7);
+INSERT INTO freighter_move VALUES ((select player_id FROM `player` where player_no = 1), "truck9", 5, 8, 3, 7);
+/* ---------------------------- ----------------------------   ---------------------------- */
 
 INSERT INTO freighter_move VALUES ((select player_id FROM `player` where player_no = 2), "truck2", 0, 1, 1, 11);
 INSERT INTO freighter_move VALUES ((select player_id FROM `player` where player_no = 2), "truck2", 1, 3, 1, 12);
@@ -30,6 +50,7 @@ INSERT INTO freighter_move VALUES ((select player_id FROM `player` where player_
 INSERT INTO freighter_move VALUES ((select player_id FROM `player` where player_no = 2), "truck5", 0, 2, 2, 7);
 INSERT INTO freighter_move VALUES ((select player_id FROM `player` where player_no = 2), "truck5", 2, 5, 1, 7);
 
+/* ---------------------------- ----------------------------   ---------------------------- */
 
 -- NO FULL JOIN in mysql ! use  LEFT JOIN ...UNION...RIGHT JOIN :
 SELECT a.fmove_player_id, a.fmove_truck_id, a.confirmed_state,a.confirmed_position, b.not_confirmed_state,b.not_confirmed_position
