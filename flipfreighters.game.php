@@ -444,6 +444,10 @@ class FlipFreighters extends Table
         
         $res = $this->getTruckPositions($truckId,$player_id);
 
+        if(! isset($res)){
+            return 0;
+        } 
+        
         $confirmed_pos = $res['confirmed_position'] ;
         $not_confirmed_pos = $res['not_confirmed_position'];
 
@@ -538,13 +542,15 @@ class FlipFreighters extends Table
         $newState = STATE_MOVE_TO_CONFIRM;
         $fromPosition = $this->getCurrentTruckPosition($truckId,$player_id);
         $this->insertMoveTruck($player_id,$truckId, $fromPosition, $position, $newState,$cardId);
+        $truckPositions = $this->getTruckPositions($truckId,$player_id);
         
         //NOTIFY ACTION :
         self::notifyPlayer($player_id, "moveTruck", clienttranslate( 'You move a truck' ), array(
+            'fromPosition' => $fromPosition,
             'position' => $position,
             'truckId' => $truckId,
             'card_id' => $cardId,
-            'state' => $newState,
+            'truckState' => $truckPositions,
         ) );
         
         //Should not be public but the framework prefers to get minimum 1 notifyAll per action ?...

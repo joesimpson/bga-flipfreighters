@@ -263,6 +263,31 @@ function (dojo, declare) {
                 dojo.addClass(pos_DivId,"ffg_selectable") ;
             }
         },
+        
+        unselectCard : function()
+        {
+            console.log( "unselectCard ... ");
+            
+            this.selectedCard = null;
+            this.selectedAmount = null;
+            dojo.query(".ffg_card").removeClass("ffg_selected") ;
+            dojo.query(".ffg_container").removeClass("ffg_selectable") ;
+            dojo.query(".ffg_truck_pos").removeClass("ffg_selectable") ;
+        },
+        
+        /**
+        remove possible actions (of this type) for all cards on the parametered position
+        */
+        cleanPossibleCardForPos: function(type, posId)
+        {
+            console.log( "cleanPossibleCardForPos ... ",posId);
+            for(let i in this.possibleCards){
+                let pcard = this.possibleCards[i][type];
+                let index = pcard.indexOf(posId);
+                pcard.splice(index, 1);
+            }
+            
+        },
 
         ///////////////////////////////////////////////////
         //// Player's action
@@ -432,6 +457,7 @@ function (dojo, declare) {
             
             dojo.subscribe( 'newTurn', this, "notif_newTurn" );
             dojo.subscribe( 'loadTruck', this, "notif_loadTruck" );
+            dojo.subscribe( 'moveTruck', this, "notif_moveTruck" );
         },  
         
         //  from this point and below, you can write your game notifications handling methods
@@ -471,22 +497,60 @@ function (dojo, declare) {
             dojo.removeClass(containerDivId,"ffg_selectable") ;
             
             //unselect card
-            this.selectedCard = null;
-            this.selectedAmount = null;
-            dojo.query(".ffg_card").removeClass("ffg_selected") ;
-            dojo.query(".ffg_container").removeClass("ffg_selectable") ;
-            dojo.query(".ffg_truck_pos").removeClass("ffg_selectable") ;
+            this.unselectCard();
             
             //TODO JSA DISABLE THIS CARD FOR FURTHER ACTIONS
             
             //Update possible loads by removing the one we did
-            for(let i in this.possibleCards){
-                let pcard = this.possibleCards[i]["LOAD"];
-                let indexOfLoad = pcard.indexOf(notif.args.containerId);
-                pcard.splice(indexOfLoad, 1);
+            this.cleanPossibleCardForPos("LOAD",notif.args.containerId);
+            
+        },
+        
+        notif_moveTruck: function( notif )
+        {
+            console.log( 'notif_moveTruck',notif );
+            
+            let truckDivId = "ffg_truck_"+this.player_id+"_"+notif.args.truckId;
+            let truckDiv = dojo.query("#"+truckDivId)[0];
+            if(truckDiv == undefined) {
+                console.log( "notif_moveTruck ...ERROR not found truck", truckDivId );
+                return;
             }
             
-        },         
+            let posId = notif.args.truckId+"_"+notif.args.position;
+            let posDivId = "ffg_truck_pos_"+this.player_id+"_"+posId;
+            let div = dojo.query("#"+posDivId)[0];
+            if(div == undefined) {
+                console.log( "notif_moveTruck ...ERROR not found truck position", posDivId );
+                return;
+            }
+            //UPDATE truck div datas :
+            truckDiv.setAttribute("data_confirmed_state",notif.args.truckState.confirmed_state);
+            truckDiv.setAttribute("data_confirmed_position",notif.args.truckState.confirmed_position);
+            truckDiv.setAttribute("data_not_confirmed_state",notif.args.truckState.not_confirmed_state);
+            truckDiv.setAttribute("data_not_confirmed_position",notif.args.truckState.not_confirmed_position);
+            
+            //unselect card
+            this.unselectCard();
+            
+            //TODO JSA DISABLE THIS CARD FOR FURTHER ACTIONS
+            
+            //Update possible moves by removing the one we did  (and the corresponding previous places too !)
+            for (let k=parseInt(notif.args.fromPosition) +1 ; k<= notif.args.position; k++ ){
+                let posId = notif.args.truckId+"_"+k;
+                console.log( 'notif_moveTruck() ... Removing possible position',posId );
+                this.cleanPossibleCardForPos("MOVE",posId);
+                
+                //UPDATE div classes :
+                let posDivId = "ffg_truck_pos_"+this.player_id+"_"+posId;
+                dojo.removeClass(posDivId,"ffg_not_drawn_pos") ;
+                dojo.addClass(posDivId,"ffg_not_confirmed_pos") ;
+                
+                //Remove possible selection of this place
+                dojo.removeClass(posDivId,"ffg_selectable") ;
+            }
+            
+        },
         
    });             
 });
