@@ -99,6 +99,7 @@
 }
 .ffg_card.ffg_selectable:hover {
     scale: 1.15;
+    cursor: pointer;
 }
 
 .ffg_card[data_value='2']{
@@ -288,6 +289,7 @@
     */
     background-color: transparent;
     outline: 5px solid blue;
+    cursor: pointer;
 }
 .ffg_not_drawn_pos.ffg_selectable:hover {
   scale: 1.1;

@@ -78,6 +78,21 @@
         self::ajaxResponse( );
     }
 
+    public function moveTruck()
+    {
+        self::setAjaxMode();     
+
+        // Retrieve arguments
+        // Note: these arguments correspond to what has been sent through the javascript "ajaxcall" method
+        $position = self::getArg( "position", AT_posint, true );
+        $truckId = self::getArg( "truckId", AT_alphanum, true );
+        $cardId = self::getArg( "cardId", AT_posint, true );
+
+        // Then, call the appropriate method in your game logic 
+        $this->game->moveTruck($cardId, $truckId, $position );
+
+        self::ajaxResponse( );
+    }
   }
   
 

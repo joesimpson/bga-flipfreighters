@@ -76,14 +76,14 @@ function (dojo, declare) {
             
             this.dayCards = gamedatas.dayCards;
             
+            dojo.query("#playerBoardSliderSize").connect( 'oninput', this, 'onBoardSliderChange' );
+            
             // TODO: Set up your game interface here, according to "gamedatas"
             
             dojo.query(".ffg_card").connect( 'onclick', this, 'onSelectCard' );
+            dojo.query(".ffg_not_drawn_pos").connect( 'onclick', this, 'onSelectTruckPos' );
             
-            document.getElementById("playerBoardSliderSize").oninput = function() {
-                document.querySelector(":root").style.setProperty("--ffg_board_display_scale",this.value /100)
-            }
- 
+
             // Setup game notifications to handle (see "setupNotifications" method below)
             this.setupNotifications();
 
@@ -313,6 +313,14 @@ function (dojo, declare) {
         */
         
         /**
+        Slider Handler :
+        */
+        onBoardSliderChange: function( evt )
+        {
+            console.log( 'onBoardSliderChange',evt.currentTarget.value );
+            document.querySelector(":root").style.setProperty("--ffg_board_display_scale",evt.currentTarget.value /100);
+        },        
+        /**
         Click Handler for choosing a card on the left : 
         */
         onSelectCard: function( evt )
@@ -368,8 +376,31 @@ function (dojo, declare) {
             }
             
             this.ajaxcallwrapper("loadTruck", {'cardId': cardId, 'containerId': container_id, 'amount': amount});
-        },        
+        },     
 
+        /**
+        Click Handler for the trucks moves positions : 
+        */
+        onSelectTruckPos: function( evt )
+        {
+            console.log( 'onSelectTruckPos',evt );
+            
+            // Preventing default browser reaction
+            dojo.stopEvent( evt );
+            
+            let div_id = evt.currentTarget.id;
+            let position = evt.currentTarget.getAttribute("data_position") ;
+            let truck_id = evt.currentTarget.getAttribute("data_truck") ;
+            let cardId = this.selectedCard;
+            
+            if( ! dojo.hasClass( div_id, 'ffg_selectable' ) )
+            {
+                // This is not a possible action => the click does nothing
+                return ;
+            }
+            
+            this.ajaxcallwrapper("moveTruck", {'cardId': cardId, 'truckId': truck_id, 'position': position,});
+        },   
         
         ///////////////////////////////////////////////////
         //// Reaction to cometD notifications

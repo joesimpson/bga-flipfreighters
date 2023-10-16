@@ -36,6 +36,11 @@ const STATE_LOAD_INITIAL = 0;
 const STATE_LOAD_TO_CONFIRM = 1;
 const STATE_LOAD_CONFIRMED = 2;
 
+const STATE_MOVE_TO_CONFIRM = 1;
+const STATE_MOVE_CONFIRMED = 2;
+const STATE_MOVE_DELIVERED_TO_CONFIRM = 3;
+const STATE_MOVE_DELIVERED_CONFIRMED = 4;
+
 class FlipFreighters extends Table
 {
 	function __construct( )
@@ -411,20 +416,55 @@ class FlipFreighters extends Table
             ORDER BY 1,2
              ";
              //TODO JSA WHERE fmove_player_id ='$player_id'
+             //TODO JSA use STATE constants
         if(isset($player_id) ){
             $sql = "SELECT * FROM ( ".$sql.") c WHERE player_id ='$player_id' ";
         }     
         return $sql;    
     }
     
+    /**
+    Return truck state and positions
+    */
+    function getTruckPositions($truckId,$player_id){
+        self::trace("getCurrentTruckPosition($truckId,$player_id)...");
+        
+        $sql = $this->getSQLSelectTruckPositions($player_id);
+        $sql = $sql." AND truck_id ='$truckId' ";
+        return $this->getObjectFromDB($sql);
+    }
     
-    
+    /**
+    Return current truck position according to positions
+    */
+    function getCurrentTruckPosition($truckId,$player_id){
+        self::trace("getCurrentTruckPosition($truckId,$player_id)...");
+        
+        $position = 0;
+        
+        $res = $this->getTruckPositions($truckId,$player_id);
+
+        $confirmed_pos = $res['confirmed_position'] ;
+        $not_confirmed_pos = $res['not_confirmed_position'];
+
+        if( isset($confirmed_pos)){
+            $position = $confirmed_pos;
+        } 
+        if( isset($not_confirmed_pos)){//WILL BE GREATER than the confirmed one
+            $position = $not_confirmed_pos;
+        } 
+        
+        return $position;
+    }
     
     function updateLoadInTruck($player_id, $containerId, $amount,$state,$cardId = null){
         
         $this->DbQuery("UPDATE freighter_loading SET loading_amount= $amount, loading_card_id= $cardId, loading_state= $state WHERE loading_key='$containerId' AND loading_player_id ='$player_id' ");
     }
     
+    function insertMoveTruck($player_id,$truckId, $fromPosition, $toPosition, $newState,$cardId){
+        $this->DbQuery("INSERT INTO freighter_move VALUES ('$player_id', '$truckId', $fromPosition, $toPosition, $newState, $cardId); ");
+    }
 //////////////////////////////////////////////////////////////////////////////
 //////////// Player actions
 //////////// 
@@ -444,7 +484,7 @@ class FlipFreighters extends Table
         $player_name = self::getCurrentPlayerName();
         self::trace("loadTruck($cardId, $containerId, $amount,$player_id,$player_name )");
         
-        //CHEAT CHECKS :
+        //ANTICHEAT CHECKS :
         if($amount == null || $amount<=0)
             throw new BgaVisibleSystemException( ("Incorrect quantity for loading this truck here"));
         if($cardId == null )
@@ -481,6 +521,34 @@ class FlipFreighters extends Table
         //Should not be public but the framework prefers to get minimum 1 notifyAll per action ?...
         self::notifyAllPlayers("loadTruckPublic", '', '' );
           
+    }
+    
+    function moveTruck($cardId, $truckId, $position ){
+        // Check that this is the player's turn and that it is a "possible action" at this game state (see states.inc.php)
+        self::checkAction( 'moveTruck' ); 
+        
+        $player_id = self::getCurrentPlayerId();
+        $player_name = self::getCurrentPlayerName();
+        self::trace("moveTruck($cardId, $truckId, $position,$player_id,$player_name )");
+        
+        //TODO JSA ANTICHEAT CHECKS :
+        
+        
+        //REAL ACTION :
+        $newState = STATE_MOVE_TO_CONFIRM;
+        $fromPosition = $this->getCurrentTruckPosition($truckId,$player_id);
+        $this->insertMoveTruck($player_id,$truckId, $fromPosition, $position, $newState,$cardId);
+        
+        //NOTIFY ACTION :
+        self::notifyPlayer($player_id, "moveTruck", clienttranslate( 'You move a truck' ), array(
+            'position' => $position,
+            'truckId' => $truckId,
+            'card_id' => $cardId,
+            'state' => $newState,
+        ) );
+        
+        //Should not be public but the framework prefers to get minimum 1 notifyAll per action ?...
+        self::notifyAllPlayers("moveTruckPublic", '', '' );
     }
     
 //////////////////////////////////////////////////////////////////////////////

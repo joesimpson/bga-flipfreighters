@@ -51,6 +51,8 @@ INSERT INTO freighter_move VALUES ((select player_id FROM `player` where player_
 INSERT INTO freighter_move VALUES ((select player_id FROM `player` where player_no = 2), "truck5", 2, 5, 1, 7);
 
 /* ---------------------------- ----------------------------   ---------------------------- */
+SELECT * FROM `freighter_move`  ORDER BY `freighter_move`.`fmove_player_id` ASC, `freighter_move`.`fmove_truck_id` ASC, `freighter_move`.`fmove_position_from` ASC, `freighter_move`.`fmove_state` ASC LIMIT 100;
+
 
 -- NO FULL JOIN in mysql ! use  LEFT JOIN ...UNION...RIGHT JOIN :
 SELECT a.fmove_player_id, a.fmove_truck_id, a.confirmed_state,a.confirmed_position, b.not_confirmed_state,b.not_confirmed_position
