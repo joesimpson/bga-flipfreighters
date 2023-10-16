@@ -206,8 +206,8 @@ function (dojo, declare) {
         {            
             console.log( "playCardOnTable ... " ,row,card_id, color, value);
             
-            let divId = "#ffg_card_"+row;
-            let div = dojo.query(divId)[0];
+            let divId = "ffg_card_"+row;
+            let div = dojo.query("#"+divId)[0];
             if(div == undefined) {
                 console.log( "playCardOnTable ...ERROR undefined row", row );
                 return;
