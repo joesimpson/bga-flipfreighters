@@ -292,6 +292,23 @@ function (dojo, declare) {
             
         },
 
+        /**
+        Return true if at least 1 card is still playable
+                false otherwise  (ie all cards are non playable)
+        */
+        existPossibleCard: function()
+        {
+            console.log( "existPossibleCard()", this.possibleCards);
+            
+            for(let i in this.possibleCards){
+                let pcard = this.possibleCards[i];
+                if( pcard["LOAD"].length > 0 ) return true;
+                if( pcard["MOVE"].length > 0 ) return true;
+            }
+            
+            return false;
+        },
+        
         ///////////////////////////////////////////////////
         //// Player's action
         
@@ -403,7 +420,12 @@ function (dojo, declare) {
             // Preventing default browser reaction
             dojo.stopEvent( evt );
             
-            //TODO JSA add confirm dialog if one card is not used
+            if(this.existPossibleCard()){
+                this.confirmationDialog(_("You still have cards to play, are you sure to end your turn ?"), () => {
+                    this.ajaxcallwrapper("endTurn", { });
+                });
+                return;
+            }
             
             this.ajaxcallwrapper("endTurn", { });
         },   
@@ -415,7 +437,7 @@ function (dojo, declare) {
             // Preventing default browser reaction
             dojo.stopEvent( evt );
             
-            this.confirmationDialog(_("Are you sure you want to cancel your whole turn?"), () => {
+            this.confirmationDialog(_("Are you sure you want to cancel your whole turn ?"), () => {
                 this.ajaxcallwrapperNoCheck("cancelTurn", { });
             });
             return;
