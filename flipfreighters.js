@@ -218,9 +218,9 @@ function (dojo, declare) {
             //TODO JSA ADD some animation ?
         },
         
-        displayPossibleLoading: function( card_id )
+        displayPossibleLoads: function( card_id )
         {            
-            console.log( "displayPossibleLoading ... " ,card_id, this.possibleCards);
+            console.log( "displayPossibleLoads ... " ,card_id, this.possibleCards);
             
             dojo.query(".ffg_container").removeClass("ffg_selectable") ;
              
@@ -229,7 +229,7 @@ function (dojo, declare) {
             }
             
             if(this.possibleCards [ card_id ] == undefined) {
-                console.log( "displayPossibleLoading ... Not possible card :", card_id );
+                console.log( "displayPossibleLoads ... Not possible card :", card_id );
                 return ;
             }
             
@@ -366,7 +366,7 @@ function (dojo, declare) {
                 this.selectedCard = null;
                 this.selectedAmount = null;
                 console.log("onSelectCard() => Hide :",card_id);
-                this.displayPossibleLoading( null);
+                this.displayPossibleLoads( null);
                 this.displayPossibleMoves( null);
                 return;
             } //ELSE continue to SHOW
@@ -375,12 +375,12 @@ function (dojo, declare) {
                 
             this.selectedCard = card_id;
             this.selectedAmount = data_value;
-            this.displayPossibleLoading( card_id);
+            this.displayPossibleLoads( card_id);
             this.displayPossibleMoves( card_id);
             
         },        
         /**
-        Click Handler for the trucks loading containers : 
+        Click Handler for the trucks cargo containers : 
         */
         onSelectLoadTarget: function( evt )
         {

@@ -33,13 +33,13 @@ CREATE TABLE IF NOT EXISTS `card` (
 -- Example 2: add a custom field to the standard "player" table
 -- ALTER TABLE `player` ADD `player_my_custom_field` INT UNSIGNED NOT NULL DEFAULT '0';
 
-CREATE TABLE IF NOT EXISTS `freighter_loading` (
-  `loading_player_id` int(10) unsigned NOT NULL COMMENT 'Id of player who owns the truck/board',
-  `loading_key` varchar(32) NOT NULL COMMENT 'Id of one truck cargo containing the truck id and the cargo index',
-  `loading_amount` int(2) COMMENT 'Quantity of loaded goods in this cargo',
-  `loading_state` int(10) DEFAULT 0 COMMENT 'LOAD status : [0: EMPTY, 1: UNCONFIRMED, 2 : CONFIRMED, ] ',
-  `loading_card_id` int(10) unsigned COMMENT 'Id of card used to load truck',
-  PRIMARY KEY (`loading_player_id`, `loading_key`)
+CREATE TABLE IF NOT EXISTS `freighter_cargo` (
+  `cargo_player_id` int(10) unsigned NOT NULL COMMENT 'Id of player who owns the truck/board',
+  `cargo_key` varchar(32) NOT NULL COMMENT 'Id of one truck cargo containing the truck id and the cargo index',
+  `cargo_amount` int(2) COMMENT 'Quantity of loaded goods in this cargo',
+  `cargo_state` int(10) DEFAULT 0 COMMENT 'LOAD status : [0: EMPTY, 1: UNCONFIRMED, 2 : CONFIRMED, ] ',
+  `cargo_card_id` int(10) unsigned COMMENT 'Id of card used to load the cargo',
+  PRIMARY KEY (`cargo_player_id`, `cargo_key`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT 'save infos related to each truck cargo';
 
 

@@ -242,7 +242,7 @@ class FlipFreighters extends Table
     }
     
     /**
-    Return all possibles loading positions for this card according to its color and value, and according to already loaded trucks from player board
+    Return all possibles cargo positions for this card according to its color and value, and according to already loaded trucks from player board
     Example : input : "5 of Hearts" 
         output  array(
                 truck1_2,
@@ -253,15 +253,15 @@ class FlipFreighters extends Table
                 truck6_1,truck6_2,truck6_3,truck6_4,
             )
     */
-    function getPossibleLoadingWithCard($card,$playerBoard)
+    function getPossibleLoadsWithCard($card,$playerBoard)
     { 
         $possibles = array();
         
         //Loop over each container 
-        $cargos = $playerBoard['trucks_loading'];
+        $cargos = $playerBoard['trucks_cargos'];
         foreach( $cargos as $container_id => $container )
         {
-            if($this->isPossibleLoadingWithCard($card,$container) == false ) {
+            if($this->isPossibleLoadWithCard($card,$container) == false ) {
                 continue;
             }
             $possibles[] = $container['id'];
@@ -269,11 +269,11 @@ class FlipFreighters extends Table
         return $possibles;
     }
     
-    function isPossibleLoadingWithCard($card,$container)
+    function isPossibleLoadWithCard($card,$container)
     { 
         
         $card_id = $card['id'];
-        self::dump("isPossibleLoadingWithCard($card_id)", $container);
+        self::dump("isPossibleLoadWithCard($card_id)", $container);
         //IF Container is not empty KO
         if( array_key_exists('amount',$container) && $container['amount']>0 ) {
             return false;
@@ -319,13 +319,13 @@ class FlipFreighters extends Table
         $players = self::loadPlayersBasicInfos();
         
         //CLEAN BEFORE (useful FOR TESTING)
-        self::DbQuery( "DELETE FROM freighter_loading " );
+        self::DbQuery( "DELETE FROM freighter_cargo " );
         
         $trucks = $this->trucks_types;
         
         //TODO JSA : may be unnecessary if we use material container_ids to retrieve possibles actions, so we insert only when loaded ?
-        //Step 1 : prepare an entry for all possible loading in every players trucks :
-        $sql = "INSERT INTO freighter_loading (loading_player_id, loading_key) VALUES ";
+        //Step 1 : prepare an entry for all possible cargo in every players trucks :
+        $sql = "INSERT INTO freighter_cargo (cargo_player_id, cargo_key) VALUES ";
         $values = array();
         foreach( $players as $player_id => $player )
         {
@@ -340,12 +340,12 @@ class FlipFreighters extends Table
     }
     
     function getPlayerBoard($player_id){
-        $trucks_loading = array();
+        $trucks_cargos = array();
         
-        $trucks_loading = $this->getCollectionFromDb("SELECT loading_key id,loading_amount  amount, loading_state state,loading_card_id card_id,
-            SUBSTRING(loading_key FROM 1 FOR 6) truck_id
-            FROM freighter_loading
-            WHERE loading_player_id ='$player_id' ");
+        $trucks_cargos = $this->getCollectionFromDb("SELECT cargo_key id,cargo_amount  amount, cargo_state state,cargo_card_id card_id,
+            SUBSTRING(cargo_key FROM 1 FOR 6) truck_id
+            FROM freighter_cargo
+            WHERE cargo_player_id ='$player_id' ");
         
         $trucks_positions = $this->getDoubleKeyCollectionFromDB( $this->getSQLSelectTruckPositions($player_id)) [$player_id];
         
@@ -369,20 +369,20 @@ class FlipFreighters extends Table
         self::dump("getPlayerBoard($player_id) trucks_positions AFTER ",$trucks_positions);
             
         return array( 
-            "trucks_loading" => $trucks_loading,
+            "trucks_cargos" => $trucks_cargos,
             "trucks_positions" => $trucks_positions,
         );
     }
     
     //TODO JSA FACTORIZE
-    function getTruckContainer($player_id,$container_id){
-        $datas = $this->getObjectFromDB("SELECT loading_key id,loading_amount  amount, loading_state state,loading_card_id card_id,
-            SUBSTRING(loading_key FROM 1 FOR 6) truck_id
-            FROM freighter_loading
-            WHERE loading_player_id ='$player_id' AND loading_key ='$container_id' "
+    function getTruckContainer($player_id,$cargo_id){
+        $datas = $this->getObjectFromDB("SELECT cargo_key id,cargo_amount  amount, cargo_state state,cargo_card_id card_id,
+            SUBSTRING(cargo_key FROM 1 FOR 6) truck_id
+            FROM freighter_cargo
+            WHERE cargo_player_id ='$player_id' AND cargo_key ='$cargo_id' "
             );
 
-        self::dump("getTruckContainer($player_id,$container_id)", $datas);            
+        self::dump("getTruckContainer($player_id,$cargo_id)", $datas);            
         return $datas;    
     }
     
@@ -461,9 +461,9 @@ class FlipFreighters extends Table
         return $position;
     }
     
-    function updateLoadInTruck($player_id, $containerId, $amount,$state,$cardId = null){
+    function updateLoadInTruck($player_id, $cargoId, $amount,$state,$cardId = null){
         
-        $this->DbQuery("UPDATE freighter_loading SET loading_amount= $amount, loading_card_id= $cardId, loading_state= $state WHERE loading_key='$containerId' AND loading_player_id ='$player_id' ");
+        $this->DbQuery("UPDATE freighter_cargo SET cargo_amount= $amount, cargo_card_id= $cardId, cargo_state= $state WHERE cargo_key='$cargoId' AND cargo_player_id ='$player_id' ");
     }
     
     function insertMoveTruck($player_id,$truckId, $fromPosition, $toPosition, $newState,$cardId){
@@ -506,7 +506,7 @@ class FlipFreighters extends Table
             throw new BgaVisibleSystemException( ("Unknown truck container"));
         
         //LOGIC CHECK :
-        if($this->isPossibleLoadingWithCard($card,$container) == false ) {
+        if($this->isPossibleLoadWithCard($card,$container) == false ) {
             throw new BgaVisibleSystemException( ("You cannot load at this place"));
         }
         
@@ -578,7 +578,7 @@ class FlipFreighters extends Table
             $playerBoard = $this->getPlayerBoard($player_id);
             foreach( $dayCards as $dayCard){
                 $possibleCards[$dayCard['id']] = array(
-                    "LOAD" => $this->getPossibleLoadingWithCard($dayCard,$playerBoard),
+                    "LOAD" => $this->getPossibleLoadsWithCard($dayCard,$playerBoard),
                     "MOVE" => $this->getPossibleMovesWithCard($dayCard,$playerBoard),
                     );
             }

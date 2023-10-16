@@ -101,19 +101,19 @@ class view_flipfreighters_flipfreighters extends game_view
         foreach( $players as $player_id => $player )
         { 
             $player_board = $this->game->getPlayerBoard($player_id);
-            $trucks_loading = $player_board['trucks_loading'];
+            $trucks_cargos = $player_board['trucks_cargos'];
         
-            $this->game->dump("VIEW trucks_loading", $trucks_loading);
+            $this->game->dump("VIEW trucks_cargos", $trucks_cargos);
             
-            foreach( $trucks_loading as $truck_loading )
+            foreach( $trucks_cargos as $truck_cargo )
             {
                 $this->page->insert_block( "ffg_player_trucks_cargo", array( 
                                                         "PLAYER_ID" => $player_id,
-                                                        "CONTAINER_ID" => $truck_loading['id'],
-                                                        "TRUCK_ID" => $truck_loading['truck_id'],
-                                                        "AMOUNT" => $truck_loading['amount'],
-                                                        "STATE" => $truck_loading['state'],
-                                                        "CARD_ID" => $truck_loading['card_id'],
+                                                        "CONTAINER_ID" => $truck_cargo['id'],
+                                                        "TRUCK_ID" => $truck_cargo['truck_id'],
+                                                        "AMOUNT" => $truck_cargo['amount'],
+                                                        "STATE" => $truck_cargo['state'],
+                                                        "CARD_ID" => $truck_cargo['card_id'],
                                                          ) );
             }
             
