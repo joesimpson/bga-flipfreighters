@@ -450,7 +450,7 @@ function (dojo, declare) {
             
             //Update possible loads by removing the one we did
             for(let i in this.possibleCards){
-                let pcard = this.possibleCards[i];
+                let pcard = this.possibleCards[i]["LOAD"];
                 let indexOfLoad = pcard.indexOf(notif.args.containerId);
                 pcard.splice(indexOfLoad, 1);
             }
