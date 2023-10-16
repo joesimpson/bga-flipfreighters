@@ -10,8 +10,11 @@
 -------
 -->
 
-<center> <h1>   Work IN PROGRESS... </h1></center>
+<center> <h1>   Work IN PROGRESS... </h1>
 
+    <input type="range" min="30" max="150" value="50" class="slider" id="playerBoardSliderSize">
+</center>
+    
 <div id="ffg_game_zone">
 
     <div id="ffg_cards">

@@ -79,6 +79,10 @@ function (dojo, declare) {
             // TODO: Set up your game interface here, according to "gamedatas"
             
             dojo.query(".ffg_card").connect( 'onclick', this, 'onSelectCard' );
+            
+            document.getElementById("playerBoardSliderSize").oninput = function() {
+                document.querySelector(":root").style.setProperty("--ffg_board_display_scale",this.value /100)
+            }
  
             // Setup game notifications to handle (see "setupNotifications" method below)
             this.setupNotifications();
