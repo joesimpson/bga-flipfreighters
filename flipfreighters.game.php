@@ -564,6 +564,21 @@ class FlipFreighters extends Table
         self::notifyAllPlayers("moveTruckPublic", '', '' );
     }
     
+    function endTurn(){
+        self::checkAction( 'endTurn' ); 
+        
+        $player_id = self::getCurrentPlayerId();
+        $player_name = self::getCurrentPlayerName();
+        self::trace("endTurn($player_id,$player_name )");
+        
+        self::notifyAllPlayers("endTurn", clienttranslate( '${player_name} ends his turn' ), array(
+            'player_id' => $player_id,
+            'player_name' => $player_name,
+        ) );
+        
+        // END PLAYER turn and go to next state when everyone is ready
+        $this->gamestate->setPlayerNonMultiactive( $player_id, 'next');
+    }
 //////////////////////////////////////////////////////////////////////////////
 //////////// Game state arguments
 ////////////

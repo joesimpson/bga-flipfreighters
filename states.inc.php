@@ -105,7 +105,7 @@ $machinestates = array(
             "type" => "multipleactiveplayer",
             "action" => "stPlayerturn",
             "args" => "argPlayerTurn",
-            "possibleactions" => array( "loadTruck", "moveTruck", "cancelActions" ),
+            "possibleactions" => array( "loadTruck", "moveTruck", "cancelActions", "endTurn" ),
             "transitions" => array( "next" => 15)
         ),
         

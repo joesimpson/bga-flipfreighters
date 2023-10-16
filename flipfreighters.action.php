@@ -93,6 +93,16 @@
 
         self::ajaxResponse( );
     }
+    
+    public function endTurn()
+    {
+        self::setAjaxMode();     
+
+        // Then, call the appropriate method in your game logic 
+        $this->game->endTurn();
+
+        self::ajaxResponse( );
+    }
   }
   
 
