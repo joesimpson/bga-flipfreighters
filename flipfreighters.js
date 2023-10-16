@@ -161,20 +161,17 @@ function (dojo, declare) {
             {            
                 switch( stateName )
                 {
-/*               
-                 Example:
- 
-                 case 'myGameState':
-                    
-                    // Add 3 action buttons in the action status bar:
-                    
-                    this.addActionButton( 'button_1_id', _('Button 1 label'), 'onMyMethodToCall1' ); 
-                    this.addActionButton( 'button_2_id', _('Button 2 label'), 'onMyMethodToCall2' ); 
-                    this.addActionButton( 'button_3_id', _('Button 3 label'), 'onMyMethodToCall3' ); 
-                    break;
-*/
+
                 case 'playerTurn':
                     this.addActionButton( 'ffg_button_endturn', _('End turn'), 'onEndTurn' ); 
+                    break;
+                }
+            }  
+            else if (!this.isSpectator) { // player is NOT active but not spectator either
+                switch( stateName )
+                {
+                case 'playerTurn':
+                    this.addActionButton( 'ffg_button_cancelturn', _('Restart turn'), 'onCancelTurn',null, false, 'red' );
                     break;
                 }
             }
@@ -191,15 +188,18 @@ function (dojo, declare) {
         */
  
         ajaxcallwrapper: function(action, args, handler) {
+            if (this.checkAction(action)) {
+                this.ajaxcallwrapperNoCheck(action, args, handler);
+            }
+        },
+        ajaxcallwrapperNoCheck: function(action, args, handler) {
             if (!args) {
                 args = {};
             }
             //Beware of "Move recorded, waiting for update...." when lock enabled
             args.lock = true;
 
-            if (this.checkAction(action)) {
-                this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/" + action + ".html", args, this, (result) => { }, handler);
-            }
+            this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/" + action + ".html", args, this, (result) => { }, handler);
         },
         
         playCardOnTable: function( row,card_id, color, value )
@@ -407,6 +407,19 @@ function (dojo, declare) {
             
             this.ajaxcallwrapper("endTurn", { });
         },   
+        
+        onCancelTurn: function( evt )
+        {
+            console.log( 'onCancelTurn',evt );
+            
+            // Preventing default browser reaction
+            dojo.stopEvent( evt );
+            
+            this.confirmationDialog(_("Are you sure you want to cancel your whole turn?"), () => {
+                this.ajaxcallwrapperNoCheck("cancelTurn", { });
+            });
+            return;
+        },
         
         ///////////////////////////////////////////////////
         //// Reaction to cometD notifications

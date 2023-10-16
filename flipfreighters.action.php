@@ -103,6 +103,12 @@
 
         self::ajaxResponse( );
     }
+    
+    public function cancelTurn() {
+       self::setAjaxMode();
+       $this->game->cancelTurn();
+       self::ajaxResponse();
+   }
   }
   
 

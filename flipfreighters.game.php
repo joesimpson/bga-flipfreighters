@@ -579,6 +579,24 @@ class FlipFreighters extends Table
         // END PLAYER turn and go to next state when everyone is ready
         $this->gamestate->setPlayerNonMultiactive( $player_id, 'next');
     }
+    
+    /**
+    ACTION OF CANCELING is possible even when player is not ACTIVE, and the objective is to make them active again
+    */
+    function cancelTurn() {
+        $this->gamestate->checkPossibleAction('cancelTurn');
+        
+        $player_id = self::getCurrentPlayerId();
+        $player_name = self::getCurrentPlayerName();
+        self::trace("cancelTurn($player_id)");
+       
+        self::notifyAllPlayers("cancelTurn", clienttranslate( '${player_name} restarts his turn' ), array(
+            'player_id' => $player_id,
+            'player_name' => $player_name,
+        ) );
+        
+        $this->gamestate->setPlayersMultiactive(array ($player_id), 'next', false);
+   }
 //////////////////////////////////////////////////////////////////////////////
 //////////// Game state arguments
 ////////////
