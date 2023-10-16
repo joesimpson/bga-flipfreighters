@@ -347,7 +347,14 @@ class FlipFreighters extends Table
             FROM freighter_cargo
             WHERE cargo_player_id ='$player_id' ");
         
-        $trucks_positions = $this->getDoubleKeyCollectionFromDB( $this->getSQLSelectTruckPositions($player_id)) [$player_id];
+        $trucks_positions = $this->getDoubleKeyCollectionFromDB( $this->getSQLSelectTruckPositions($player_id));
+        
+        if( ! isset($trucks_positions ) || ! array_key_exists($player_id, $trucks_positions )){ 
+            //ONLY BEFORE THE FIRST MOVE of the game for this player
+            $trucks_positions = array();
+        } else {
+            $trucks_positions = $trucks_positions [$player_id];
+        }
         
         self::dump("getPlayerBoard($player_id) trucks_positions BEFORE ",$trucks_positions);
         
