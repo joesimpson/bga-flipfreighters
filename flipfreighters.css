@@ -174,7 +174,6 @@
 .ffg_container{
     width: var(--ffg_container_width);
     height: var(--ffg_container_width);
-    outline: 2px solid blue;/* TODO JSA remove AFTER TESTS */
     position: absolute;
     z-index: 1;
 }
@@ -185,12 +184,17 @@
     cursor: pointer;
 }
 .ffg_container.ffg_selectable:hover {
-  scale: 1.2;
-  outline-style: solid;
-  outline-color: yellow;
-  z-index: 2;
+    scale: 1.2;
+    outline-style: solid;
+    outline-color: yellow;
+    z-index: 2;
 }
 
+/* 
+---------------------------- ----------------------------   ---------------------------- 
+---------------------------- LIST OF ALL 42 Truck CARGOS    ---------------------------- 
+---------------------------- ----------------------------   ---------------------------- 
+*/
 /* ---------------------------- ----------------------------   ---------------------------- */
 /** truck1 is the truck "!=" on the top right, containers are valued from LEFT to RIGHT, TOP TO BOTTOM  */
 .ffg_container[data_id='truck1_0']{
@@ -251,7 +255,122 @@
     left: 273px;
 }
 /* ---------------------------- ----------------------------   ---------------------------- */
-/** TODO JSA FILL WITH other trucks*/
+/** truck4 is the truck "1-6" on the left, containers are valued from LEFT to RIGHT */
+.ffg_container[data_truck='truck4']{
+    top: 368px;
+}
+.ffg_container[data_id='truck4_0']{
+    left: 38px;
+}
+.ffg_container[data_id='truck4_1']{
+    left: 85px;
+}
+.ffg_container[data_id='truck4_2']{
+    left: 132px;
+}
+.ffg_container[data_id='truck4_3']{
+    left: 179px;
+}
+.ffg_container[data_id='truck4_4']{
+    left: 226px;
+}
+.ffg_container[data_id='truck4_5']{
+    left: 273px;
+}
+/* ---------------------------- ----------------------------   ---------------------------- */
+/** truck5 is the truck "#" on the left, containers are valued from LEFT to RIGHT */
+.ffg_container[data_truck='truck5']{
+    top: 583px;
+}
+.ffg_container[data_id='truck5_0']{
+    left: 38px;
+}
+.ffg_container[data_id='truck5_1']{
+    left: 85px;
+}
+.ffg_container[data_id='truck5_2']{
+    left: 132px;
+}
+.ffg_container[data_id='truck5_3']{
+    left: 179px;
+}
+.ffg_container[data_id='truck5_4']{
+    left: 226px;
+}
+.ffg_container[data_id='truck5_5']{
+    left: 273px;
+}
+/* ---------------------------- ----------------------------   ---------------------------- */
+/** truck6 is the truck "#" HEARTs on the bottom, containers are valued from LEFT to RIGHT */
+.ffg_container[data_truck='truck6']{
+    top: 798px;
+}
+.ffg_container[data_id='truck6_0']{
+    left: 330px;
+}
+.ffg_container[data_id='truck6_1']{
+    left: 377px;
+}
+.ffg_container[data_id='truck6_2']{
+    left: 425px;
+}
+.ffg_container[data_id='truck6_3']{
+    left: 472px;
+}
+
+/* ---------------------------- ----------------------------   ---------------------------- */
+/** truck7 is the truck "#" CLUBS on the bottom, containers are valued from LEFT to RIGHT */
+.ffg_container[data_truck='truck7']{
+    top: 914px;
+}
+.ffg_container[data_id='truck7_0']{
+    left: 558px;
+}
+.ffg_container[data_id='truck7_1']{
+    left: 605px;
+}
+.ffg_container[data_id='truck7_2']{
+    left: 652px;
+}
+.ffg_container[data_id='truck7_3']{
+    left: 699px;
+}
+
+/* ---------------------------- ----------------------------   ---------------------------- */
+/** truck8 is the truck "#" DIAMOND on the bottom, containers are valued from LEFT to RIGHT */
+.ffg_container[data_truck='truck8']{
+    top: 888px;
+}
+.ffg_container[data_id='truck8_0']{
+    left: 835px;
+}
+.ffg_container[data_id='truck8_1']{
+    left: 882px;
+}
+.ffg_container[data_id='truck8_2']{
+    left: 929px;
+}
+.ffg_container[data_id='truck8_3']{
+    left: 976px;
+}
+/* ---------------------------- ----------------------------   ---------------------------- */
+/** truck9 is the truck "#" SPADE on the bottom, containers are valued from LEFT to RIGHT */
+.ffg_container[data_truck='truck9']{
+    top: 914px;
+}
+.ffg_container[data_id='truck9_0']{
+    left: 1116px;
+}
+.ffg_container[data_id='truck9_1']{
+    left: 1163px;
+}
+.ffg_container[data_id='truck9_2']{
+    left: 1210px;
+}
+.ffg_container[data_id='truck9_3']{
+    left: 1257px;
+}
+/* ---------------------------- ----------------------------   ---------------------------- */
 
 
 .ffg_container_number{
