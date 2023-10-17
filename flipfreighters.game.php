@@ -161,6 +161,18 @@ class FlipFreighters extends Table
             'card_types' =>  $this->card_types,
             'trucks_types' =>  $this->trucks_types,
         ); 
+        
+        $result['constants'] = array( 
+            'NB_ROUNDS' => NB_ROUNDS,
+        ); 
+        
+        //SOME STATS are directly displayed during the game, let's add them in the players array, as if it was in the player table:
+        foreach($result['players'] as $player){ 
+            $player_id = $player["id"];
+            for($k=1; $k <= NB_ROUNDS;$k++){
+                $result['players'][$player_id]["score_week".$k] = self::getStat( "score_week".$k, $player_id );
+            }
+        }
   
         return $result;
     }
@@ -838,7 +850,14 @@ class FlipFreighters extends Table
             //Total all the values for all the trucks that have been delivered 
             $score = $this->computePlayerScore( $player_id);
             self::setStat( $score, "score_week".$round, $player_id );
-        
+            
+            $player_name = $player['player_name'];
+            self::notifyAllPlayers( "newWeekScore", clienttranslate( 'Day ${player_name} scores ${nb} points for week ${k}' ), array( 
+                'player_id' => $player_id,
+                'player_name' => $player_name,
+                'nb' => $score,
+                'k' => $round,
+            ) );
         }
         
         

@@ -97,9 +97,11 @@ class view_flipfreighters_flipfreighters extends game_view
         $this->page->begin_block( "flipfreighters_flipfreighters", "ffg_player_trucks_cargo" );
         $this->page->begin_block( "flipfreighters_flipfreighters", "ffg_player_truck_position" );
         $this->page->begin_block( "flipfreighters_flipfreighters", "ffg_player_truck_positions" );
-
+        $this->page->begin_block( "flipfreighters_flipfreighters", "ffg_week_score" );
+        
         foreach( $players as $player_id => $player )
         { 
+            
             $player_board = $this->game->getPlayerBoard($player_id);
             $trucks_cargos = $player_board['trucks_cargos'];
         
@@ -167,8 +169,13 @@ class view_flipfreighters_flipfreighters extends game_view
                                                          ) );
                 
             }
-            //TODO JSA use material file to add trucks which are not moved yet
             
+            for($k=1; $k <= NB_ROUNDS;$k++){
+                $this->page->insert_block( "ffg_week_score", array( 
+                                                    "WK_PLAYER_ID" => $player_id,
+                                                    "ROUND" => $k,
+                                                     ) );
+            }
         }
 
         /*********** Do not change anything below this line  ************/

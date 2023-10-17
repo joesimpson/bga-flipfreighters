@@ -55,6 +55,14 @@
                     </div>
                 <!-- END ffg_player_truck_positions -->
             </div>
+            
+            <div id="ffg_board_weeks_wrapper">
+                <!-- BEGIN ffg_week_score -->
+                <div id="ffg_week_score_{WK_PLAYER_ID}_{ROUND}" class="ffg_week_score" data_player="{PLAYER_ID}" data_round="{ROUND}">
+                    <span class="ffg_score_number"></span>
+                </div>
+                <!-- END ffg_week_score -->
+            </div>
         </div>
     </div>
 

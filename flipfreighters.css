@@ -822,11 +822,13 @@
     left: 1193px;
 } 
 
+.ffg_hidden,
 .ffg_truck[data_score='0'] .ffg_truck_score,
 .ffg_truck[data_score='0'] .ffg_truck_score_right
 {
     visibility: hidden;
 }
+.ffg_week_score>.ffg_score_number,
 .ffg_truck_score>.ffg_score_number,
 .ffg_truck_score_right>.ffg_score_number{
     align-items: center;
@@ -876,6 +878,26 @@
 
 .ffg_truck_score_right>.ffg_score_number{
     line-height: 27px;
+}
+
+.ffg_week_score{
+    width: 144px;
+    height: 45px;
+    position: absolute;
+    z-index: 1;
+    left: 108px;
+}
+.ffg_week_score>.ffg_score_number{
+    line-height: 45px;
+}
+.ffg_week_score[data_round="1"]{
+    top: 706px; 
+}
+.ffg_week_score[data_round="2"]{
+    top: 789px; 
+}
+.ffg_week_score[data_round="3"]{
+    top: 872px; 
 }
 
 /* ---------------------------- ----------------------------   ---------------------------- */

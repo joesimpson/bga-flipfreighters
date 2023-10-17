@@ -9,7 +9,8 @@ DELETE FROM freighter_move;
 UPDATE freighter_cargo SET cargo_amount= null, cargo_card_id= null, cargo_state= 0;
 
 -- PUT SELECT CARDS in "DAY"
-UPDATE card SET card_location= "discard" ;
+UPDATE card SET card_location= "deck" WHERE card_location= "DAY";
+-- TODO JSA INIT ALL LOCATIONS to avoid bugs when looking at week_1 etc....
 
 UPDATE card SET card_location= "DAY" WHERE card_type = 1 AND card_type_arg = 2 LIMIT 1 ;
 UPDATE card SET card_location= "DAY" WHERE card_type = 2 AND card_type_arg = 5 LIMIT 1 ;

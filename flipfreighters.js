@@ -34,6 +34,9 @@ function (dojo, declare) {
             this.selectedCard = null;
             this.selectedAmount = null;//Not always the card value, with overtime hours
             this.material = [];
+            
+            this.NB_ROUNDS =0;
+            this.currentRound = 1;
         },
         
         /*
@@ -53,6 +56,9 @@ function (dojo, declare) {
         {
             console.log( "Starting game setup",gamedatas );
             
+            this.NB_ROUNDS = gamedatas.constants.NB_ROUNDS;
+            this.currentRound = gamedatas.round_number;//TODO JSA update on new round
+            
             // Setting up player boards
             for( let player_id in gamedatas.players )
             {
@@ -65,12 +71,12 @@ function (dojo, declare) {
                     
                 if(this.player_id == player_id){ //CURRENT player
                     playerContainers.connect( 'onclick', this, 'onSelectLoadTarget' );
+                    this.displayPlayerScores(player);
                 }
                 else {
                     //TODO JSA update other players, instead of destroying them (destroy for now because it is displayed in the same place for every one)
                     playerContainers.forEach(dojo.destroy);
                     playerTrucks.forEach(dojo.destroy);
-                    
                 }
             }
             
@@ -134,18 +140,6 @@ function (dojo, declare) {
             
             switch( stateName )
             {
-            
-            /* Example:
-            
-            case 'myGameState':
-            
-                // Hide the HTML block we are displaying only during this game state
-                dojo.style( 'my_html_block_id', 'display', 'none' );
-                
-                break;
-           */
-           
-           
             case 'dummmy':
                 break;
             }               
@@ -319,6 +313,30 @@ function (dojo, declare) {
                 numberDivs[i].innerHTML=truckScore;
             }
            
+        },
+        
+        displayPlayerScores: function(playerDatas){
+            console.log("displayPlayerScores",playerDatas);
+            
+            let k=1;
+            while( k< this.currentRound ){
+                let weekscore = playerDatas['score_week'+k];
+                this.updatePlayerScore(playerDatas.id,k,weekscore);
+                k++;
+            }
+            //TODO JSA when do we display last week ?
+            //+ TODO JSA display sum of all weeks at end of game
+        },
+        
+        updatePlayerScore: function(player_id, round,weekscore) {
+            console.log("updatePlayerScore",player_id, weekscore , round);
+            if(this.player_id == player_id){//CURRENT player
+                let numberDiv = dojo.query("#ffg_week_score_"+player_id+"_"+round+" .ffg_score_number")[0];
+                numberDiv.innerHTML = weekscore;
+            }
+            else {
+                //TODO JSA displayer other players elsewhere
+            }
         },
         
         ///////////////////////////////////////////////////
@@ -506,6 +524,7 @@ function (dojo, declare) {
             dojo.subscribe( 'newTurn', this, "notif_newTurn" );
             dojo.subscribe( 'loadTruck', this, "notif_loadTruck" );
             dojo.subscribe( 'moveTruck', this, "notif_moveTruck" );
+            dojo.subscribe( 'newWeekScore', this, "notif_newWeekScore" );
         },  
         
         //  from this point and below, you can write your game notifications handling methods
@@ -603,6 +622,11 @@ function (dojo, declare) {
             
         },
         
+        notif_newWeekScore: function( notif )
+        {
+            console.log( 'notif_newWeekScore',notif );
+            this.updatePlayerScore(notif.args.player_id,notif.args.k,notif.args.nb );
+        },
    });             
 });
 
