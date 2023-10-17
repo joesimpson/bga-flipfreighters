@@ -526,10 +526,24 @@ class FlipFreighters extends Table
     function computeScore($player_id,$truckId,$cargos, $truck_position_state){
         self::trace("computeScore($player_id,$truckId)...");
         //self::dump( 'cargo', $cargos );
+        //self::dump( 'truck_position_state', $truck_position_state );
         //TODO JSA computeScore should not be sent to others when state is not confirmed yet
         $truck_material = $this->trucks_types[$truckId];
-        $delivery_type = $truck_material['delivery_score'][0];
-        //TODO JSA check if X1 or X2
+        $path_sizes = $truck_material['path_size'];
+        $delivery_type = null;
+        
+        for($k = 0; $k< count($path_sizes)  ; $k++){
+            $path_size = $path_sizes[$k];
+            
+            if($truck_position_state['confirmed_state'] == STATE_MOVE_DELIVERED_CONFIRMED && $truck_position_state['confirmed_position'] == $path_size
+            || $truck_position_state['not_confirmed_state'] == STATE_MOVE_DELIVERED_TO_CONFIRM && $truck_position_state['not_confirmed_position'] == $path_size
+            ){
+                $delivery_type = $truck_material['delivery_score'][$k];
+                break;
+            }
+        }
+        
+        self::trace("computeScore($player_id,$truckId)... delivery_type = $delivery_type");
         
         switch ($delivery_type){
             case SCORE_TYPE_NUMBER_OF_GOODS_X5: 
@@ -629,7 +643,7 @@ class FlipFreighters extends Table
         $this->insertMoveTruck($player_id,$truckId, $fromPosition, $position, $newState,$cardId);
         $truckPositions = $this->getTruckPositions($truckId,$player_id);
         if($isDelivery) {
-            $truckCargos = $this->getTruckCargos($player_id,$truckId);
+            $truckCargos = $this->getTruckCargos($player_id,$truckId) [$truckId];
             $truckScore = $this->computeScore($player_id,$truckId,$truckCargos,$truckPositions);
         }
         
