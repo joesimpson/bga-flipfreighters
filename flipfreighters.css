@@ -822,7 +822,13 @@
     left: 1193px;
 } 
 
-.ffg_truck_score>.ffg_score_number{
+.ffg_truck[data_score='0'] .ffg_truck_score,
+.ffg_truck[data_score='0'] .ffg_truck_score_right
+{
+    visibility: hidden;
+}
+.ffg_truck_score>.ffg_score_number,
+.ffg_truck_score_right>.ffg_score_number{
     align-items: center;
     display: flex;
     font-size: 27px;
@@ -869,14 +875,7 @@
 }
 
 .ffg_truck_score_right>.ffg_score_number{
-    align-items: center;
-    display: flex;
-    font-size: 27px;
-    font-weight: bold;
-    justify-content: center;
     line-height: 27px;
-    text-align: center;
-    color: black;
 }
 
 /* ---------------------------- ----------------------------   ---------------------------- */

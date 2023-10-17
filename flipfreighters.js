@@ -310,8 +310,15 @@ function (dojo, declare) {
             return false;
         },
         
-        displayTruckScore: function(player_id, truckScore){
-            console.log("displayTruckScore",player_id, truckScore);
+        displayTruckScore: function(player_id, truckScore, truckDivId){
+            console.log("displayTruckScore",player_id, truckScore, truckDivId);
+            
+            let numberDivs = dojo.query("#"+truckDivId+" .ffg_score_number");
+            
+            for(let i in numberDivs){
+                numberDivs[i].innerHTML=truckScore;
+            }
+           
         },
         
         ///////////////////////////////////////////////////
@@ -572,7 +579,7 @@ function (dojo, declare) {
             truckDiv.setAttribute("data_not_confirmed_position",notif.args.truckState.not_confirmed_position);
             truckDiv.setAttribute("data_score",notif.args.truckScore);
             
-            this.displayTruckScore(this.player_id, notif.args.truckScore);            
+            this.displayTruckScore(this.player_id, notif.args.truckScore,truckDivId);            
             
             //unselect card
             this.unselectCard();
