@@ -103,11 +103,13 @@ class view_flipfreighters_flipfreighters extends game_view
             $player_board = $this->game->getPlayerBoard($player_id);
             $trucks_cargos = $player_board['trucks_cargos'];
         
-            $this->game->dump("VIEW trucks_cargos", $trucks_cargos);
+            //$this->game->dump("VIEW trucks_cargos", $trucks_cargos);
             
-            foreach( $trucks_cargos as $truck_cargo )
+            foreach( $trucks_cargos as $truck_id => $truck_cargos )
             {
-                $this->page->insert_block( "ffg_player_trucks_cargo", array( 
+                foreach( $truck_cargos as $truck_cargo )
+                {
+                    $this->page->insert_block( "ffg_player_trucks_cargo", array( 
                                                         "PLAYER_ID" => $player_id,
                                                         "CONTAINER_ID" => $truck_cargo['id'],
                                                         "TRUCK_ID" => $truck_cargo['truck_id'],
@@ -115,11 +117,12 @@ class view_flipfreighters_flipfreighters extends game_view
                                                         "STATE" => $truck_cargo['state'],
                                                         "CARD_ID" => $truck_cargo['card_id'],
                                                          ) );
+                }
             }
             
             $trucks_positions = $player_board['trucks_positions'];
             $trucks_scores = $player_board['trucks_scores'];
-            $this->game->dump("VIEW trucks_positions", $trucks_positions);
+            //$this->game->dump("VIEW trucks_positions", $trucks_positions);
             //TODO JSA FILTER PRIVATE DATAS : current player cannot see "NOT_CONFIRMED" datas from other players
             foreach( $trucks_positions as $trucks_position )
             {

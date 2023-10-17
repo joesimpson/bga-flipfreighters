@@ -263,13 +263,17 @@ class FlipFreighters extends Table
         $possibles = array();
         
         //Loop over each container 
-        $cargos = $playerBoard['trucks_cargos'];
-        foreach( $cargos as $container_id => $container )
+        $trucks_cargos = $playerBoard['trucks_cargos'];
+        
+        foreach( $trucks_cargos as $truck_id => $cargos )
         {
-            if($this->isPossibleLoadWithCard($card,$container) == false ) {
-                continue;
+            foreach( $cargos as $container_id => $container )
+            {
+                if($this->isPossibleLoadWithCard($card,$container) == false ) {
+                    continue;
+                }
+                $possibles[] = $container_id;
             }
-            $possibles[] = $container['id'];
         }
         return $possibles;
     }
@@ -278,7 +282,7 @@ class FlipFreighters extends Table
     { 
         
         $card_id = $card['id'];
-        self::dump("isPossibleLoadWithCard($card_id)", $container);
+        //self::dump("isPossibleLoadWithCard($card_id)", $container);
         //IF Container is not empty KO
         if( array_key_exists('amount',$container) && $container['amount']>0 ) {
             return false;
@@ -311,7 +315,7 @@ class FlipFreighters extends Table
     function isPossibleMoveWithCard($card,$playerBoard,$truck_id,$k)
     { 
         $card_id = $card['id'];
-        self::trace("isPossibleMoveWithCard($card_id,$truck_id,$k)");
+        //self::trace("isPossibleMoveWithCard($card_id,$truck_id,$k)");
 
         //TODO JSA isPossibleMoveWithCard
              
@@ -346,10 +350,7 @@ class FlipFreighters extends Table
     
     function getPlayerBoard($player_id){
         
-        $trucks_cargos = $this->getCollectionFromDb("SELECT cargo_key id,cargo_amount  amount, cargo_state state,cargo_card_id card_id,
-            SUBSTRING(cargo_key FROM 1 FOR 6) truck_id
-            FROM freighter_cargo
-            WHERE cargo_player_id ='$player_id' ");
+        $trucks_cargos = $this->getTruckCargos($player_id);
         
         $trucks_positions = $this->getDoubleKeyCollectionFromDB( $this->getSQLSelectTruckPositions($player_id));
         
@@ -360,7 +361,7 @@ class FlipFreighters extends Table
             $trucks_positions = $trucks_positions [$player_id];
         }
         
-        self::dump("getPlayerBoard($player_id) trucks_positions BEFORE ",$trucks_positions);
+        //self::dump("getPlayerBoard($player_id) trucks_positions BEFORE ",$trucks_positions);
         
         $trucks_scores = array();
         
@@ -379,9 +380,9 @@ class FlipFreighters extends Table
             
             //TODO JSA DO the same with cargo load
             
-            $trucks_scores[$truck_type_id] = $this->computeScore($player_id,$truck_type_id);
+            $trucks_scores[$truck_type_id] = $this->computeScore($player_id,$truck_type_id, $trucks_cargos[$truck_type_id], $trucks_positions[$truck_type_id] ); 
         }
-        self::dump("getPlayerBoard($player_id) trucks_positions AFTER ",$trucks_positions);
+        //self::dump("getPlayerBoard($player_id) trucks_positions AFTER ",$trucks_positions);
         
         return array( 
             "trucks_cargos" => $trucks_cargos,
@@ -391,6 +392,16 @@ class FlipFreighters extends Table
     }
     
     //TODO JSA FACTORIZE
+    function getTruckCargos($player_id,$truck_id = null){
+        $sql = "SELECT SUBSTRING(cargo_key FROM 1 FOR 6) truck_id, cargo_key id,cargo_amount  amount, cargo_state state,cargo_card_id card_id
+            FROM freighter_cargo
+            WHERE cargo_player_id ='$player_id' ";
+        if(isset($truck_id) ){
+            $sql = "SELECT * FROM ( ".$sql.") c WHERE truck_id ='$truck_id' ";
+        }  
+        $trucks_cargos = $this->getDoubleKeyCollectionFromDB( $sql);
+        return $trucks_cargos;    
+    }
     function getTruckContainer($player_id,$cargo_id){
         $datas = $this->getObjectFromDB("SELECT cargo_key id,cargo_amount  amount, cargo_state state,cargo_card_id card_id,
             SUBSTRING(cargo_key FROM 1 FOR 6) truck_id
@@ -486,19 +497,35 @@ class FlipFreighters extends Table
         $this->DbQuery("INSERT INTO freighter_move VALUES ('$player_id', '$truckId', $fromPosition, $toPosition, $newState, $cardId); ");
     }
     
-    function sumCargoValues($player_id,$truckId){
-        //TODO JSA sumCargoValues 
-        return 10;
+    function sumCargoValues($cargos){
+        self::dump( 'sumCargoValues', $cargos );
+        $sum = 0;
+        foreach($cargos as $cargo){
+            if(isset ($cargo['amount'] ) ){
+                $sum += $cargo['amount'];
+            }
+        }
+        self::trace( "sumCargoValues()... => $sum");
+        return $sum;
+    }
+    function countCargoValues($cargos){
+        self::dump( 'countCargoValues', $cargos );
+        $sum = 0;
+        foreach($cargos as $cargo){
+            if(isset ($cargo['amount'] ) ){
+                $sum += 1;
+            }
+        }
+        self::trace( "countCargoValues()... => $sum");
+        return $sum;
     }
     
-    function computeCargoSize($player_id,$truckId){
-        //TODO JSA computeCargoSize 
-        return 1;
-    }
     /**
     Return current score for one player's truck
     */
-    function computeScore($player_id,$truckId){
+    function computeScore($player_id,$truckId,$cargos, $truck_position_state){
+        self::trace("computeScore($player_id,$truckId)...");
+        //self::dump( 'cargo', $cargos );
         //TODO JSA computeScore should not be sent to others when state is not confirmed yet
         $truck_material = $this->trucks_types[$truckId];
         $delivery_type = $truck_material['delivery_score'][0];
@@ -506,17 +533,17 @@ class FlipFreighters extends Table
         
         switch ($delivery_type){
             case SCORE_TYPE_NUMBER_OF_GOODS_X5: 
-                $numberOfGoods = $this->computeCargoSize($player_id,$truckId);
+                $numberOfGoods = $this->countCargoValues($cargos);
                 return $numberOfGoods * 5;
             case SCORE_TYPE_NUMBER_OF_GOODS_3_TO_30: 
-                $numberOfGoods = $this->computeCargoSize($player_id,$truckId);
+                $numberOfGoods = $this->countCargoValues($cargos);
                 $scorePerGoods = [3, 7, 10, 15, 20, 30];
-                return $scorePerGoods[$numberOfGoods];
+                return $scorePerGoods[$numberOfGoods -1 ];
             case SCORE_TYPE_SUM_GOODS_X1: 
-                $valueOfGoods = $this->sumCargoValues($player_id,$truckId);
+                $valueOfGoods = $this->sumCargoValues($cargos);
                 return $valueOfGoods * 1;
             case SCORE_TYPE_SUM_GOODS_X2: 
-                $valueOfGoods = $this->sumCargoValues($player_id,$truckId);
+                $valueOfGoods = $this->sumCargoValues($cargos);
                 return $valueOfGoods * 2;
             default: break;
         }
@@ -602,7 +629,8 @@ class FlipFreighters extends Table
         $this->insertMoveTruck($player_id,$truckId, $fromPosition, $position, $newState,$cardId);
         $truckPositions = $this->getTruckPositions($truckId,$player_id);
         if($isDelivery) {
-            $truckScore = $this->computeScore($player_id,$truckId);
+            $truckCargos = $this->getTruckCargos($player_id,$truckId);
+            $truckScore = $this->computeScore($player_id,$truckId,$truckCargos,$truckPositions);
         }
         
         //NOTIFY ACTION :
