@@ -118,12 +118,14 @@ class view_flipfreighters_flipfreighters extends game_view
             }
             
             $trucks_positions = $player_board['trucks_positions'];
+            $trucks_scores = $player_board['trucks_scores'];
             $this->game->dump("VIEW trucks_positions", $trucks_positions);
             //TODO JSA FILTER PRIVATE DATAS : current player cannot see "NOT_CONFIRMED" datas from other players
             foreach( $trucks_positions as $trucks_position )
             {
                 
                 $truck_id = $trucks_position['truck_id'];
+                $truckScore = $trucks_scores[$truck_id];
                 
                 $confirmed_pos = $trucks_position['confirmed_position'] ;
                 $not_confirmed_pos = $trucks_position['not_confirmed_position'];
@@ -158,6 +160,7 @@ class view_flipfreighters_flipfreighters extends game_view
                                                         "CONFIRMED_POSITION" => $confirmed_pos,
                                                         "NOT_CONFIRMED_STATE" => $not_confirmed_state,
                                                         "NOT_CONFIRMED_POSITION" => $not_confirmed_pos,
+                                                        "SCORE" => $truckScore,
                                                          ) );
                 
             }

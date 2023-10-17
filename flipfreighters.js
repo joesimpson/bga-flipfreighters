@@ -566,6 +566,7 @@ function (dojo, declare) {
             truckDiv.setAttribute("data_confirmed_position",notif.args.truckState.confirmed_position);
             truckDiv.setAttribute("data_not_confirmed_state",notif.args.truckState.not_confirmed_state);
             truckDiv.setAttribute("data_not_confirmed_position",notif.args.truckState.not_confirmed_position);
+            truckDiv.setAttribute("data_score",notif.args.truckScore);
             
             //unselect card
             this.unselectCard();

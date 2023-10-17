@@ -41,6 +41,11 @@ const STATE_MOVE_CONFIRMED = 2;
 const STATE_MOVE_DELIVERED_TO_CONFIRM = 3;
 const STATE_MOVE_DELIVERED_CONFIRMED = 4;
 
+const SCORE_TYPE_NUMBER_OF_GOODS_X5 = 1;
+const SCORE_TYPE_NUMBER_OF_GOODS_3_TO_30 = 2;
+const SCORE_TYPE_SUM_GOODS_X1 = 3;
+const SCORE_TYPE_SUM_GOODS_X2 = 4;
+
 class FlipFreighters extends Table
 {
 	function __construct( )
@@ -340,7 +345,6 @@ class FlipFreighters extends Table
     }
     
     function getPlayerBoard($player_id){
-        $trucks_cargos = array();
         
         $trucks_cargos = $this->getCollectionFromDb("SELECT cargo_key id,cargo_amount  amount, cargo_state state,cargo_card_id card_id,
             SUBSTRING(cargo_key FROM 1 FOR 6) truck_id
@@ -358,6 +362,8 @@ class FlipFreighters extends Table
         
         self::dump("getPlayerBoard($player_id) trucks_positions BEFORE ",$trucks_positions);
         
+        $trucks_scores = array();
+        
         //LOOP ON EACH TRUCK to add trucks which are not selected by this player yet
         foreach ($this->trucks_types as $truck_type_id =>  $truck_type){
             if( ! array_key_exists($truck_type_id, $trucks_positions ) ){
@@ -372,12 +378,15 @@ class FlipFreighters extends Table
             }
             
             //TODO JSA DO the same with cargo load
+            
+            $trucks_scores[$truck_type_id] = $this->computeScore($player_id,$truck_type_id);
         }
         self::dump("getPlayerBoard($player_id) trucks_positions AFTER ",$trucks_positions);
-            
+        
         return array( 
             "trucks_cargos" => $trucks_cargos,
             "trucks_positions" => $trucks_positions,
+            "trucks_scores" => $trucks_scores,
         );
     }
     
@@ -476,6 +485,46 @@ class FlipFreighters extends Table
     function insertMoveTruck($player_id,$truckId, $fromPosition, $toPosition, $newState,$cardId){
         $this->DbQuery("INSERT INTO freighter_move VALUES ('$player_id', '$truckId', $fromPosition, $toPosition, $newState, $cardId); ");
     }
+    
+    function sumCargoValues($player_id,$truckId){
+        //TODO JSA sumCargoValues 
+        return 10;
+    }
+    
+    function computeCargoSize($player_id,$truckId){
+        //TODO JSA computeCargoSize 
+        return 1;
+    }
+    /**
+    Return current score for one player's truck
+    */
+    function computeScore($player_id,$truckId){
+        //TODO JSA computeScore should not be sent to others when state is not confirmed yet
+        $truck_material = $this->trucks_types[$truckId];
+        $delivery_type = $truck_material['delivery_score'][0];
+        //TODO JSA check if X1 or X2
+        
+        switch ($delivery_type){
+            case SCORE_TYPE_NUMBER_OF_GOODS_X5: 
+                $numberOfGoods = $this->computeCargoSize($player_id,$truckId);
+                return $numberOfGoods * 5;
+            case SCORE_TYPE_NUMBER_OF_GOODS_3_TO_30: 
+                $numberOfGoods = $this->computeCargoSize($player_id,$truckId);
+                $scorePerGoods = [3, 7, 10, 15, 20, 30];
+                return $scorePerGoods[$numberOfGoods];
+            case SCORE_TYPE_SUM_GOODS_X1: 
+                $valueOfGoods = $this->sumCargoValues($player_id,$truckId);
+                return $valueOfGoods * 1;
+            case SCORE_TYPE_SUM_GOODS_X2: 
+                $valueOfGoods = $this->sumCargoValues($player_id,$truckId);
+                return $valueOfGoods * 2;
+            default: break;
+        }
+        
+        return 0;
+    }
+    
+    
 //////////////////////////////////////////////////////////////////////////////
 //////////// Player actions
 //////////// 
@@ -547,10 +596,14 @@ class FlipFreighters extends Table
         
         //REAL ACTION :
         $newState = STATE_MOVE_TO_CONFIRM;
+        $truckScore = 0;
         if($isDelivery) $newState = STATE_MOVE_DELIVERED_TO_CONFIRM;
         $fromPosition = $this->getCurrentTruckPosition($truckId,$player_id);
         $this->insertMoveTruck($player_id,$truckId, $fromPosition, $position, $newState,$cardId);
         $truckPositions = $this->getTruckPositions($truckId,$player_id);
+        if($isDelivery) {
+            $truckScore = $this->computeScore($player_id,$truckId);
+        }
         
         //NOTIFY ACTION :
         self::notifyPlayer($player_id, "moveTruck", clienttranslate( 'You move a truck' ), array(
@@ -559,6 +612,7 @@ class FlipFreighters extends Table
             'truckId' => $truckId,
             'card_id' => $cardId,
             'truckState' => $truckPositions,
+            'truckScore' => $truckScore,
         ) );
         
         //Should not be public but the framework prefers to get minimum 1 notifyAll per action ?...

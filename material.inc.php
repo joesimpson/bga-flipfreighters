@@ -43,6 +43,7 @@ $this->trucks_types = array(
     "truck1" => array(
         "truck_id" => "truck1",
         "path_size" => array(5), 
+        "delivery_score" => array(SCORE_TYPE_NUMBER_OF_GOODS_X5),
         "containers" => array(
             "1" , "2" , "3" ,  "4" 
         ),
@@ -50,6 +51,7 @@ $this->trucks_types = array(
     "truck2" => array(
         "truck_id" => "truck2",
         "path_size" => array(5),
+        "delivery_score" => array(SCORE_TYPE_NUMBER_OF_GOODS_X5),
         "containers" => array(
             "1" , "2" , "3" ,  "4" 
         ),
@@ -57,6 +59,7 @@ $this->trucks_types = array(
     "truck3" => array(
         "truck_id" => "truck3",
         "path_size" => array(7),
+        "delivery_score" => array(SCORE_TYPE_NUMBER_OF_GOODS_3_TO_30),
         "containers" => array(
             "1" , "2" , "3" ,  "4" ,  "5" ,  "6" 
         ),
@@ -64,6 +67,7 @@ $this->trucks_types = array(
     "truck4" => array(
         "truck_id" => "truck4",
         "path_size" => array(7),
+        "delivery_score" => array(SCORE_TYPE_NUMBER_OF_GOODS_3_TO_30),
         "containers" => array(
             6 , 5 , 4 ,  3 ,  2 ,  1
         ),
@@ -71,6 +75,7 @@ $this->trucks_types = array(
     "truck5" => array(
         "truck_id" => "truck5",
         "path_size" => array(5),
+        "delivery_score" => array(SCORE_TYPE_SUM_GOODS_X1),
         "containers" => array(
             1,2,3,4,5,6,
         ),
@@ -78,6 +83,7 @@ $this->trucks_types = array(
     "truck6" => array(
         "truck_id" => "truck6",
         "path_size" => array(5,8),
+        "delivery_score" => array(SCORE_TYPE_SUM_GOODS_X1,SCORE_TYPE_SUM_GOODS_X2),
         "containers" => array(
             1,2,3,4,
         ),
@@ -85,6 +91,7 @@ $this->trucks_types = array(
     "truck7" => array(
         "truck_id" => "truck7",
         "path_size" => array(5,8),
+        "delivery_score" => array(SCORE_TYPE_SUM_GOODS_X1,SCORE_TYPE_SUM_GOODS_X2),
         "containers" => array(
             1,2,3,4,
         ),
@@ -92,6 +99,7 @@ $this->trucks_types = array(
     "truck8" => array(
         "truck_id" => "truck8",
         "path_size" => array(5,8),
+        "delivery_score" => array(SCORE_TYPE_SUM_GOODS_X1,SCORE_TYPE_SUM_GOODS_X2),
         "containers" => array(
             1,2,3,4,
         ),
@@ -99,6 +107,7 @@ $this->trucks_types = array(
     "truck9" => array(
         "truck_id" => "truck9",
         "path_size" => array(5,8),
+        "delivery_score" => array(SCORE_TYPE_SUM_GOODS_X1,SCORE_TYPE_SUM_GOODS_X2),
         "containers" => array(
             1,2,3,4,
         ),
