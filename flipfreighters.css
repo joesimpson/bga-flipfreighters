@@ -772,7 +772,112 @@
     top: 517px;
 }
 /* ---------------------------- ----------------------------   ---------------------------- */
+/* List of spaces to display trucks score on end of each line : they are listed by color order, not the same order of trucks around the board... */
+.ffg_truck_score{
+    width: 55px;
+    height: 55px;
+    position: absolute;
+    z-index: 1;
+}
+.ffg_truck[data_id='truck1']>.ffg_truck_score{
+    top: 585px; 
+    left: 889px;
+    background-color: rgba(255,255,255, 0.5);
+} 
+.ffg_truck[data_id='truck2']>.ffg_truck_score{
+    top: 498px; 
+    left: 371px;
+    background-color: rgba(255,255,255, 0.5);
+} 
+.ffg_truck[data_id='truck3']>.ffg_truck_score{
+    top: 381px; 
+    left: 1004px;
+    width: 83px;
+    background-color: rgba(255,255,255, 0.5);
+} 
+.ffg_truck[data_id='truck4']>.ffg_truck_score{
+    top: 355px; 
+    left: 1122px;
+    width: 83px;
+    background-color: rgba(255,255,255, 0.5);
+} 
+.ffg_truck[data_id='truck5']>.ffg_truck_score{
+    top: 505px; 
+    left: 972px;
+} 
+.ffg_truck[data_id='truck6']>.ffg_truck_score{
+    top: 355px; 
+    left: 642px;
+} 
+.ffg_truck[data_id='truck7']>.ffg_truck_score{
+    top: 530px; 
+    left: 655px;
+} 
+.ffg_truck[data_id='truck8']>.ffg_truck_score{
+    top: 485px; 
+    left: 1114px;
+} 
+.ffg_truck[data_id='truck9']>.ffg_truck_score{
+    top: 444px; 
+    left: 1193px;
+} 
 
+.ffg_truck_score>.ffg_score_number{
+    align-items: center;
+    display: flex;
+    font-size: 27px;
+    font-weight: bold;
+    justify-content: center;
+    line-height: 56px;
+    text-align: center;
+    color: black;
+}
+/* List of spaces to display trucks score on right of the board : they are listed by color order, not the same order of trucks around the board... */
+.ffg_truck_score_right{
+    width: 55px;
+    height: 27px;
+    position: absolute;
+    z-index: 1;
+    left: 1319px;
+}
+.ffg_truck[data_id='truck2']>.ffg_truck_score_right{
+    top: 461px; 
+}
+.ffg_truck[data_id='truck1']>.ffg_truck_score_right{
+    top: 505px; 
+}
+.ffg_truck[data_id='truck3']>.ffg_truck_score_right{
+    top: 550px; 
+}
+.ffg_truck[data_id='truck4']>.ffg_truck_score_right{
+    top: 596px; 
+}
+.ffg_truck[data_id='truck5']>.ffg_truck_score_right{
+    top: 640px; 
+}
+.ffg_truck[data_id='truck6']>.ffg_truck_score_right{
+    top: 684px; 
+}
+.ffg_truck[data_id='truck7']>.ffg_truck_score_right{
+    top: 730px; 
+}
+.ffg_truck[data_id='truck8']>.ffg_truck_score_right{
+    top: 774px; 
+}
+.ffg_truck[data_id='truck9']>.ffg_truck_score_right{
+    top: 819px;
+}
+
+.ffg_truck_score_right>.ffg_score_number{
+    align-items: center;
+    display: flex;
+    font-size: 27px;
+    font-weight: bold;
+    justify-content: center;
+    line-height: 27px;
+    text-align: center;
+    color: black;
+}
 
 /* ---------------------------- ----------------------------   ---------------------------- */
 

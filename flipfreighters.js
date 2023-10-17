@@ -310,6 +310,10 @@ function (dojo, declare) {
             return false;
         },
         
+        displayTruckScore: function(player_id, truckScore){
+            console.log("displayTruckScore",player_id, truckScore);
+        },
+        
         ///////////////////////////////////////////////////
         //// Player's action
         
@@ -567,6 +571,8 @@ function (dojo, declare) {
             truckDiv.setAttribute("data_not_confirmed_state",notif.args.truckState.not_confirmed_state);
             truckDiv.setAttribute("data_not_confirmed_position",notif.args.truckState.not_confirmed_position);
             truckDiv.setAttribute("data_score",notif.args.truckScore);
+            
+            this.displayTruckScore(this.player_id, notif.args.truckScore);            
             
             //unselect card
             this.unselectCard();
