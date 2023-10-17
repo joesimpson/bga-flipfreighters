@@ -52,10 +52,6 @@ $stats_type = array(
     // Statistics global to table
     "table" => array(
 
-        "turns_number" => array("id"=> 10,
-                    "name" => totranslate("Number of turns"),
-                    "type" => "int" ),
-
 /*
         Examples:
 
@@ -73,8 +69,14 @@ $stats_type = array(
     // Statistics existing for each player
     "player" => array(
 
-        "turns_number" => array("id"=> 10,
-                    "name" => totranslate("Number of turns"),
+        "score_week1" => array("id"=> 10,
+                    "name" => totranslate("Week 1 score"),
+                    "type" => "int" ),
+        "score_week2" => array("id"=> 11,
+                    "name" => totranslate("Week 2 score"),
+                    "type" => "int" ),
+        "score_week3" => array("id"=> 12,
+                    "name" => totranslate("Week 3 score"),
                     "type" => "int" ),
     
 /*

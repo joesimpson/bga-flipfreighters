@@ -116,7 +116,9 @@ class FlipFreighters extends Table
         // Init game statistics
         // (note: statistics used in this file must be defined in your stats.inc.php file)
         //self::initStat( 'table', 'table_teststat1', 0 );    // Init a table statistics
-        //self::initStat( 'player', 'player_teststat1', 0 );  // Init a player statistics (for all players)
+        self::initStat( 'player', 'score_week1', 0 );  // Init a player statistics (for all players)
+        self::initStat( 'player', 'score_week2', 0 );
+        self::initStat( 'player', 'score_week3', 0 );
 
         // TODO: setup the initial game situation here
         $this->initDeck();
@@ -571,7 +573,19 @@ class FlipFreighters extends Table
         return 0;
     }
     
-    
+    function computePlayerScore($player_id){
+        self::trace("computePlayerScore($player_id)...");
+        $score = 0;
+        
+        $playerBoard = $this->getPlayerBoard($player_id);
+        $trucks_scores = $playerBoard['trucks_scores'];
+        foreach( $trucks_scores as $truck_id => $truck_score )
+        {
+            $score += $truck_score;
+        }
+        
+        return $score;
+    }
 //////////////////////////////////////////////////////////////////////////////
 //////////// Player actions
 //////////// 
@@ -815,6 +829,18 @@ class FlipFreighters extends Table
     function stEndRound()
     {  
         self::trace("stEndRound()");
+        
+        $players = self::loadPlayersBasicInfos();
+        
+        $round = self::getGameStateValue( 'round_number');
+        
+        foreach($players as $player_id => $player){
+            //Total all the values for all the trucks that have been delivered 
+            $score = $this->computePlayerScore( $player_id);
+            self::setStat( $score, "score_week".$round, $player_id );
+        
+        }
+        
         
         //TODO JSA CHECK round_number and end if >=MAX
         
