@@ -106,6 +106,7 @@ $machinestates = array(
             "action" => "stPlayerturn",
             "args" => "argPlayerTurn",
             "possibleactions" => array( "loadTruck", "moveTruck", "cancelTurn", "endTurn" ),
+            "updateGameProgression" => true,
             "transitions" => array( "next" => 15)
         ),
         

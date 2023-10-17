@@ -23,8 +23,9 @@ require_once( APP_GAMEMODULE_PATH.'module/table/table.game.php' );
 const JOKER_TYPE = 5;
 const JOKER_VALUE = 15;
 
-const NB_CARDS_BY_WEEK = 15;
-const NB_CARDS_BY_ROUND = 3;
+const NB_CARDS_BY_WEEK = 15;// BY ROUND
+const NB_CARDS_BY_TURN = 3;
+const NB_ROUNDS = 3;
 
 const DECK_LOCATION_WEEK_1 = "WEEK_1";
 const DECK_LOCATION_WEEK_2 = "WEEK_2";
@@ -174,9 +175,14 @@ class FlipFreighters extends Table
     */
     function getGameProgression()
     {
-        // TODO: compute and return the game progression
-
-        return 0;
+        $round = self::getGameStateValue( 'round_number'); // FROM 1 to 3
+        $turn = self::getGameStateValue( 'turn_number'); // FROM 1 to 5, reset to 1 at each turn
+        
+        $maxTurnsByRound = NB_CARDS_BY_WEEK/NB_CARDS_BY_TURN;//5
+        $maxTurns = NB_ROUNDS * $maxTurnsByRound;//15
+        $progression = ( ($round -1) * $maxTurnsByRound + $turn-1 ) / $maxTurns *100;// FROM 0 TO 14/15 (93%)
+        
+        return $progression;
     }
 
 
@@ -766,9 +772,9 @@ class FlipFreighters extends Table
         
         //Flip three cards face up from the draw deck  :
         $weekLocation = $this->getCurrentWeekLocation();
-        $newCards = $this->cards->pickCardsForLocation( NB_CARDS_BY_ROUND, $weekLocation, DECK_LOCATION_DAY,0, true );
+        $newCards = $this->cards->pickCardsForLocation( NB_CARDS_BY_TURN, $weekLocation, DECK_LOCATION_DAY,0, true );
         
-        $maxTurn = NB_CARDS_BY_WEEK / NB_CARDS_BY_ROUND;
+        $maxTurn = NB_CARDS_BY_WEEK / NB_CARDS_BY_TURN;
         
         //NOTIF ALL about new cards
         self::notifyAllPlayers( "newTurn", clienttranslate( 'Day ${day}/${max} : the game draws new cards' ), array( 
