@@ -534,19 +534,20 @@ class FlipFreighters extends Table
           
     }
     
-    function moveTruck($cardId, $truckId, $position ){
+    function moveTruck($cardId, $truckId, $position, $isDelivery ){
         // Check that this is the player's turn and that it is a "possible action" at this game state (see states.inc.php)
         self::checkAction( 'moveTruck' ); 
         
         $player_id = self::getCurrentPlayerId();
         $player_name = self::getCurrentPlayerName();
-        self::trace("moveTruck($cardId, $truckId, $position,$player_id,$player_name )");
+        self::trace("moveTruck($cardId, $truckId, $position,$isDelivery,$player_id,$player_name )");
         
         //TODO JSA ANTICHEAT CHECKS :
         
         
         //REAL ACTION :
         $newState = STATE_MOVE_TO_CONFIRM;
+        if($isDelivery) $newState = STATE_MOVE_DELIVERED_TO_CONFIRM;
         $fromPosition = $this->getCurrentTruckPosition($truckId,$player_id);
         $this->insertMoveTruck($player_id,$truckId, $fromPosition, $position, $newState,$cardId);
         $truckPositions = $this->getTruckPositions($truckId,$player_id);

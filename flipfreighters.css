@@ -772,3 +772,18 @@
     top: 517px;
 }
 /* ---------------------------- ----------------------------   ---------------------------- */
+
+
+/* ---------------------------- ----------------------------   ---------------------------- */
+
+/** In this game, only one multipleChoice_dialog is used with YES/NO */
+.multiplechoice_btn#choice_btn_0 {
+    /*bgabutton_green*/
+    background: #89a538;
+    border-color: #697f2b;
+}
+.multiplechoice_btn#choice_btn_1 {
+    /*bgabutton_red*/
+    background: #c92727;
+    border-color: #b20a0a;;
+}

@@ -87,9 +87,10 @@
         $position = self::getArg( "position", AT_posint, true );
         $truckId = self::getArg( "truckId", AT_alphanum, true );
         $cardId = self::getArg( "cardId", AT_posint, true );
+        $isDelivery = self::getArg( "isDelivery", AT_bool, true );
 
         // Then, call the appropriate method in your game logic 
-        $this->game->moveTruck($cardId, $truckId, $position );
+        $this->game->moveTruck($cardId, $truckId, $position, $isDelivery );
 
         self::ajaxResponse( );
     }

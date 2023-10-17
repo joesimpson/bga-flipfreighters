@@ -33,7 +33,7 @@ function (dojo, declare) {
             this.possibleCards = [];
             this.selectedCard = null;
             this.selectedAmount = null;//Not always the card value, with overtime hours
-
+            this.material = [];
         },
         
         /*
@@ -74,6 +74,7 @@ function (dojo, declare) {
                 }
             }
             
+            this.material = gamedatas.material;
             this.dayCards = gamedatas.dayCards;
             
             dojo.query("#playerBoardSliderSize").connect( 'oninput', this, 'onBoardSliderChange' );
@@ -403,6 +404,9 @@ function (dojo, declare) {
             let position = evt.currentTarget.getAttribute("data_position") ;
             let truck_id = evt.currentTarget.getAttribute("data_truck") ;
             let cardId = this.selectedCard;
+            let isDelivery = false;
+            let truck_material = this.material.trucks_types[truck_id];
+            
             
             if( ! dojo.hasClass( div_id, 'ffg_selectable' ) )
             {
@@ -410,7 +414,24 @@ function (dojo, declare) {
                 return ;
             }
             
-            this.ajaxcallwrapper("moveTruck", {'cardId': cardId, 'truckId': truck_id, 'position': position,});
+            if(truck_material.path_size.lastItem == position ){
+                //LAST POSITION iS ALWAYS DELIVERED
+                isDelivery = true;
+            }
+            else if(truck_material.path_size.length >1 && truck_material.path_size[0] == position ){
+                // DISPLAY CONFIRM TO DELIVER AT "X1" half path
+                const choices = [_("Yes"), _("No"), _("Cancel")];
+                this.multipleChoiceDialog(_("Do you want to deliver this truck now (at x1) ?"), choices, (choice) => {
+                    if (choice==0) isDelivery = true;
+                    if (choice==1) isDelivery = false;
+                    if (choice==2) return; // cancel operation, do not call server action
+                    
+                    this.ajaxcallwrapper("moveTruck", {'cardId': cardId, 'truckId': truck_id, 'position': position,'isDelivery': isDelivery,});
+                });
+                return; //(multipleChoiceDialog is async function)
+            }
+            
+            this.ajaxcallwrapper("moveTruck", {'cardId': cardId, 'truckId': truck_id, 'position': position,'isDelivery': isDelivery,});
         },
         
         onEndTurn: function( evt )
