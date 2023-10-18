@@ -149,6 +149,8 @@ class FlipFreighters extends Table
         // Note: you can retrieve some extra field you added for "player" table in "dbmodel.sql" if you need it.
         $sql = "SELECT player_id id, player_score score FROM player ";
         $result['players'] = self::getCollectionFromDb( $sql );
+        
+        //TODO JSA retrieve current player unconfirmed deliveries, in order to send him only his temporary "player_score" (as we do in UI : updating score when we deliver )
   
         // TODO: Gather all information about current game situation (visible by player $current_player_id).
         
@@ -644,6 +646,10 @@ class FlipFreighters extends Table
         self::DbQuery( "UPDATE player SET player_score=$score WHERE player_id='$player_id'" );
     }
     
+    function dbGetScore($player_id) {
+       return $this->getUniqueValueFromDB("SELECT player_score FROM player WHERE player_id='$player_id'");
+    }
+    
     function getPlayerAvailableOvertimeHours($player_id){
         //TODO JSA MODEL OvertimeHours
         return 5;
@@ -873,6 +879,10 @@ class FlipFreighters extends Table
     { 
         self::trace("stEndTurn()");
         
+        
+        $players = self::loadPlayersBasicInfos();
+        $round = self::getGameStateValue( 'round_number');
+        
         //Discard cards from board
         $this->cards->moveAllCardsInLocation( DECK_LOCATION_DAY, 'discard' );
     
@@ -881,7 +891,25 @@ class FlipFreighters extends Table
         $this->confirmTurnActions();
         
         //TODO JSA notify all players actions
-        //TODO JSA update player score
+        
+        //update players score
+        foreach($players as $player_id => $player){
+            //UPDATE player week score
+            $score = $this->computePlayerWeekScore( $player_id);
+            self::setStat( $score, "score_week".$round, $player_id );
+            //UPDATE player total score
+            $newPlayerScore = $this->computePlayerTotalScore( $player_id);
+            $this->dbUpdatePlayerScore($player_id,$newPlayerScore);
+            
+            $player_name = $player['player_name'];
+            self::notifyAllPlayers( "endTurnScore", '', array( 
+                'player_id' => $player_id,
+                'player_name' => $player_name,
+                'k' => $round,
+                'nb' => $score,
+                'newScore' => $newPlayerScore,
+            ) );
+        }
         
         $weekSize = $this->cards->countCardInLocation( $week );
         if($weekSize == 0){
@@ -903,12 +931,10 @@ class FlipFreighters extends Table
         $round = self::getGameStateValue( 'round_number');
         
         foreach($players as $player_id => $player){
-            $score = $this->computePlayerWeekScore( $player_id);
-            self::setStat( $score, "score_week".$round, $player_id );
-            
-            //UPDATE player total score
-            $newPlayerScore = $this->computePlayerTotalScore( $player_id);
-            $this->dbUpdatePlayerScore($player_id,$newPlayerScore);
+            //Score computation is done in stEndTurn
+            $score = self::getStat( "score_week".$round, $player_id );
+            //get UPDATED player score
+            $newPlayerScore = $this->dbGetScore($player_id);
             
             $player_name = $player['player_name'];
             self::notifyAllPlayers( "newWeekScore", clienttranslate( '${player_name} scores ${nb} points for week ${k}' ), array( 

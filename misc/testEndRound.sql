@@ -167,4 +167,4 @@ UPDATE `stats` SET `stats_value`=0 WHERE stats_type in (10,11,12) ;
 -- CHECK SCORING AFTER running the script + click "End round"
 SELECT * FROM `stats` WHERE stats_type in (10,11,12) order by stats_type,stats_player_id LIMIT 100;
 -- PLAYER 1 MUST HAVE 24 points for week1
--- PLAYER 1 MUST HAVE 7 points for week1
+-- PLAYER 2 MUST HAVE 7 points for week1

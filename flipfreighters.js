@@ -541,6 +541,7 @@ function (dojo, declare) {
             dojo.subscribe( 'newTurn', this, "notif_newTurn" );
             dojo.subscribe( 'loadTruck', this, "notif_loadTruck" );
             dojo.subscribe( 'moveTruck', this, "notif_moveTruck" );
+            dojo.subscribe( 'endTurnScore', this, "notif_endTurnScore" );
             dojo.subscribe( 'newWeekScore', this, "notif_newWeekScore" );
         },  
         
@@ -638,6 +639,13 @@ function (dojo, declare) {
                 dojo.removeClass(posDivId,"ffg_selectable") ;
             }
             
+        },
+        
+        notif_endTurnScore: function( notif )
+        {
+            console.log( 'notif_endTurnScore',notif );
+            this.updatePlayerWeekScore(notif.args.player_id,notif.args.k,notif.args.nb );
+            this.updatePlayerScore(notif.args.player_id,notif.args.newScore );
         },
         
         notif_newWeekScore: function( notif )
