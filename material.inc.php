@@ -22,13 +22,13 @@
 //Couleurs de nos cartes  
 //spade, heart, club, diamond
 $this->card_types  = array(
-    1 => array( 'name' => clienttranslate('spade'),
+    CARGO_SUIT_SPADE => array( 'name' => clienttranslate('spade'),
                 'nametr' => self::_('spade') ),    
-    2 => array( 'name' => clienttranslate('heart'),
+    CARGO_SUIT_HEART => array( 'name' => clienttranslate('heart'),
                 'nametr' => self::_('heart') ),
-    3 => array( 'name' => clienttranslate('club'),
+    CARGO_SUIT_CLUB => array( 'name' => clienttranslate('club'),
                 'nametr' => self::_('club') ),
-    4 => array( 'name' => clienttranslate('diamond'),
+    CARGO_SUIT_DIAMOND => array( 'name' => clienttranslate('diamond'),
                 'nametr' => self::_('diamond') ),
 );
     //we have two of each label for suits. This is because sometimes we need translated values on the php side and sometimes we don't.
@@ -44,25 +44,27 @@ $this->trucks_types = array(
         "truck_id" => "truck1",
         "path_size" => array(5), 
         "delivery_score" => array(SCORE_TYPE_NUMBER_OF_GOODS_X5),
-        "containers" => array(
-            "1" , "2" , "3" ,  "4" 
-        ),
+        "containers" => array( 1 ,2 ,3,4 ),
+        "containers_suit_filter" => array(CARGO_SUIT_SPADE, CARGO_SUIT_HEART,CARGO_SUIT_DIAMOND, CARGO_SUIT_CLUB ), // values correspond to containers
+        "cargo_value_filter" => CARGO_TYPE_DIFFERENT_VALUES,
     ),
     "truck2" => array(
         "truck_id" => "truck2",
         "path_size" => array(5),
         "delivery_score" => array(SCORE_TYPE_NUMBER_OF_GOODS_X5),
-        "containers" => array(
-            "1" , "2" , "3" ,  "4" 
-        ),
+        "containers" => array( 1 ,2 ,3,4 ),
+        "containers_suit_filter" => array(CARGO_SUIT_SPADE, CARGO_SUIT_HEART,CARGO_SUIT_DIAMOND, CARGO_SUIT_CLUB ), // values correspond to containers
+        "cargo_value_filter" => CARGO_TYPE_SAME_VALUES,
     ),
     "truck3" => array(
         "truck_id" => "truck3",
         "path_size" => array(7),
         "delivery_score" => array(SCORE_TYPE_NUMBER_OF_GOODS_3_TO_30),
         "containers" => array(
-            "1" , "2" , "3" ,  "4" ,  "5" ,  "6" 
+            1,2,3,4,5,6
         ),
+        "containers_suit_filter" => CARGO_SUIT_ALL,
+        "cargo_value_filter" => CARGO_TYPE_REVERSE_ORDERED_VALUES,
     ),
     "truck4" => array(
         "truck_id" => "truck4",
@@ -71,6 +73,8 @@ $this->trucks_types = array(
         "containers" => array(
             6 , 5 , 4 ,  3 ,  2 ,  1
         ),
+        "containers_suit_filter" => CARGO_SUIT_ALL,
+        "cargo_value_filter" => CARGO_TYPE_ORDERED_VALUES,
     ),
     "truck5" => array(
         "truck_id" => "truck5",
@@ -79,6 +83,8 @@ $this->trucks_types = array(
         "containers" => array(
             1,2,3,4,5,6,
         ),
+        "containers_suit_filter" => CARGO_SUIT_ALL,
+        "cargo_value_filter" => CARGO_TYPE_ALL_VALUES,
     ),
     "truck6" => array(
         "truck_id" => "truck6",
@@ -87,6 +93,8 @@ $this->trucks_types = array(
         "containers" => array(
             1,2,3,4,
         ),
+        "containers_suit_filter" => CARGO_SUIT_HEART,
+        "cargo_value_filter" => CARGO_TYPE_ALL_VALUES,
     ),
     "truck7" => array(
         "truck_id" => "truck7",
@@ -95,6 +103,8 @@ $this->trucks_types = array(
         "containers" => array(
             1,2,3,4,
         ),
+        "containers_suit_filter" => CARGO_SUIT_CLUB,
+        "cargo_value_filter" => CARGO_TYPE_ALL_VALUES,
     ),
     "truck8" => array(
         "truck_id" => "truck8",
@@ -103,6 +113,8 @@ $this->trucks_types = array(
         "containers" => array(
             1,2,3,4,
         ),
+        "containers_suit_filter" => CARGO_SUIT_DIAMOND,
+        "cargo_value_filter" => CARGO_TYPE_ALL_VALUES,
     ),
     "truck9" => array(
         "truck_id" => "truck9",
@@ -111,5 +123,7 @@ $this->trucks_types = array(
         "containers" => array(
             1,2,3,4,
         ),
+        "containers_suit_filter" => CARGO_SUIT_SPADE,
+        "cargo_value_filter" => CARGO_TYPE_ALL_VALUES,
     ),
 );

@@ -47,6 +47,19 @@ const SCORE_TYPE_NUMBER_OF_GOODS_3_TO_30 = 2;
 const SCORE_TYPE_SUM_GOODS_X1 = 3;
 const SCORE_TYPE_SUM_GOODS_X2 = 4;
 
+// TRUCK VALUES Types :
+const CARGO_TYPE_DIFFERENT_VALUES = 1;
+const CARGO_TYPE_SAME_VALUES = 2;
+const CARGO_TYPE_REVERSE_ORDERED_VALUES = 3;
+const CARGO_TYPE_ORDERED_VALUES = 4;
+const CARGO_TYPE_ALL_VALUES = 5;
+//CARGO SUIT TYPE :
+const CARGO_SUIT_ALL = 0;
+const CARGO_SUIT_SPADE = 1;
+const CARGO_SUIT_HEART = 2;
+const CARGO_SUIT_CLUB = 3;
+const CARGO_SUIT_DIAMOND = 4;
+
 class FlipFreighters extends Table
 {
 	function __construct( )
@@ -269,6 +282,23 @@ class FlipFreighters extends Table
     }
     
     /**
+    Return true if $card_suit is present in $containers_suit_filter (Either array, or a single value)
+    */
+    function isInSuitFilter($card_suit,$containers_suit_filter ,$cargo_index){
+        
+        if(is_array($containers_suit_filter)){
+            //suit corresponding to container position
+            return $containers_suit_filter[$cargo_index] == $card_suit;
+        }
+        else if(CARGO_SUIT_ALL == $containers_suit_filter ){
+            return true;
+        }
+        else {
+           return $containers_suit_filter == $card_suit;
+        }
+    }
+    
+    /**
     Return all possibles cargo positions for this card according to its color and value, and according to already loaded trucks from player board
     Example : input : "5 of Hearts" 
         output  array(
@@ -310,6 +340,7 @@ class FlipFreighters extends Table
         
         $card_id = $card['id'];
         //self::dump("isPossibleLoadWithCard($card_id)", $container);
+        self::dump("isPossibleLoadWithCard($card_id)", $truck);
         //IF Container is not empty KO
         if( array_key_exists('amount',$container) && $container['amount']>0 ) {
             return false;
@@ -318,6 +349,23 @@ class FlipFreighters extends Table
         if( $currentTruckPosition >0 ) {//if truck MOVED
             return false;
         }
+        
+        $truck_id = $container['truck_id'];
+        $material = $this->trucks_types[$truck_id];
+        $containers_suit_filter = $material['containers_suit_filter'];
+        $cargo_value_filter = $material['cargo_value_filter'];
+        
+        $card_suit = $card['type'];
+        $card_value = $card['type_arg'];
+        $cargo_index = $container['cargo_index'];
+        
+        if($card_value == JOKER_VALUE){
+            return true;
+        }
+        if( ! $this->isInSuitFilter($card_suit,$containers_suit_filter,$cargo_index )){
+            return false;
+        }
+        
         //TODO JSA filter other cases
              
         return true;
@@ -434,24 +482,25 @@ class FlipFreighters extends Table
         );
     }
     
-    //TODO JSA FACTORIZE
-    function getTruckCargos($player_id,$truck_id = null){
-        $sql = "SELECT SUBSTRING(cargo_key FROM 1 FOR 6) truck_id, cargo_key id,cargo_amount  amount, cargo_state state,cargo_card_id card_id
+    function getSQLSelectTruckCargos($player_id,$truck_id,$cargo_id){
+        $sql = "SELECT SUBSTRING(cargo_key FROM 1 FOR 6) truck_id, cargo_key id,cargo_amount  amount, cargo_state state,cargo_card_id card_id, SUBSTRING(cargo_key FROM 8 FOR 2) cargo_index
             FROM freighter_cargo
             WHERE cargo_player_id ='$player_id' ";
         if(isset($truck_id) ){
             $sql = "SELECT * FROM ( ".$sql.") c WHERE truck_id ='$truck_id' ";
-        }  
+        } else if(isset($cargo_id) ){
+            $sql = "SELECT * FROM ( ".$sql.") c WHERE id ='$cargo_id' ";
+        } 
+        return $sql;
+    }
+    function getTruckCargos($player_id,$truck_id = null){
+        $sql = $this->getSQLSelectTruckCargos($player_id,$truck_id,null);
         $trucks_cargos = $this->getDoubleKeyCollectionFromDB( $sql);
         return $trucks_cargos;    
     }
     function getTruckContainer($player_id,$cargo_id){
-        $datas = $this->getObjectFromDB("SELECT cargo_key id,cargo_amount  amount, cargo_state state,cargo_card_id card_id,
-            SUBSTRING(cargo_key FROM 1 FOR 6) truck_id
-            FROM freighter_cargo
-            WHERE cargo_player_id ='$player_id' AND cargo_key ='$cargo_id' "
-            );
-
+        $sql = $this->getSQLSelectTruckCargos($player_id,null,$cargo_id);
+        $datas = $this->getObjectFromDB($sql);
         self::dump("getTruckContainer($player_id,$cargo_id)", $datas);            
         return $datas;    
     }
@@ -716,8 +765,9 @@ class FlipFreighters extends Table
             throw new BgaVisibleSystemException( ("Unknown truck container"));
         
         //LOGIC CHECK :
-        $truck = null;//TODO JSA 
-        if($this->isPossibleLoadWithCard($card,$container,$truck) == false ) {
+        $truck_id = $container['truck_id'];
+        $truckDatas = $this->getTruckPositions($truck_id,$player_id);
+        if($this->isPossibleLoadWithCard($card,$container,$truckDatas) == false ) {
             throw new BgaVisibleSystemException( ("You cannot load at this place"));
         }
         
