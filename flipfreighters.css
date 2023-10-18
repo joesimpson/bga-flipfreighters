@@ -179,7 +179,7 @@
 }
 
 .ffg_container.ffg_selectable{
-    outline: 4px dashed red;
+    outline: 4px solid blue;
     background-color: #0800ff29;
     cursor: pointer;
 }
@@ -188,6 +188,10 @@
     outline-style: solid;
     outline-color: yellow;
     z-index: 2;
+}
+.ffg_container[data_state="1"]{
+    /**  STATE_LOAD_TO_CONFIRM */
+    outline: 4px dashed red;
 }
 
 /* 

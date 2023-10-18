@@ -517,6 +517,25 @@ class FlipFreighters extends Table
         $this->DbQuery("INSERT INTO freighter_move VALUES ('$player_id', '$truckId', $fromPosition, $toPosition, $newState, $cardId); ");
     }
     
+    /**
+    CONFIRM all players actions by updating to the corresponding state
+    */
+    function confirmTurnActions(){
+        self::trace( "confirmTurnActions()...");
+
+        $oldState = STATE_LOAD_TO_CONFIRM;
+        $newState = STATE_LOAD_CONFIRMED;
+        $this->DbQuery("UPDATE freighter_cargo SET cargo_state= $newState WHERE cargo_state = $oldState");
+        
+        $oldState = STATE_MOVE_TO_CONFIRM;
+        $newState = STATE_MOVE_CONFIRMED;
+        $this->DbQuery("UPDATE freighter_move SET fmove_state= $newState WHERE fmove_state = $oldState");
+        
+        $oldState = STATE_MOVE_DELIVERED_TO_CONFIRM;
+        $newState = STATE_MOVE_DELIVERED_CONFIRMED;
+        $this->DbQuery("UPDATE freighter_move SET fmove_state= $newState WHERE fmove_state = $oldState");
+    }
+    
     function sumCargoValues($cargos){
         self::dump( 'sumCargoValues', $cargos );
         $sum = 0;
@@ -859,7 +878,8 @@ class FlipFreighters extends Table
     
         $week = $this->getCurrentWeekLocation();
         
-        //TODO JSA CONFIRM players actions
+        $this->confirmTurnActions();
+        
         //TODO JSA notify all players actions
         //TODO JSA update player score
         
