@@ -585,8 +585,12 @@ class FlipFreighters extends Table
         return 0;
     }
     
-    function computePlayerScore($player_id){
-        self::trace("computePlayerScore($player_id)...");
+    /**
+    Return the score of the week for this player id: 
+        Total all the values for all the trucks that have been delivered 
+    */
+    function computePlayerWeekScore($player_id){
+        self::trace("computePlayerWeekScore($player_id)...");
         $score = 0;
         
         $playerBoard = $this->getPlayerBoard($player_id);
@@ -597,6 +601,33 @@ class FlipFreighters extends Table
         }
         
         return $score;
+    }
+    
+    /**
+    Return the current total score for this player : 
+        - SUM score of each week (must be computed before calling this function)
+        - add 2 Points per unused "overtime hours"
+    */
+    function computePlayerTotalScore($player_id){
+        self::trace("computePlayerTotalScore($player_id)...");
+        $score = 0;
+        
+        for($k=1; $k <= NB_ROUNDS;$k++){
+            $score += self::getStat( "score_week".$k, $player_id );
+        }
+        
+        $score += 2 * $this->getPlayerAvailableOvertimeHours($player_id);
+        
+        return $score;
+    }
+    
+    function dbUpdatePlayerScore($player_id,$score){
+        self::DbQuery( "UPDATE player SET player_score=$score WHERE player_id='$player_id'" );
+    }
+    
+    function getPlayerAvailableOvertimeHours($player_id){
+        //TODO JSA MODEL OvertimeHours
+        return 5;
     }
 //////////////////////////////////////////////////////////////////////////////
 //////////// Player actions
@@ -827,6 +858,11 @@ class FlipFreighters extends Table
         $this->cards->moveAllCardsInLocation( DECK_LOCATION_DAY, 'discard' );
     
         $week = $this->getCurrentWeekLocation();
+        
+        //TODO JSA CONFIRM players actions
+        //TODO JSA notify all players actions
+        //TODO JSA update player score
+        
         $weekSize = $this->cards->countCardInLocation( $week );
         if($weekSize == 0){
             //END WEEK = END round
@@ -847,9 +883,12 @@ class FlipFreighters extends Table
         $round = self::getGameStateValue( 'round_number');
         
         foreach($players as $player_id => $player){
-            //Total all the values for all the trucks that have been delivered 
-            $score = $this->computePlayerScore( $player_id);
+            $score = $this->computePlayerWeekScore( $player_id);
             self::setStat( $score, "score_week".$round, $player_id );
+            
+            //UPDATE player total score
+            $newPlayerScore = $this->computePlayerTotalScore( $player_id);
+            $this->dbUpdatePlayerScore($player_id,$newPlayerScore);
             
             $player_name = $player['player_name'];
             self::notifyAllPlayers( "newWeekScore", clienttranslate( '${player_name} scores ${nb} points for week ${k}' ), array( 
@@ -857,6 +896,7 @@ class FlipFreighters extends Table
                 'player_name' => $player_name,
                 'nb' => $score,
                 'k' => $round,
+                'newScore' => $newPlayerScore,
             ) );
         }
         

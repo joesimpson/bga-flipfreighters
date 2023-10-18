@@ -321,15 +321,15 @@ function (dojo, declare) {
             let k=1;
             while( k< this.currentRound ){
                 let weekscore = playerDatas['score_week'+k];
-                this.updatePlayerScore(playerDatas.id,k,weekscore);
+                this.updatePlayerWeekScore(playerDatas.id,k,weekscore);
                 k++;
             }
             //TODO JSA when do we display last week ?
             //+ TODO JSA display sum of all weeks at end of game
         },
         
-        updatePlayerScore: function(player_id, round,weekscore) {
-            console.log("updatePlayerScore",player_id, weekscore , round);
+        updatePlayerWeekScore: function(player_id, round,weekscore) {
+            console.log("updatePlayerWeekScore",player_id, weekscore , round);
             if(this.player_id == player_id){//CURRENT player
                 let numberDiv = dojo.query("#ffg_week_score_"+player_id+"_"+round+" .ffg_score_number")[0];
                 numberDiv.innerHTML = weekscore;
@@ -337,6 +337,23 @@ function (dojo, declare) {
             else {
                 //TODO JSA displayer other players elsewhere
             }
+        },
+        
+        /**
+        Update BGA player panel score
+        */
+        updatePlayerScore: function(player_id,score) {
+            console.log("updatePlayerScore",player_id, score);
+            this.scoreCtrl[ player_id ].toValue( score );
+        },
+        
+        /**
+        Update BGA player panel score : by increasing whatever the current score value is
+        (Useful when we don't want to compute all the score again)
+        */
+        increasePlayerScore: function(player_id,delta_score) {
+            console.log("increasePlayerScore",player_id, delta_score);
+            this.scoreCtrl[ player_id ].incValue( delta_score );
         },
         
         ///////////////////////////////////////////////////
@@ -598,7 +615,8 @@ function (dojo, declare) {
             truckDiv.setAttribute("data_not_confirmed_position",notif.args.truckState.not_confirmed_position);
             truckDiv.setAttribute("data_score",notif.args.truckScore);
             
-            this.displayTruckScore(this.player_id, notif.args.truckScore,truckDivId);            
+            this.displayTruckScore(this.player_id, notif.args.truckScore,truckDivId);    
+            this.increasePlayerScore(this.player_id,notif.args.truckScore);
             
             //unselect card
             this.unselectCard();
@@ -625,7 +643,8 @@ function (dojo, declare) {
         notif_newWeekScore: function( notif )
         {
             console.log( 'notif_newWeekScore',notif );
-            this.updatePlayerScore(notif.args.player_id,notif.args.k,notif.args.nb );
+            this.updatePlayerWeekScore(notif.args.player_id,notif.args.k,notif.args.nb );
+            this.updatePlayerScore(notif.args.player_id,notif.args.newScore );
         },
    });             
 });

@@ -8,13 +8,13 @@ DELETE FROM freighter_move;
 -- CLEAN ALL LOADS IN GAME :
 UPDATE freighter_cargo SET cargo_amount= null, cargo_card_id= null, cargo_state= 0;
 
--- PUT SELECT CARDS in "DAY"
-UPDATE card SET card_location= "deck" WHERE card_location= "DAY";
--- TODO JSA INIT ALL LOCATIONS to avoid bugs when looking at week_1 etc....
+-- REFILL WEEK decks, except first one, because we simulate end of week
+UPDATE card SET card_location= "discard";
+UPDATE card SET card_location= "WEEK_2" WHERE card_id>= 16 AND card_id<=30;
+UPDATE card SET card_location= "WEEK_3" WHERE card_id>= 31 AND card_id<=45;
 
-UPDATE card SET card_location= "DAY" WHERE card_type = 1 AND card_type_arg = 2 LIMIT 1 ;
-UPDATE card SET card_location= "DAY" WHERE card_type = 2 AND card_type_arg = 5 LIMIT 1 ;
-UPDATE card SET card_location= "DAY" WHERE card_type = 4 AND card_type_arg = 6 LIMIT 1 ;
+-- PUT SELECT CARDS in "DAY"
+UPDATE card SET card_location= "DAY" WHERE card_id>= 13 AND card_id<=15 ;
 
 -- player 1
 --  2 of spade, STATUS to be CONFIRMED
@@ -152,13 +152,16 @@ UPDATE global SET global_value=(select player_id FROM `player` where player_no =
 
 
 -- RESET ALL PLAYERS TO INACTIVE except P1
-UPDATE player SET player_is_multiactive=0;
+UPDATE player SET player_is_multiactive=0, player_score =0;
 UPDATE player SET player_is_multiactive=1 where player_no = 1;
 
 -- SET ROUND => 1/3
 UPDATE global SET global_value='1' WHERE global_id='10';
 -- SET TURN => 5/5
 UPDATE global SET global_value='5' WHERE global_id='11';
+
+-- RESET Stats (include scoring)
+UPDATE `stats` SET `stats_value`=0 WHERE stats_type in (10,11,12) ;
 
 
 -- CHECK SCORING AFTER running the script + click "End round"
