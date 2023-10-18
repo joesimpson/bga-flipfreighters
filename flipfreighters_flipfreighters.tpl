@@ -10,14 +10,13 @@
 -------
 -->
 
-<center> <h1>   Work IN PROGRESS... </h1>
-
+<center>
     <input type="range" min="30" max="150" value="50" class="slider" id="playerBoardSliderSize">
 </center>
     
 <div id="ffg_game_zone">
 
-    <div id="ffg_cards">
+    <div id="ffg_cards" class="whiteblock">
         <!-- BEGIN ffg_cards -->
     
             <div id="ffg_card_{INDEX}" class="ffg_card ffg_selectable" data_id="{CARD_ID}" data_suit="{CARD_SUIT}" data_value="{CARD_VALUE}"></div>

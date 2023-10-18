@@ -76,6 +76,12 @@
     justify-content: center;
 }
 
+.ffg_theme_dark #overall-content
+{
+    /** overall-content is the BGA page  */
+    background: #000000bf;
+}
+
 /* 
 ---------------------------- ----------------------------   ---------------------------- 
 ----------------------------  LEFT ZONE  : CARDS            ---------------------------- 
