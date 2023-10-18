@@ -64,7 +64,7 @@ $this->trucks_types = array(
             1,2,3,4,5,6
         ),
         "containers_suit_filter" => CARGO_SUIT_ALL,
-        "cargo_value_filter" => CARGO_TYPE_REVERSE_ORDERED_VALUES,
+        "cargo_value_filter" => CARGO_TYPE_ORDERED_VALUES,
     ),
     "truck4" => array(
         "truck_id" => "truck4",
@@ -74,7 +74,7 @@ $this->trucks_types = array(
             6 , 5 , 4 ,  3 ,  2 ,  1
         ),
         "containers_suit_filter" => CARGO_SUIT_ALL,
-        "cargo_value_filter" => CARGO_TYPE_ORDERED_VALUES,
+        "cargo_value_filter" => CARGO_TYPE_REVERSE_ORDERED_VALUES,
     ),
     "truck5" => array(
         "truck_id" => "truck5",

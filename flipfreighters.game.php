@@ -297,7 +297,32 @@ class FlipFreighters extends Table
            return $containers_suit_filter == $card_suit;
         }
     }
+    /**
+    return true if at least one of the cargos is loaded with a position < $card_value
+    */
+    function hasInferiorValueLoaded($cargos, $card_value){
+        
+        foreach( $cargos as $cargo )
+        {
+            if(isset ($cargo['amount'] ) && $cargo['amount'] < $card_value){
+               return true;
+            }
+        }
+        return false;
+    }
+    /**
+    return true if at least one of the cargos is loaded with a position > $card_value
+    */
+    function hasSuperiorValueLoaded($cargos, $card_value){
     
+        foreach( $cargos as $cargo )
+        {
+            if(isset ($cargo['amount'] ) && $cargo['amount'] > $card_value){
+               return true;
+            }
+        }
+        return false;
+    }
     /**
     Return all possibles cargo positions for this card according to its color and value, and according to already loaded trucks from player board
     Example : input : "5 of Hearts" 
@@ -324,7 +349,7 @@ class FlipFreighters extends Table
             
             foreach( $cargos as $container_id => $container )
             {
-                if($this->isPossibleLoadWithCard($card,$container,$truck) == false ) {
+                if($this->isPossibleLoadWithCard($card,$container,$truck,$cargos) == false ) {
                     continue;
                 }
                 $possibles[] = $container_id;
@@ -335,12 +360,12 @@ class FlipFreighters extends Table
     /**
     Return true if LOAD truck $container with card $card is possible according to current truck position and loaded cargos
     */
-    function isPossibleLoadWithCard($card,$container,$truck)
+    function isPossibleLoadWithCard($card,$container,$truck,$cargos)
     { 
         
         $card_id = $card['id'];
         //self::dump("isPossibleLoadWithCard($card_id)", $container);
-        self::dump("isPossibleLoadWithCard($card_id)", $truck);
+        //self::dump("isPossibleLoadWithCard($card_id)", $truck);
         //IF Container is not empty KO
         if( array_key_exists('amount',$container) && $container['amount']>0 ) {
             return false;
@@ -352,17 +377,49 @@ class FlipFreighters extends Table
         
         $truck_id = $container['truck_id'];
         $material = $this->trucks_types[$truck_id];
+        $containers = $material['containers'];
         $containers_suit_filter = $material['containers_suit_filter'];
         $cargo_value_filter = $material['cargo_value_filter'];
         
         $card_suit = $card['type'];
         $card_value = $card['type_arg'];
-        $cargo_index = $container['cargo_index'];
+        $cargo_index = $container['cargo_index']; //From 0 
         
-        if($card_value == JOKER_VALUE){
+        if(CARGO_TYPE_ORDERED_VALUES == $cargo_value_filter ){ // Truck 1-6
+            $target_value = $containers[$cargo_index];
+            if($card_suit == JOKER_TYPE){//COnsider that joker is THAT VALUE, or it won't be playable
+                $card_value = $target_value;
+            }
+            if($this->hasInferiorValueLoaded($cargos, $card_value)){ 
+                //GAME RULE : You may skip numbers but you may never fill in numbers that were skipped.
+                return false;
+            }
+        }
+        if(CARGO_TYPE_REVERSE_ORDERED_VALUES == $cargo_value_filter ){ // Truck 6-1
+            $target_value = $containers[$cargo_index];
+            if($card_suit == JOKER_TYPE){//COnsider that joker is THAT VALUE, or it won't be playable
+                $card_value = $target_value;
+            }
+            if($this->hasSuperiorValueLoaded($cargos, $card_value)){ 
+                //GAME RULE : You may skip numbers but you may never fill in numbers that were skipped.
+                return false;
+            }
+        }
+        if($card_suit == JOKER_TYPE){//AFTER previous checks, a joker is always possible
             return true;
         }
         if( ! $this->isInSuitFilter($card_suit,$containers_suit_filter,$cargo_index )){
+            return false;
+        }
+        if(CARGO_TYPE_ORDERED_VALUES == $cargo_value_filter ){ // Truck 1-6
+            if($card_value != $containers[$cargo_index]
+            ){// Example : playing any "5" is possible in the 5th cargo (index 4)
+                return false;
+            }
+        }
+        if(CARGO_TYPE_REVERSE_ORDERED_VALUES == $cargo_value_filter 
+            && $card_value != $containers[$cargo_index]
+            ){// Example : playing any "6" is possible in the first cargo (index 0)
             return false;
         }
         
@@ -767,7 +824,8 @@ class FlipFreighters extends Table
         //LOGIC CHECK :
         $truck_id = $container['truck_id'];
         $truckDatas = $this->getTruckPositions($truck_id,$player_id);
-        if($this->isPossibleLoadWithCard($card,$container,$truckDatas) == false ) {
+        $truckCargos = $this->getTruckCargos($player_id,$truck_id) [$truck_id];
+        if($this->isPossibleLoadWithCard($card,$container,$truckDatas,$truckCargos) == false ) {
             throw new BgaVisibleSystemException( ("You cannot load at this place"));
         }
         
