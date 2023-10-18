@@ -852,7 +852,7 @@ class FlipFreighters extends Table
             self::setStat( $score, "score_week".$round, $player_id );
             
             $player_name = $player['player_name'];
-            self::notifyAllPlayers( "newWeekScore", clienttranslate( 'Day ${player_name} scores ${nb} points for week ${k}' ), array( 
+            self::notifyAllPlayers( "newWeekScore", clienttranslate( '${player_name} scores ${nb} points for week ${k}' ), array( 
                 'player_id' => $player_id,
                 'player_name' => $player_name,
                 'nb' => $score,
