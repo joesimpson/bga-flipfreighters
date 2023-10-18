@@ -284,14 +284,17 @@ class FlipFreighters extends Table
     { 
         $possibles = array();
         
-        //Loop over each container 
         $trucks_cargos = $playerBoard['trucks_cargos'];
+        $trucks_positions = $playerBoard['trucks_positions'];
         
+        //Loop over each container 
         foreach( $trucks_cargos as $truck_id => $cargos )
         {
+            $truck = $trucks_positions[$truck_id];
+            
             foreach( $cargos as $container_id => $container )
             {
-                if($this->isPossibleLoadWithCard($card,$container) == false ) {
+                if($this->isPossibleLoadWithCard($card,$container,$truck) == false ) {
                     continue;
                 }
                 $possibles[] = $container_id;
@@ -300,13 +303,17 @@ class FlipFreighters extends Table
         return $possibles;
     }
     
-    function isPossibleLoadWithCard($card,$container)
+    function isPossibleLoadWithCard($card,$container,$truck)
     { 
         
         $card_id = $card['id'];
         //self::dump("isPossibleLoadWithCard($card_id)", $container);
         //IF Container is not empty KO
         if( array_key_exists('amount',$container) && $container['amount']>0 ) {
+            return false;
+        }
+        $currentTruckPosition = $this->getCurrentTruckPositionInDatas($truck);
+        if( $currentTruckPosition >0 ) {//if truck MOVED
             return false;
         }
         //TODO JSA filter other cases
@@ -489,16 +496,20 @@ class FlipFreighters extends Table
     function getCurrentTruckPosition($truckId,$player_id){
         self::trace("getCurrentTruckPosition($truckId,$player_id)...");
         
+        $res = $this->getTruckPositions($truckId,$player_id);
+        
+        return $this->getCurrentTruckPositionInDatas($res);
+    }
+    
+    function getCurrentTruckPositionInDatas($truck_datas){
         $position = 0;
         
-        $res = $this->getTruckPositions($truckId,$player_id);
-
-        if(! isset($res)){
+        if(! isset($truck_datas)){
             return 0;
         } 
         
-        $confirmed_pos = $res['confirmed_position'] ;
-        $not_confirmed_pos = $res['not_confirmed_position'];
+        $confirmed_pos = $truck_datas['confirmed_position'] ;
+        $not_confirmed_pos = $truck_datas['not_confirmed_position'];
 
         if( isset($confirmed_pos)){
             $position = $confirmed_pos;
@@ -691,7 +702,8 @@ class FlipFreighters extends Table
             throw new BgaVisibleSystemException( ("Unknown truck container"));
         
         //LOGIC CHECK :
-        if($this->isPossibleLoadWithCard($card,$container) == false ) {
+        $truck = null;//TODO JSA 
+        if($this->isPossibleLoadWithCard($card,$container,$truck) == false ) {
             throw new BgaVisibleSystemException( ("You cannot load at this place"));
         }
         
