@@ -302,7 +302,9 @@ class FlipFreighters extends Table
         }
         return $possibles;
     }
-    
+    /**
+    Return true if LOAD truck $container with card $card is possible according to current truck position and loaded cargos
+    */
     function isPossibleLoadWithCard($card,$container,$truck)
     { 
         
@@ -326,14 +328,17 @@ class FlipFreighters extends Table
         $possibles = array();
         
         $trucks_positions = $playerBoard['trucks_positions'];
+        $trucks_cargos = $playerBoard['trucks_cargos'];
         foreach( $trucks_positions as $truck_position ){
             $truck_id = $truck_position['truck_id'];
             $material = $this->trucks_types[$truck_id];
             $truck_max_position = end($material['path_size']);//TODO JSA GAME RULES
+            $truck_cargos = $trucks_cargos[$truck_id];
+            $currentTruckPosition = $this->getCurrentTruckPositionInDatas($truck_position);
             
             for ($k =1; $k<= $truck_max_position; $k++ ) {
                 $position_id = $truck_id."_".$k;
-                if($this->isPossibleMoveWithCard($card,$playerBoard,$truck_id,$k) == false ) {
+                if($this->isPossibleMoveWithCard($card,$currentTruckPosition,$truck_cargos,$truck_id,$k) == false ) {
                     continue;
                 }
                 $possibles[] = $position_id;
@@ -341,10 +346,19 @@ class FlipFreighters extends Table
         }
         return $possibles;
     }
-    function isPossibleMoveWithCard($card,$playerBoard,$truck_id,$k)
+    /**
+    Return true if Move truck $truck_id with card $card to position $target_pos is possible according to current truck position and loaded cargos
+    */
+    function isPossibleMoveWithCard($card,$currentTruckPosition,$truck_cargos,$truck_id,$target_pos)
     { 
         $card_id = $card['id'];
-        //self::trace("isPossibleMoveWithCard($card_id,$truck_id,$k)");
+        //self::trace("isPossibleMoveWithCard($card_id,$truck_id,$target_pos)");
+
+        $countCargoValues = $this->countCargoValues($truck_cargos);
+        if($countCargoValues <1){
+            //TRUCK Cannot move before being loaded
+            return false;
+        }
 
         //TODO JSA isPossibleMoveWithCard
              
@@ -718,6 +732,7 @@ class FlipFreighters extends Table
             'card_id' => $cardId,
             'state' => $newState,
         ) );
+            //TODO JSA send possiblePositions (MOVE become possible)
         
         //Should not be public but the framework prefers to get minimum 1 notifyAll per action ?...
         self::notifyAllPlayers("loadTruckPublic", '', '' );
@@ -756,6 +771,7 @@ class FlipFreighters extends Table
             'truckState' => $truckPositions,
             'truckScore' => $truckScore,
         ) );
+            //TODO JSA send possiblePositions (LOAD become impossible)
         
         //Should not be public but the framework prefers to get minimum 1 notifyAll per action ?...
         self::notifyAllPlayers("moveTruckPublic", '', '' );
