@@ -63,6 +63,8 @@ const CARGO_SUIT_DIAMOND = 4;
 const CARD_VALUE_MIN = 1;
 const CARD_VALUE_MAX = 6;
 
+const MAX_LOAD = 11;//CARD_VALUE_MAX + NB_OVERTIME_TOKENS
+
 class FlipFreighters extends Table
 {
 	function __construct( )
@@ -286,9 +288,11 @@ class FlipFreighters extends Table
     }
     
     /**
-    Return true if $card_suit is present in $containers_suit_filter (Either array, or a single value)
+    Return true if $card_suit is present in $containers_suit_filter (Either array, or a single value), => this would means this suit is allowed
+    false otherwise
     */
     function isInSuitFilter($card_suit,$containers_suit_filter ,$cargo_index){
+        if($card_suit == JOKER_TYPE) return true;
         
         if(is_array($containers_suit_filter)){
             //suit corresponding to container position
@@ -414,7 +418,7 @@ class FlipFreighters extends Table
         $card_value = $card['type_arg'];
         $cargo_index = $container['cargo_index']; //From 0 
         
-        $isJoker = $card_suit == JOKER_TYPE;
+        $isJoker = ($card_value == JOKER_VALUE); // LOOK for value because we will hack it after joker value is chosen
         
         if(CARGO_TYPE_ORDERED_VALUES == $cargo_value_filter ){ // Truck 1-6
             $target_value = $containers[$cargo_index];
@@ -846,7 +850,7 @@ class FlipFreighters extends Table
         self::trace("loadTruck($cardId, $containerId, $amount,$player_id,$player_name )");
         
         //ANTICHEAT CHECKS :
-        if($amount == null || $amount<=0)
+        if($amount == null || $amount<=0 || $amount> MAX_LOAD)
             throw new BgaVisibleSystemException( ("Incorrect quantity for loading this truck here"));
         if($cardId == null )
             throw new BgaVisibleSystemException( ("Unknown card"));
@@ -866,6 +870,7 @@ class FlipFreighters extends Table
         $truck_id = $container['truck_id'];
         $truckDatas = $this->getTruckPositions($truck_id,$player_id);
         $truckCargos = $this->getTruckCargos($player_id,$truck_id) [$truck_id];
+        $card['type_arg'] = $amount; //Don't save this in card, but allow to run rules on this value
         if($this->isPossibleLoadWithCard($card,$container,$truckDatas,$truckCargos) == false ) {
             throw new BgaVisibleSystemException( ("You cannot load at this place"));
         }

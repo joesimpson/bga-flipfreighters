@@ -474,7 +474,6 @@ function (dojo, declare) {
             let data_amount = evt.currentTarget.getAttribute("data_amount") ;
             this.selectedAmount = data_amount;
             
-            dojo.query(".ffg_cargo_to_fill").removeClass("ffg_cargo_to_fill");
             
             if( ! dojo.hasClass( div_id, 'ffg_selectable' ) )
             {
@@ -630,6 +629,7 @@ function (dojo, declare) {
             //Remove possible selection of this place
             dojo.removeClass(containerDivId,"ffg_selectable") ;
             dojo.query(".ffg_cargo_amount").removeClass("ffg_selectable");
+            dojo.query(".ffg_cargo_to_fill").removeClass("ffg_cargo_to_fill");
             
             //unselect card
             this.unselectCard();
