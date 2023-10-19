@@ -298,7 +298,7 @@ class FlipFreighters extends Table
         }
     }
     /**
-    return true if at least one of the cargos is loaded with a position < $card_value
+    return true if at least one of the cargos is loaded with a number < $card_value
     */
     function hasInferiorValueLoaded($cargos, $card_value){
         
@@ -311,13 +311,38 @@ class FlipFreighters extends Table
         return false;
     }
     /**
-    return true if at least one of the cargos is loaded with a position > $card_value
+    return true if at least one of the cargos is loaded with a number > $card_value
     */
     function hasSuperiorValueLoaded($cargos, $card_value){
     
         foreach( $cargos as $cargo )
         {
             if(isset ($cargo['amount'] ) && $cargo['amount'] > $card_value){
+               return true;
+            }
+        }
+        return false;
+    }
+    /**
+    return true if at least one of the cargos is loaded with a number != $card_value
+    */
+    function hasOtherValueLoaded($cargos, $card_value){
+        if($this->hasInferiorValueLoaded($cargos, $card_value)){
+           return true;
+        }
+        if($this->hasSuperiorValueLoaded($cargos, $card_value)){
+           return true;
+        }
+        return false;
+    }
+    /**
+    return true if at least one of the cargos is loaded with a number == $card_value
+    */
+    function hasSameValueLoaded($cargos, $card_value){
+    
+        foreach( $cargos as $cargo )
+        {
+            if(isset ($cargo['amount'] ) && $cargo['amount'] == $card_value){
                return true;
             }
         }
@@ -385,9 +410,11 @@ class FlipFreighters extends Table
         $card_value = $card['type_arg'];
         $cargo_index = $container['cargo_index']; //From 0 
         
+        $isJoker = $card_suit == JOKER_TYPE;
+        
         if(CARGO_TYPE_ORDERED_VALUES == $cargo_value_filter ){ // Truck 1-6
             $target_value = $containers[$cargo_index];
-            if($card_suit == JOKER_TYPE){//COnsider that joker is THAT VALUE, or it won't be playable
+            if($isJoker){//COnsider that joker is THAT VALUE, or it won't be playable
                 $card_value = $target_value;
             }
             if($this->hasInferiorValueLoaded($cargos, $card_value)){ 
@@ -397,7 +424,7 @@ class FlipFreighters extends Table
         }
         if(CARGO_TYPE_REVERSE_ORDERED_VALUES == $cargo_value_filter ){ // Truck 6-1
             $target_value = $containers[$cargo_index];
-            if($card_suit == JOKER_TYPE){//COnsider that joker is THAT VALUE, or it won't be playable
+            if($isJoker){//COnsider that joker is THAT VALUE, or it won't be playable
                 $card_value = $target_value;
             }
             if($this->hasSuperiorValueLoaded($cargos, $card_value)){ 
@@ -405,26 +432,36 @@ class FlipFreighters extends Table
                 return false;
             }
         }
-        if($card_suit == JOKER_TYPE){//AFTER previous checks, a joker is always possible
+        if($isJoker){//AFTER previous checks, a joker is always possible
             return true;
         }
         if( ! $this->isInSuitFilter($card_suit,$containers_suit_filter,$cargo_index )){
             return false;
         }
         if(CARGO_TYPE_ORDERED_VALUES == $cargo_value_filter ){ // Truck 1-6
-            if($card_value != $containers[$cargo_index]
-            ){// Example : playing any "5" is possible in the 5th cargo (index 4)
+            if($card_value != $containers[$cargo_index]){
+                // Example : playing any "5" is possible in the 5th cargo (index 4)
                 return false;
             }
         }
-        if(CARGO_TYPE_REVERSE_ORDERED_VALUES == $cargo_value_filter 
-            && $card_value != $containers[$cargo_index]
-            ){// Example : playing any "6" is possible in the first cargo (index 0)
-            return false;
+        if(CARGO_TYPE_REVERSE_ORDERED_VALUES == $cargo_value_filter ) {// Truck 6-1
+            if( $card_value != $containers[$cargo_index]){
+                // Example : playing any "6" is possible in the first cargo (index 0)
+                return false;
+            }
         }
-        
-        //TODO JSA filter other cases
-             
+        if(CARGO_TYPE_SAME_VALUES == $cargo_value_filter ){
+            //GAME RULE : ALL THE SAME NUMBERS
+            if($this->hasOtherValueLoaded($cargos, $card_value)){ 
+                return false;
+            }
+        }
+        if(CARGO_TYPE_DIFFERENT_VALUES == $cargo_value_filter ){
+            //GAME RULE : ALL DIFFERENT NUMBERS
+            if($this->hasSameValueLoaded($cargos, $card_value)){ 
+                return false;
+            }
+        }
         return true;
     }
     
