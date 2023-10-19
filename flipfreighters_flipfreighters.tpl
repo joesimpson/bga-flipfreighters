@@ -27,7 +27,16 @@
     <!-- TODO JSA Display other players boards somewhere-->
     <div id="ffg_board_current_player_container">
         <div id="ffg_board_current_player" class="ffg_board">
-        
+                
+            <!-- LIST of amounts to select by for JOKER-->
+            <div id="ffg_cargo_amount_list" class="whiteblock ffg_hidden">
+                <!-- BEGIN ffg_cargo_amount_list -->
+                    <div id="ffg_cargo_amount_list_{AMOUNT}" class="ffg_cargo_amount" data_amount="{AMOUNT}">
+                        <span class="ffg_container_number">{AMOUNT}</span> 
+                    </div>
+                <!-- END ffg_cargo_amount_list -->
+            </div>
+            
             <div id="ffg_board_trucks_wrapper">
                 <!-- BEGIN ffg_player_trucks_cargo -->
             
@@ -64,7 +73,7 @@
             </div>
         </div>
     </div>
-
+    
 </div>
 
 <script type="text/javascript">

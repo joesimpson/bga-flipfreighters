@@ -60,6 +60,9 @@ const CARGO_SUIT_HEART = 2;
 const CARGO_SUIT_CLUB = 3;
 const CARGO_SUIT_DIAMOND = 4;
 
+const CARD_VALUE_MIN = 1;
+const CARD_VALUE_MAX = 6;
+
 class FlipFreighters extends Table
 {
 	function __construct( )
@@ -178,6 +181,7 @@ class FlipFreighters extends Table
         ); 
         
         $result['constants'] = array( 
+            'JOKER_TYPE' => JOKER_TYPE,
             'NB_ROUNDS' => NB_ROUNDS,
         ); 
         
@@ -236,7 +240,7 @@ class FlipFreighters extends Table
         $cards = array();
         foreach( $this->card_types as  $color_id => $color ) // spade, heart, club, diamond
         {
-            for( $value=1; $value<=6; $value++ )   //  A,2, 3, 4,5,6
+            for( $value=CARD_VALUE_MIN; $value<=CARD_VALUE_MAX; $value++ )   //  A,2, 3, 4,5,6
             {
                 $cards[] = array( 'type' => $color_id, 'type_arg' => $value, 'nbr' => 2);
             }

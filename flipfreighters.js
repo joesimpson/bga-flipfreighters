@@ -33,9 +33,10 @@ function (dojo, declare) {
             this.possibleCards = [];
             this.selectedCard = null;
             this.selectedAmount = null;//Not always the card value, with overtime hours
+            this.selectedCargoContainer = null;
             this.material = [];
             
-            this.NB_ROUNDS =0;
+            this.constants = [];
             this.currentRound = 1;
         },
         
@@ -56,7 +57,7 @@ function (dojo, declare) {
         {
             console.log( "Starting game setup",gamedatas );
             
-            this.NB_ROUNDS = gamedatas.constants.NB_ROUNDS;
+            this.constants  = gamedatas.constants;
             this.currentRound = gamedatas.round_number;//TODO JSA update on new round
             
             // Setting up player boards
@@ -90,6 +91,7 @@ function (dojo, declare) {
             dojo.query(".ffg_card").connect( 'onclick', this, 'onSelectCard' );
             dojo.query(".ffg_not_drawn_pos").connect( 'onclick', this, 'onSelectTruckPos' );
             
+            dojo.query(".ffg_cargo_amount").connect( 'onclick', this, 'onSelectCargoAmount' );
 
             // Setup game notifications to handle (see "setupNotifications" method below)
             this.setupNotifications();
@@ -268,9 +270,13 @@ function (dojo, declare) {
             
             this.selectedCard = null;
             this.selectedAmount = null;
+            this.selectedCargoContainer = null;
             dojo.query(".ffg_card").removeClass("ffg_selected") ;
             dojo.query(".ffg_container").removeClass("ffg_selectable") ;
             dojo.query(".ffg_truck_pos").removeClass("ffg_selectable") ;
+            dojo.query(".ffg_cargo_amount").removeClass("ffg_selectable");
+            dojo.query("#ffg_cargo_amount_list").addClass("ffg_hidden");
+            dojo.query(".ffg_cargo_to_fill").removeClass("ffg_cargo_to_fill");
         },
         
         /**
@@ -389,6 +395,8 @@ function (dojo, declare) {
             dojo.stopEvent( evt );
             
             dojo.query(".ffg_card").removeClass("ffg_selected") ;
+            dojo.query("#ffg_cargo_amount_list").addClass("ffg_hidden");
+            dojo.query(".ffg_cargo_to_fill").removeClass("ffg_cargo_to_fill");
             
             let div_id = evt.currentTarget.id;
             let card_id= evt.currentTarget.getAttribute("data_id") ;
@@ -396,9 +404,8 @@ function (dojo, declare) {
             
             if(this.selectedCard == card_id ){
                 //IF ALREADY DISPLAYED , hide
-                this.selectedCard = null;
-                this.selectedAmount = null;
                 console.log("onSelectCard() => Hide :",card_id);
+                this.unselectCard();
                 this.displayPossibleLoads( null);
                 this.displayPossibleMoves( null);
                 return;
@@ -424,8 +431,50 @@ function (dojo, declare) {
             
             let div_id = evt.currentTarget.id;
             let container_id = evt.currentTarget.getAttribute("data_id") ;
+            this.selectedCargoContainer = container_id;
             let cardId = this.selectedCard;
+            if( cardId ==null || ! dojo.hasClass( div_id, 'ffg_selectable' ) )
+            {
+                // This is not a possible action => the click does nothing
+                return ;
+            }
+            let cardSuit = dojo.query(".ffg_card[data_id="+cardId+"]")[0].getAttribute("data_suit") ;
+            dojo.query(".ffg_cargo_to_fill").removeClass("ffg_cargo_to_fill");
+            dojo.query("#ffg_cargo_amount_list").addClass("ffg_hidden");
+            
+            if( cardSuit == this.constants.JOKER_TYPE){
+                dojo.query("#ffg_cargo_amount_list").removeClass("ffg_hidden");
+                dojo.query("#"+div_id).addClass("ffg_cargo_to_fill");
+                //let boardpos = dojo.position("ffg_board_current_player");
+                //let dx = dojo.position(div_id).x - boardpos.x;
+                //let dy = dojo.position(div_id).y - boardpos.y;
+                //let dx = dojo.coords(div_id).x;
+                //let dy = dojo.coords(div_id).y;
+                //dojo.query("#ffg_cargo_amount_list").style("left", dx +"px").style("top", dy +"px") ;
+                let divAmountList = dojo.query("#ffg_cargo_amount_list")[0];
+                dojo.setMarginBox(divAmountList, {  l: dojo.getMarginBox(dojo.query( "#"+div_id)[0]  ).l, t: dojo.getMarginBox(dojo.query("#"+div_id)[0]  ).t  } ); 
+                //this.placeOnObject( "ffg_cargo_amount_list", div_id);
+                //this.slideToObject( "ffg_cargo_amount_list", div_id).play();
+                dojo.query(".ffg_cargo_amount").addClass("ffg_selectable");
+                return ;
+            }
+            //TODO JSA GET amount from overtime hours
             let amount = this.selectedAmount;
+            
+            this.ajaxcallwrapper("loadTruck", {'cardId': cardId, 'containerId': container_id, 'amount': amount});
+        },     
+        
+        onSelectCargoAmount: function( evt )
+        {
+            console.log( 'onSelectCargoAmount',evt )
+            // Preventing default browser reaction
+            dojo.stopEvent( evt );;
+            
+            let div_id = evt.currentTarget.id;
+            let data_amount = evt.currentTarget.getAttribute("data_amount") ;
+            this.selectedAmount = data_amount;
+            
+            dojo.query(".ffg_cargo_to_fill").removeClass("ffg_cargo_to_fill");
             
             if( ! dojo.hasClass( div_id, 'ffg_selectable' ) )
             {
@@ -433,8 +482,8 @@ function (dojo, declare) {
                 return ;
             }
             
-            this.ajaxcallwrapper("loadTruck", {'cardId': cardId, 'containerId': container_id, 'amount': amount});
-        },     
+            this.ajaxcallwrapper("loadTruck", {'cardId': this.selectedCard, 'containerId': this.selectedCargoContainer, 'amount': this.selectedAmount });
+        },
 
         /**
         Click Handler for the trucks moves positions : 
@@ -580,6 +629,7 @@ function (dojo, declare) {
             
             //Remove possible selection of this place
             dojo.removeClass(containerDivId,"ffg_selectable") ;
+            dojo.query(".ffg_cargo_amount").removeClass("ffg_selectable");
             
             //unselect card
             this.unselectCard();

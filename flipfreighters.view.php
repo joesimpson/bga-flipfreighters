@@ -41,43 +41,6 @@ class view_flipfreighters_flipfreighters extends game_view
         $players_nbr = count( $players );
 
         /*********** Place your code below:  ************/
-
-
-        /*
-        
-        // Examples: set the value of some element defined in your tpl file like this: {MY_VARIABLE_ELEMENT}
-
-        // Display a specific number / string
-        $this->tpl['MY_VARIABLE_ELEMENT'] = $number_to_display;
-
-        // Display a string to be translated in all languages: 
-        $this->tpl['MY_VARIABLE_ELEMENT'] = self::_("A string to be translated");
-
-        // Display some HTML content of your own:
-        $this->tpl['MY_VARIABLE_ELEMENT'] = self::raw( $some_html_code );
-        
-        */
-        
-        /*
-        
-        // Example: display a specific HTML block for each player in this game.
-        // (note: the block is defined in your .tpl file like this:
-        //      <!-- BEGIN myblock --> 
-        //          ... my HTML code ...
-        //      <!-- END myblock --> 
-        
-
-        $this->page->begin_block( "flipfreighters_flipfreighters", "myblock" );
-        foreach( $players as $player )
-        {
-            $this->page->insert_block( "myblock", array( 
-                                                    "PLAYER_NAME" => $player['player_name'],
-                                                    "SOME_VARIABLE" => $some_value
-                                                    ...
-                                                     ) );
-        }
-        
-        */
         
         $cards = $this->game->getCurrentDayCards();
         
@@ -92,6 +55,14 @@ class view_flipfreighters_flipfreighters extends game_view
                                                     "CARD_VALUE" => $card['type_arg'],
                                                      ) );
             $index++;
+        }
+        
+        $this->page->begin_block( "flipfreighters_flipfreighters", "ffg_cargo_amount_list" );
+        for($k=CARD_VALUE_MIN; $k<=CARD_VALUE_MAX; $k++ )
+        {
+            $this->page->insert_block( "ffg_cargo_amount_list", array( 
+                                                    "AMOUNT" => $k,
+                                                     ) );
         }
 
         $this->page->begin_block( "flipfreighters_flipfreighters", "ffg_player_trucks_cargo" );

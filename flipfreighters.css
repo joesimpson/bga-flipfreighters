@@ -214,22 +214,46 @@
     z-index: 1;
 }
 
-.ffg_container.ffg_selectable{
+.ffg_container.ffg_selectable,
+.ffg_cargo_amount.ffg_selectable{
     outline: 4px solid blue;
     background-color: #0800ff29;
     cursor: pointer;
 }
-.ffg_container.ffg_selectable:hover {
+.ffg_container.ffg_selectable:hover,
+.ffg_cargo_amount.ffg_selectable:hover {
     scale: 1.2;
     outline-style: solid;
     outline-color: yellow;
     z-index: 2;
+}
+.ffg_cargo_amount.ffg_selectable:hover {
+    outline-color: red;
 }
 .ffg_container[data_state="1"]{
     /**  STATE_LOAD_TO_CONFIRM */
     outline: 4px dashed red;
 }
 
+.ffg_container.ffg_cargo_to_fill{
+    outline: 10px solid yellow;
+    z-index: 3;
+}
+
+#ffg_cargo_amount_list{
+    position: absolute;
+    z-index: 4;
+    display: flex;
+    flex-flow: row;
+    margin-top: var(--ffg_container_width);
+    background-color: white;
+}
+.ffg_cargo_amount{
+    width: var(--ffg_container_width);
+    height: var(--ffg_container_width);
+    outline: 4px dotted black;
+    margin-right: 10px;
+}
 /* 
 ---------------------------- ----------------------------   ---------------------------- 
 ---------------------------- LIST OF ALL 42 Truck CARGOS    ---------------------------- 
@@ -425,7 +449,10 @@
     text-shadow: 1px 1px 1px black;
 }
 
-
+.ffg_cargo_amount .ffg_container_number{
+    font-style: italic;
+    font-weight: initial;
+}
 
 .ffg_truck_pos{
     width: var(--ffg_truck_position_small_size);
