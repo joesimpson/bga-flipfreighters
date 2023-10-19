@@ -81,6 +81,34 @@
     /** overall-content is the BGA page  */
     background: #000000bf;
 }
+/*
+---------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------- 
+---------------------------- BGA - PLAYER PANEL                         ---------------
+---------------------------------------------------------------------------------------
+*/
+
+.ffg_theme_dark .player-board{
+    /** Keep the framework background-color, but add alpha (opacity 50%)*/
+    background-color: #ebd5bd7d;
+    color: white;
+}
+/** Add a WHITE shadow behind player name in case of dark colors like red/blue*/
+.ffg_theme_dark .player_board_inner>.player-name>a:first-child{
+    text-shadow: 1px 1px 5px white;
+}
+/** Add a BLACK shadow behind player name in case of bright colors like white/orange*/
+.ffg_theme_dark .player_board_inner>.player-name>a[style='color: #ffa500'],
+.ffg_theme_dark .player_board_inner>.player-name>a[style='color: #ffffff'],
+.ffg_theme_dark .player_board_inner>.player-name>a[style='color: #72c3b1'],
+.ffg_theme_dark .player_board_inner>.player-name>a[style='color: #f07f16'],
+.ffg_theme_dark .player_board_inner>.player-name>a[style='color: #bdd002'],
+.ffg_theme_standard .player_board_inner>.player-name>a[style='color: #ffa500'],
+.ffg_theme_standard .player_board_inner>.player-name>a[style='color: #ffffff'],
+.ffg_theme_standard .player_board_inner>.player-name>a[style='color: #bdd002']
+{
+    text-shadow: 1px 1px 5px black;
+}
 
 /* 
 ---------------------------- ----------------------------   ---------------------------- 
