@@ -260,9 +260,15 @@
     outline: 4px dotted black;
     margin-right: 10px;
 }
-#ffg_arrow, #ffg_cargo_amount_loading{
+.ffg_cargo_amount:not(.ffg_selectable) .ffg_container_number{
+    visibility: hidden;
+}
+#ffg_arrow, #ffg_cargo_amount_loading, #ffg_close_amount_list{
     outline: none;
     font-size: var(--ffg_container_width);
+}
+#ffg_close_amount_list{
+    cursor: pointer;
 }
 /* 
 ---------------------------- ----------------------------   ---------------------------- 

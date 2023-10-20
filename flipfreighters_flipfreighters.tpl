@@ -37,6 +37,7 @@
                         <span class="ffg_container_number">{AMOUNT}</span> 
                     </div>
                 <!-- END ffg_cargo_amount_list -->
+                <div id="ffg_close_amount_list" class=""><i class="fa fa-close"></i></div>
             </div>
             
             <div id="ffg_board_trucks_wrapper">

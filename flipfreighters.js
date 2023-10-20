@@ -93,6 +93,7 @@ function (dojo, declare) {
             dojo.query(".ffg_card").connect( 'onclick', this, 'onSelectCard' );
             dojo.query(".ffg_not_drawn_pos").connect( 'onclick', this, 'onSelectTruckPos' );
             
+            dojo.query("#ffg_close_amount_list").connect( 'onclick', this, 'onCloseCargoAmountSelection' );
             dojo.query(".ffg_cargo_amount").connect( 'onclick', this, 'onSelectCargoAmount' );
 
             // Setup game notifications to handle (see "setupNotifications" method below)
@@ -451,14 +452,22 @@ function (dojo, declare) {
             
             let div_id = evt.currentTarget.id;
             let container_id = evt.currentTarget.getAttribute("data_id") ;
-            this.selectedCargoContainer = container_id;
             let cardId = this.selectedCard;
             if( cardId ==null || ! dojo.hasClass( div_id, 'ffg_selectable' ) )
             {
                 // This is not a possible action => the click does nothing
                 return ;
             }
+            if( ! dojo.hasClass("ffg_cargo_amount_list","ffg_hidden") && this.selectedCargoContainer == container_id ){
+                //AMOUNT SELECTION already displayed, we want to hide this, like if we quit selection
+                dojo.query(".ffg_cargo_to_fill").removeClass("ffg_cargo_to_fill");
+                dojo.query("#ffg_cargo_amount_list").addClass("ffg_hidden");
+                this.selectedCargoContainer = null;
+                return ;
+            }
+            this.selectedCargoContainer = container_id;
             let cardSuit = dojo.query(".ffg_card[data_id="+cardId+"]")[0].getAttribute("data_suit") ;
+            
             dojo.query(".ffg_cargo_to_fill").removeClass("ffg_cargo_to_fill");
             dojo.query("#ffg_cargo_amount_list").addClass("ffg_hidden");
             
@@ -479,6 +488,7 @@ function (dojo, declare) {
                 dojo.query("#ffg_cargo_amount_loading").removeClass("ffg_no_display");
                 dojo.query(".ffg_cargo_amount").removeClass("ffg_selectable");
             
+                //TODO JSA don't call server for 1/2 trucks that we know allow all numbers
                 //CALL SERVER to get updated possible numbers :
                 this.ajaxcallwrapper("getPossibleLoads", {'containerId': container_id});
             
@@ -488,13 +498,13 @@ function (dojo, declare) {
             let amount = this.selectedAmount;
             
             this.ajaxcallwrapper("loadTruck", {'cardId': cardId, 'containerId': container_id, 'amount': amount});
-        },     
+        },
         
         onSelectCargoAmount: function( evt )
         {
             console.log( 'onSelectCargoAmount',evt )
             // Preventing default browser reaction
-            dojo.stopEvent( evt );;
+            dojo.stopEvent( evt );
             
             let div_id = evt.currentTarget.id;
             let data_amount = evt.currentTarget.getAttribute("data_amount") ;
@@ -508,6 +518,18 @@ function (dojo, declare) {
             }
             
             this.ajaxcallwrapper("loadTruck", {'cardId': this.selectedCard, 'containerId': this.selectedCargoContainer, 'amount': this.selectedAmount });
+        },
+        
+        onCloseCargoAmountSelection: function( evt )
+        {
+            console.log( 'onCloseCargoAmountSelection',evt )
+            // Preventing default browser reaction
+            dojo.stopEvent( evt );
+            
+            dojo.query(".ffg_cargo_to_fill").removeClass("ffg_cargo_to_fill");
+            dojo.query("#ffg_cargo_amount_list").addClass("ffg_hidden");
+            
+            this.selectedCargoContainer = null;
         },
 
         /**
