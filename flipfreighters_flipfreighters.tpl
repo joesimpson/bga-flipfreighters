@@ -56,7 +56,7 @@
                         <!-- END ffg_player_truck_position -->
                         
                         
-                        <div id="ffg_score_{PLAYER_ID}_{TRUCK_ID}" class="ffg_truck_score">
+                        <div id="ffg_score_{PLAYER_ID}_{TRUCK_ID}" class="ffg_truck_score ffg_score_{SCORE_TYPE}">
                             <span class="ffg_score_number">{SCORE}</span>
                         </div>
                         <div id="ffg_score_right_{PLAYER_ID}_{TRUCK_ID}" class="ffg_truck_score_right">

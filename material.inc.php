@@ -136,4 +136,12 @@ $this->ffg_tooltips  = array(
         CARGO_TYPE_ORDERED_VALUES => clienttranslate('The amount you can load in this truck is the exact number displayed on the square. <br> <br> Note: This truck require an exact number to load and must be loaded in order from front to back (ie. from RIGHT to LEFT). You may skip numbers but you may never fill in numbers that were skipped.'),
         CARGO_TYPE_ALL_VALUES => clienttranslate('The amount you can load in this truck is :  any number'),
     ),
+    "delivery_score" => array( 
+        SCORE_TYPE_NUMBER_OF_GOODS_X5 => clienttranslate('Scores 5 points per good in the truck (when arrived at this destination') ,
+        SCORE_TYPE_NUMBER_OF_GOODS_3_TO_30 => clienttranslate('Scores 3/7/10/15/20/30 points with 1/2/3/4/5/6 goods in the truck (when arrived at this destination)'),
+        
+        SCORE_TYPE_SUM_GOODS_X1 => clienttranslate('Scores points corresponding to the sum of all goods in the truck (when arrived at this destination)'),
+        //TODO ? KEEP THE same text for X2 + add a specific tooltip on "X2" to explain it will multiply the score
+        SCORE_TYPE_SUM_GOODS_X2 => clienttranslate('Scores points corresponding to the sum of all goods in the truck (when delivered at "x1" destination) : multiplied by 2 if you reach the "x2" end of the line'),
+    ),
 );

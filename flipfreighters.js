@@ -206,8 +206,13 @@ function (dojo, declare) {
             
             for(let k in ffg_tooltips.trucks) {
                 let message = ffg_tooltips.trucks[k];
-                console.log( "initTooltips ... " ,k, message);
+                console.log( "initTooltip trucks... " ,k, message);
                 this.addTooltipToClass( "ffg_truck_symbol_"+k, message,'' );
+            }
+            for(let k in ffg_tooltips.delivery_score) {
+                let message = ffg_tooltips.delivery_score[k];
+                console.log( "initTooltip delivery_score... " ,k, message);
+                this.addTooltipToClass( "ffg_score_"+k, message,'' );
             }
             
             this.addTooltipToClass( "ffg_symbol_path_size", ffg_tooltips.path_size,'' );

@@ -900,8 +900,7 @@
 } 
 
 .ffg_hidden,
-.ffg_truck[data_score='0'] .ffg_truck_score,
-.ffg_truck[data_score='0'] .ffg_truck_score_right
+.ffg_truck[data_score='0'] .ffg_score_number
 {
     visibility: hidden;
 }
