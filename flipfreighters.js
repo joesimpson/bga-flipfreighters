@@ -455,7 +455,13 @@ function (dojo, declare) {
                 dojo.setMarginBox(divAmountList, {  l: dojo.getMarginBox(dojo.query( "#"+div_id)[0]  ).l, t: dojo.getMarginBox(dojo.query("#"+div_id)[0]  ).t  } ); 
                 //this.placeOnObject( "ffg_cargo_amount_list", div_id);
                 //this.slideToObject( "ffg_cargo_amount_list", div_id).play();
-                dojo.query(".ffg_cargo_amount").addClass("ffg_selectable");
+                
+                dojo.query("#ffg_cargo_amount_loading").removeClass("ffg_no_display");
+                dojo.query(".ffg_cargo_amount").removeClass("ffg_selectable");
+            
+                //CALL SERVER to get updated possible numbers :
+                this.ajaxcallwrapper("getPossibleLoads", {'containerId': container_id});
+            
                 return ;
             }
             //TODO JSA GET amount from overtime hours
@@ -587,6 +593,7 @@ function (dojo, declare) {
             // 
             
             dojo.subscribe( 'newTurn', this, "notif_newTurn" );
+            dojo.subscribe( 'possibleLoads', this, "notif_possibleLoads" );
             dojo.subscribe( 'loadTruck', this, "notif_loadTruck" );
             dojo.subscribe( 'moveTruck', this, "notif_moveTruck" );
             dojo.subscribe( 'endTurnScore', this, "notif_endTurnScore" );
@@ -605,6 +612,19 @@ function (dojo, declare) {
                 let value = card.type_arg;     
                 this.playCardOnTable(i,card.id, color, value );
             }
+        },  
+        
+        notif_possibleLoads: function( notif )
+        {
+            console.log( 'notif_possibleLoads',notif );
+             
+            dojo.query("#ffg_cargo_amount_loading").addClass("ffg_no_display");
+            
+            for ( let k in notif.args.possibles) {
+                let value = notif.args.possibles[k];
+                dojo.query("#ffg_cargo_amount_list_"+value).addClass("ffg_selectable");
+            }
+            
         },  
 
         notif_loadTruck: function( notif )

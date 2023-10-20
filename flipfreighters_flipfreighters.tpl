@@ -30,6 +30,7 @@
                 
             <!-- LIST of amounts to select by for JOKER-->
             <div id="ffg_cargo_amount_list" class="whiteblock ffg_hidden">
+                 <div id="ffg_cargo_amount_loading" class="ffg_cargo_amount"><span class="ffg_container_number"><i class="fa fa-spinner fa-spin"></i></span> </div>
                 <!-- BEGIN ffg_cargo_amount_list -->
                     <div id="ffg_cargo_amount_list_{AMOUNT}" class="ffg_cargo_amount" data_amount="{AMOUNT}">
                         <span class="ffg_container_number">{AMOUNT}</span> 

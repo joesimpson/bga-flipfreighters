@@ -68,6 +68,10 @@
   --ffg_truck_position_medium_size: 43px;
 }
 
+.ffg_no_display{
+    display: none;
+}
+
 #ffg_game_zone{
     text-align: center;
     display: flex;

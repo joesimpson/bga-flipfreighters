@@ -395,8 +395,8 @@ class FlipFreighters extends Table
     */
     function isPossibleLoadWithCard($card,$container,$truck,$cargos)
     { 
-        
-        $card_id = $card['id'];
+        // 'id' absent with php array datas
+        //$card_id = $card['id'];
         //self::dump("isPossibleLoadWithCard($card_id)", $container);
         //self::dump("isPossibleLoadWithCard($card_id)", $truck);
         //IF Container is not empty KO
@@ -839,6 +839,43 @@ class FlipFreighters extends Table
         (note: each method below must match an input method in flipfreighters.action.php)
     */
 
+    /**
+    ACTION to refresh UI list of possibles values to be loaded (with JOKERs, or overtime hours)
+    */
+    function getPossibleLoads($containerId){
+        self::checkAction( 'getPossibleLoads' ); 
+        
+        $player_id = self::getCurrentPlayerId();
+        $player_name = self::getCurrentPlayerName();
+        
+        $possibles = array();
+         
+        if($containerId == null )
+            throw new BgaVisibleSystemException( ("Unknown truck container"));
+        $container = $this->getTruckContainer($player_id,$containerId);
+        if($container == null )
+            throw new BgaVisibleSystemException( ("Unknown truck container"));
+        
+        $truck_id = $container['truck_id'];
+        $truckDatas = $this->getTruckPositions($truck_id,$player_id);
+        $truckCargos = $this->getTruckCargos($player_id,$truck_id) [$truck_id];
+        
+        $cardSuit = JOKER_TYPE; //TODO JSA check how to use this method with a standard card
+        
+        for( $k =1; $k<= MAX_LOAD; $k++ )
+        {
+            $card = array( "type" => $cardSuit, "type_arg" => $k, );
+            if($this->isPossibleLoadWithCard($card,$container,$truckDatas,$truckCargos) == true ) {
+                $possibles[] = $k;
+            }
+        }
+        
+        //NOTIFY ACTION :
+        self::notifyPlayer($player_id, "possibleLoads", '', array(
+            'containerId' => $containerId,
+            'possibles' => $possibles,
+        ) );
+    }
 
     function loadTruck($cardId, $containerId, $amount )
     {

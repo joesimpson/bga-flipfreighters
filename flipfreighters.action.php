@@ -77,6 +77,20 @@
 
         self::ajaxResponse( );
     }
+    
+    public function getPossibleLoads()
+    {
+        self::setAjaxMode();     
+
+        // Retrieve arguments
+        // Note: these arguments correspond to what has been sent through the javascript "ajaxcall" method
+        $containerId = self::getArg( "containerId", AT_alphanum, true );
+
+        // Then, call the appropriate method in your game logic 
+        $this->game->getPossibleLoads($containerId );
+
+        self::ajaxResponse( );
+    }
 
     public function moveTruck()
     {
