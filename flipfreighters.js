@@ -84,6 +84,8 @@ function (dojo, declare) {
             this.material = gamedatas.material;
             this.dayCards = gamedatas.dayCards;
             
+            this.initTooltips(this.material.tooltips);
+            
             dojo.query("#playerBoardSliderSize").connect( 'oninput', this, 'onBoardSliderChange' );
             
             // TODO: Set up your game interface here, according to "gamedatas"
@@ -197,6 +199,19 @@ function (dojo, declare) {
             args.lock = true;
 
             this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/" + action + ".html", args, this, (result) => { }, handler);
+        },
+        
+        initTooltips: function (ffg_tooltips){
+            console.log( "initTooltips ... " ,ffg_tooltips);
+            
+            for(let k in ffg_tooltips.trucks) {
+                let message = ffg_tooltips.trucks[k];
+                console.log( "initTooltips ... " ,k, message);
+                this.addTooltipToClass( "ffg_truck_symbol_"+k, message,'' );
+            }
+            
+            this.addTooltipToClass( "ffg_symbol_path_size", ffg_tooltips.path_size,'' );
+            
         },
         
         playCardOnTable: function( row,card_id, color, value )

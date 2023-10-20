@@ -180,6 +180,7 @@ class FlipFreighters extends Table
         $result['material'] = array( 
             'card_types' =>  $this->card_types,
             'trucks_types' =>  $this->trucks_types,
+            'tooltips' =>  $this->ffg_tooltips,
         ); 
         
         $result['constants'] = array( 

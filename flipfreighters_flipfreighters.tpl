@@ -61,6 +61,9 @@
                         <div id="ffg_score_right_{PLAYER_ID}_{TRUCK_ID}" class="ffg_truck_score_right">
                             <span class="ffg_score_number">{SCORE}</span>
                         </div>
+                        
+                        <div id="ffg_symbol_{PLAYER_ID}_{TRUCK_ID}" class="ffg_truck_symbol ffg_truck_symbol_{CARGO_VALUE_FILTER}"></div>
+                        <div id="ffg_symbol_path_size_{PLAYER_ID}_{TRUCK_ID}" class="ffg_symbol_path_size"></div>
                     </div>
                 <!-- END ffg_player_truck_positions -->
             </div>

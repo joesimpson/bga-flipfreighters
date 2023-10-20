@@ -19,7 +19,6 @@
  *
  */
 
-//Couleurs de nos cartes  
 //spade, heart, club, diamond
 $this->card_types  = array(
     CARGO_SUIT_SPADE => array( 'name' => clienttranslate('spade'),
@@ -36,8 +35,6 @@ $this->card_types  = array(
 
 /**
 Definition of different trucks of the board, each with different cargos zones inside
-
-    TODO JSA : add missing specific rules for trucks & for cargo spaces
 */
 $this->trucks_types = array(
     "truck1" => array(
@@ -125,5 +122,18 @@ $this->trucks_types = array(
         ),
         "containers_suit_filter" => CARGO_SUIT_SPADE,
         "cargo_value_filter" => CARGO_TYPE_ALL_VALUES,
+    ),
+);
+
+$this->ffg_tooltips  = array(
+    "path_size" => clienttranslate("The length and direction of the path to the destination of this truck"), // (before the truck starts moving)
+    "trucks" => array( 
+        CARGO_TYPE_DIFFERENT_VALUES => clienttranslate('The amount you can load in this truck is : all different numbers'),
+        
+        CARGO_TYPE_SAME_VALUES => clienttranslate('The amount you can load in this truck is : all the same numbers'),
+        
+        CARGO_TYPE_REVERSE_ORDERED_VALUES => clienttranslate('The amount you can load in this truck is the exact number displayed on the square. <br> <br> Note: This truck require an exact number to load and must be loaded in order from front to back (ie. from RIGHT to LEFT). You may skip numbers but you may never fill in numbers that were skipped.'),
+        CARGO_TYPE_ORDERED_VALUES => clienttranslate('The amount you can load in this truck is the exact number displayed on the square. <br> <br> Note: This truck require an exact number to load and must be loaded in order from front to back (ie. from RIGHT to LEFT). You may skip numbers but you may never fill in numbers that were skipped.'),
+        CARGO_TYPE_ALL_VALUES => clienttranslate('The amount you can load in this truck is :  any number'),
     ),
 );

@@ -972,6 +972,116 @@
 }
 
 /* ---------------------------- ----------------------------   ---------------------------- */
+/* List of symbols near trucks... */
+/* ---------------------------- ----------------------------   ---------------------------- */
+.ffg_truck_symbol,
+.ffg_symbol_path_size{
+    position: absolute;
+}
+.ffg_truck_symbol:hover,
+.ffg_symbol_path_size:hover{
+    outline: 2px solid green;
+    border-radius: 15%;
+    cursor: help;
+}
+.ffg_truck[data_id='truck1'] .ffg_truck_symbol{
+    left: 908px;
+    top: 100px;
+    width: 35px;
+    height: 43px;
+}
+.ffg_truck[data_id='truck2'] .ffg_truck_symbol{
+    left: 565px;
+    top: 66px;
+    width: 35px;
+    height: 34px;
+}
+.ffg_truck[data_id='truck3'] .ffg_truck_symbol{
+    left: 143px;
+    top: 98px;
+    width: 113px;
+    height: 53px;
+}
+.ffg_truck[data_id='truck4'] .ffg_truck_symbol{
+    left: 143px;
+    top: 303px;
+    width: 113px;
+    height: 53px;
+}
+.ffg_truck[data_id='truck5'] .ffg_truck_symbol{
+    left: 167px;
+    top: 522px;
+}
+.ffg_truck[data_id='truck6'] .ffg_truck_symbol{
+    left: 423px;
+    top: 863px;
+}
+.ffg_truck[data_id='truck7'] .ffg_truck_symbol{
+    left: 650px;
+    top: 978px;
+}
+.ffg_truck[data_id='truck8'] .ffg_truck_symbol{
+    left: 927px;
+    top: 953px;
+}
+.ffg_truck[data_id='truck9'] .ffg_truck_symbol{
+    left: 1207px;
+    top: 978px;
+}
+.ffg_truck[data_id='truck5'] .ffg_truck_symbol,
+.ffg_truck[data_id='truck6'] .ffg_truck_symbol,
+.ffg_truck[data_id='truck7'] .ffg_truck_symbol,
+.ffg_truck[data_id='truck8'] .ffg_truck_symbol,
+.ffg_truck[data_id='truck9'] .ffg_truck_symbol{
+    width: 64px;
+    height: 48px;
+}
+
+.ffg_symbol_path_size{
+    width: 50px;
+    height: 28px;
+}
+.ffg_truck[data_id='truck1'] .ffg_symbol_path_size{
+    left: 888px;
+    top: 224px;
+}
+.ffg_truck[data_id='truck2'] .ffg_symbol_path_size{
+    left: 547px;
+    top: 187px;
+}
+.ffg_truck[data_id='truck3'] .ffg_symbol_path_size{
+    left: 316px;
+    top: 236px
+}
+.ffg_truck[data_id='truck4'] .ffg_symbol_path_size{
+    left: 316px;
+    top: 441px;
+}
+.ffg_truck[data_id='truck5'] .ffg_symbol_path_size{
+    left: 316px;
+    top: 655px;
+}
+.ffg_truck[data_id='truck6'] .ffg_symbol_path_size{
+    left: 361px;
+    top: 755px;
+    width: 92px;
+}
+.ffg_truck[data_id='truck7'] .ffg_symbol_path_size{
+    left: 586px;
+    top: 870px;
+    width: 92px;
+}
+.ffg_truck[data_id='truck8'] .ffg_symbol_path_size{
+    left: 962px;
+    top: 847px;
+    width: 92px;
+}
+.ffg_truck[data_id='truck9'] .ffg_symbol_path_size{
+    left: 1226px;
+    top: 871px;
+    width: 92px;
+}
+/* ---------------------------- ----------------------------   ---------------------------- */
 
 /** In this game, only one multipleChoice_dialog is used with YES/NO */
 .multiplechoice_btn#choice_btn_0 {

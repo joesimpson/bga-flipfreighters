@@ -106,8 +106,10 @@ class view_flipfreighters_flipfreighters extends game_view
                 $confirmed_pos = $trucks_position['confirmed_position'] ;
                 $not_confirmed_pos = $trucks_position['not_confirmed_position'];
                 $confirmed_state = $trucks_position['confirmed_state'];
-                $not_confirmed_state = $trucks_position['not_confirmed_state']  ;
-                $truck_max_position = end($this->game->trucks_types[$truck_id]['path_size']);
+                $not_confirmed_state = $trucks_position['not_confirmed_state'];
+                $truck_material = $this->game->trucks_types[$truck_id];
+                $truck_max_position = end($truck_material ['path_size']);
+                $cargo_value_filter = $truck_material ['cargo_value_filter'];
                 
                 $this->page->reset_subblocks( 'ffg_player_truck_position' ); 
                 
@@ -137,6 +139,7 @@ class view_flipfreighters_flipfreighters extends game_view
                                                         "NOT_CONFIRMED_STATE" => $not_confirmed_state,
                                                         "NOT_CONFIRMED_POSITION" => $not_confirmed_pos,
                                                         "SCORE" => $truckScore,
+                                                        "CARGO_VALUE_FILTER" => $cargo_value_filter,
                                                          ) );
                 
             }
