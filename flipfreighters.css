@@ -249,14 +249,20 @@
     z-index: 4;
     display: flex;
     flex-flow: row;
-    margin-top: var(--ffg_container_width);
+    margin-top: calc(var(--ffg_container_width) + 10px);
     background-color: white;
+    border-radius: 15%;
+    outline: 2px solid black;
 }
 .ffg_cargo_amount{
     width: var(--ffg_container_width);
     height: var(--ffg_container_width);
     outline: 4px dotted black;
     margin-right: 10px;
+}
+#ffg_arrow, #ffg_cargo_amount_loading{
+    outline: none;
+    font-size: var(--ffg_container_width);
 }
 /* 
 ---------------------------- ----------------------------   ---------------------------- 
