@@ -56,6 +56,7 @@
   --ffg_card_display_width: 120px;
   --ffg_card_display_height: 180px;
   
+  --ffg_board_display_img_width: 2112px;
   --ffg_board_display_width: 1400px;
   --ffg_board_display_height: 1080px;
   
@@ -1105,22 +1106,44 @@
     border-radius: 100%;
 }
 .ffg_overtime:hover{
-    outline: 3px solid green;
+    /*outline: 3px solid green;*/
+    background-image: url('img/board.jpg');
+    background-size: calc(var(--ffg_board_display_width) / var(--ffg_board_display_img_width) );
+    background-position-y: -1415px;
+    background-position-x: -379px;
+    width: 50px;
+    height: 50px;
+    top: 932px;
 }
 .ffg_overtime[data_index='1']{
     left: 253px;
 }
+.ffg_overtime[data_index='1']:hover{
+    left: 245px; /* IMITATION of scale:2 ,  with the background-image : left = left - (50-30)/2 */
+}
 .ffg_overtime[data_index='2']{
     left: 288px;
+}
+.ffg_overtime[data_index='2']:hover{
+    left: 278px;
 }
 .ffg_overtime[data_index='3']{
     left: 324px;
 }
+.ffg_overtime[data_index='3']:hover{
+    left: 314px;
+}
 .ffg_overtime[data_index='4']{
     left: 360px;
 }
+.ffg_overtime[data_index='4']:hover{
+    left: 350px;
+}
 .ffg_overtime[data_index='5']{
     left: 396px;
+}
+.ffg_overtime[data_index='5']:hover{
+    left: 386px;
 }
 
 /* ---------------------------- ----------------------------   ---------------------------- */
