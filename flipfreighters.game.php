@@ -167,7 +167,7 @@ class FlipFreighters extends Table
     
         // Get information about players
         // Note: you can retrieve some extra field you added for "player" table in "dbmodel.sql" if you need it.
-        $sql = "SELECT player_id id, player_score score, player_ffg_overtime_used overtime_used FROM player ";
+        $sql = "SELECT player_id id, player_score score FROM player ";
         $result['players'] = self::getCollectionFromDb( $sql );
         
         //TODO JSA retrieve current player unconfirmed deliveries, in order to send him only his temporary "player_score" (as we do in UI : updating score when we deliver )
@@ -197,6 +197,7 @@ class FlipFreighters extends Table
             for($k=1; $k <= NB_ROUNDS;$k++){
                 $result['players'][$player_id]["score_week".$k] = self::getStat( "score_week".$k, $player_id );
             }
+            $result['players'][$player_id]['availableOvertime'] = $this->getPlayerAvailableOvertimeHours($player_id);
         }
   
         return $result;

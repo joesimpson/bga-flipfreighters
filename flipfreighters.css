@@ -95,7 +95,7 @@
 .ffg_theme_dark .player-board{
     /** Keep the framework background-color, but add alpha (opacity 50%)*/
     background-color: #ebd5bd7d;
-    color: white;
+    /*color: white;*/
 }
 /** Add a WHITE shadow behind player name in case of dark colors like red/blue*/
 .ffg_theme_dark .player_board_inner>.player-name>a:first-child{
@@ -112,6 +112,23 @@
 .ffg_theme_standard .player_board_inner>.player-name>a[style='color: #bdd002']
 {
     text-shadow: 1px 1px 5px black;
+}
+
+.trh_player_panel_details{
+    text-align: center;
+}
+
+
+.ffg_overtime_wrapper {
+   padding: 5px;
+   display: inline-block;
+}
+.ffg_player_panel_counter, 
+.ffg_icon_overtime{
+    font-size: 1.5em;
+    padding-left: 5px;
+    vertical-align: middle;
+    text-align: center;
 }
 
 /* 

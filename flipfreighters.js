@@ -38,6 +38,8 @@ function (dojo, declare) {
             
             this.constants = [];
             this.currentRound = 1;
+            
+            this.counterOvertime={};
         },
         
         /*
@@ -79,13 +81,17 @@ function (dojo, declare) {
                     playerContainers.forEach(dojo.destroy);
                     playerTrucks.forEach(dojo.destroy);
                 }
-                //TODO JSA display overtime in player panel
+                this.displayPlayerPanel(player_id,player);
+                
             }
             
             this.material = gamedatas.material;
             this.dayCards = gamedatas.dayCards;
             
             this.initTooltips(this.material.tooltips);
+            
+            this.addTooltipToClass( "ffg_overtime_wrapper", _("Available overtime hours tokens"), '' );
+            this.updatePlayersOvertimeHours(gamedatas.players);
             
             dojo.query("#playerBoardSliderSize").connect( 'oninput', this, 'onBoardSliderChange' );
             
@@ -223,6 +229,24 @@ function (dojo, declare) {
             
         },
         
+        updatePlayersOvertimeHours: function(players)
+        {
+            console.log( "updatePlayersOvertimeHours" ,players); 
+            //RESET to 0 in case some player is not in the array
+            for ( let i in this.counterOvertime) {
+                this.counterOvertime[i].toValue(0);
+            }
+            for ( let player_id in players) {
+                let nb = players[player_id].availableOvertime; 
+                this.updatePlayerOvertimeHours(player_id,nb);
+            }
+        },
+        updatePlayerOvertimeHours: function(player_id, nb)
+        {
+            console.log( "updatePlayerOvertimeHours" ,player_id, nb); 
+            this.counterOvertime[player_id].toValue(nb);
+        },
+        
         playCardOnTable: function( row,card_id, color, value )
         {            
             console.log( "playCardOnTable ... " ,row,card_id, color, value);
@@ -244,6 +268,26 @@ function (dojo, declare) {
             //TODO JSA ADD some animation ?
         },
         
+        displayPlayerPanel: function( player_id,player)
+        {
+            console.log( "displayPlayerPanel" ,player_id,player); 
+        
+            let player_board_div = $('player_board_'+player_id);
+            if(!player_board_div){
+                console.error("Player panel not found",player_id);
+            }
+            dojo.place(  
+                this.format_block(   
+                    'jstpl_player_board_details',
+                    {
+                        player_id : player_id,
+                    }
+                ),
+                player_board_div
+            );
+            this.counterOvertime[player_id] = new ebg.counter();
+            this.counterOvertime[player_id].create("ffg_overtime_"+player_id); 
+        },
         displayPossibleLoads: function( card_id )
         {            
             console.log( "displayPossibleLoads ... " ,card_id, this.possibleCards);
@@ -759,6 +803,8 @@ function (dojo, declare) {
             //ffg_container_number
             let numberDiv = dojo.query("#"+containerDivId+">.ffg_container_number")[0];
             numberDiv.innerHTML=notif.args.amount;
+            
+            this.updatePlayerOvertimeHours(this.player_id,notif.args.availableOvertime);
             
             //Remove possible selection of this place
             dojo.removeClass(containerDivId,"ffg_selectable") ;

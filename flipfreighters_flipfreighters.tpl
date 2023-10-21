@@ -99,6 +99,9 @@
 var jstpl_some_game_item='<div class="my_game_item" id="my_game_item_${MY_ITEM_ID}"></div>';
 
 */
+var jstpl_player_board_details = '\<div class="ffg_player_panel_details" id="ffg_player_panel_details_${player_id}">\
+        <div id="ffg_overtime_wrapper_${player_id}" class="ffg_overtime_wrapper"><i class="fa fa-clock-o ffg_icon_overtime" id="ffg_icon_overtime_${player_id}"></i><span id="ffg_overtime_${player_id}" class="ffg_overtime_count ffg_player_panel_counter">0</span></div>\
+    </div>';
 
 </script>  
 
