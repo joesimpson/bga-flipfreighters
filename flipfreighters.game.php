@@ -167,7 +167,7 @@ class FlipFreighters extends Table
     
         // Get information about players
         // Note: you can retrieve some extra field you added for "player" table in "dbmodel.sql" if you need it.
-        $sql = "SELECT player_id id, player_score score FROM player ";
+        $sql = "SELECT player_id id, player_score score, player_ffg_overtime_used overtime_used FROM player ";
         $result['players'] = self::getCollectionFromDb( $sql );
         
         //TODO JSA retrieve current player unconfirmed deliveries, in order to send him only his temporary "player_score" (as we do in UI : updating score when we deliver )
@@ -831,8 +831,12 @@ class FlipFreighters extends Table
     }
     
     function getPlayerAvailableOvertimeHours($player_id){
-        //TODO JSA MODEL OvertimeHours
-        return 5;
+        return NB_OVERTIME_TOKENS - $this->getUniqueValueFromDB("SELECT player_ffg_overtime_used FROM player WHERE player_id='$player_id'");
+    }
+    
+    function setPlayerAvailableOvertimeHours($player_id, $nb){
+        $used = NB_OVERTIME_TOKENS - $nb;
+        self::DbQuery( "UPDATE player SET player_ffg_overtime_used=$used WHERE player_id='$player_id'" );
     }
 //////////////////////////////////////////////////////////////////////////////
 //////////// Player actions
@@ -901,6 +905,11 @@ class FlipFreighters extends Table
         if($card['location'] != DECK_LOCATION_DAY )
             throw new BgaVisibleSystemException( ("You cannot play that card know"));
         
+        $originalAvailableOvertime = $this->getPlayerAvailableOvertimeHours($player_id);
+        $usedOvertime = abs($amount - $card['type_arg']); //TODO JSA JOKER_TYPE
+        if($usedOvertime > $originalAvailableOvertime)
+            throw new BgaVisibleSystemException( ("You don't have enough overtime hours to do that"));
+        
         if($containerId == null )
             throw new BgaVisibleSystemException( ("Unknown truck container"));
         $container = $this->getTruckContainer($player_id,$containerId);
@@ -916,9 +925,12 @@ class FlipFreighters extends Table
             throw new BgaVisibleSystemException( ("You cannot load at this place"));
         }
         
+        
         //REAL ACTION :
         $newState = STATE_LOAD_TO_CONFIRM;
         $this->updateLoadInTruck($player_id,$containerId, $amount, $newState,$cardId);
+        $availableOvertime = $originalAvailableOvertime - $usedOvertime;
+        $this->setPlayerAvailableOvertimeHours($player_id, $availableOvertime);
         
         //NOTIFY ACTION :
         self::notifyPlayer($player_id, "loadTruck", clienttranslate( 'You load a truck with ${amount} goods' ), array(
@@ -926,6 +938,7 @@ class FlipFreighters extends Table
             'amount' => $amount,
             'card_id' => $cardId,
             'state' => $newState,
+            'availableOvertime' => $availableOvertime,
         ) );
             //TODO JSA send possiblePositions (MOVE become possible)
         
@@ -956,6 +969,7 @@ class FlipFreighters extends Table
             $truckCargos = $this->getTruckCargos($player_id,$truckId) [$truckId];
             $truckScore = $this->computeScore($player_id,$truckId,$truckCargos,$truckPositions);
         }
+        //TODO JSA setPlayerAvailableOvertimeHours
         
         //NOTIFY ACTION :
         self::notifyPlayer($player_id, "moveTruck", clienttranslate( 'You move a truck' ), array(
