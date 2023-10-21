@@ -80,6 +80,7 @@ function (dojo, declare) {
                     //TODO JSA update other players, instead of destroying them (destroy for now because it is displayed in the same place for every one)
                     playerContainers.forEach(dojo.destroy);
                     playerTrucks.forEach(dojo.destroy);
+                    dojo.query(".ffg_overtime[data_player='"+player_id+"']").forEach(dojo.destroy);
                 }
                 this.displayPlayerPanel(player_id,player);
                 
@@ -245,6 +246,8 @@ function (dojo, declare) {
         {
             console.log( "updatePlayerOvertimeHours" ,player_id, nb); 
             this.counterOvertime[player_id].toValue(nb);
+            
+            dojo.query(".ffg_overtime[data_player='"+player_id+"']").forEach( ' dojo.removeClass(item,"ffg_empty_value ffg_positive_value ffg_negative_value ffg_selectable"); if( parseInt(item.getAttribute("data_index"))<='+nb+' ){   dojo.addClass(item,"ffg_empty_value ffg_selectable"); } else { dojo.addClass(item,"ffg_empty_value ");}' );
         },
         
         playCardOnTable: function( row,card_id, color, value )
@@ -507,6 +510,8 @@ function (dojo, declare) {
             } //ELSE continue to SHOW
             
             dojo.addClass(div_id,"ffg_selected") ;
+            
+            //TODO JSA get selected overtime
                 
             this.selectedCard = card_id;
             this.selectedAmount = data_amount;
@@ -641,6 +646,12 @@ function (dojo, declare) {
             let div = dojo.query("#"+div_id);
             let data_amount = parseInt(evt.currentTarget.getAttribute("data_index") );
             
+            if( ! dojo.hasClass( div_id, 'ffg_selectable' ) )
+            {
+                // This is not a possible action => the click does nothing
+                return ;
+            }
+            
             //div.toggleClass("ffg_positive_value").toggleClass("ffg_negative_value");
             //TOGGLE with 3 Values : initial -> positive -> negative -> initial ->...
             let eltClass = "";
@@ -650,8 +661,9 @@ function (dojo, declare) {
                 eltClass = "ffg_negative_value";
             } else {
                 eltClass = "ffg_empty_value";
-            }
-            div.removeClass("ffg_empty_value").removeClass("ffg_positive_value").removeClass("ffg_negative_value").addClass(eltClass);
+            } 
+            //ALL Tokens on left receive the same state
+            dojo.query(".ffg_overtime").forEach( ' dojo.removeClass(item,"ffg_empty_value ffg_positive_value ffg_negative_value"); if( parseInt(item.getAttribute("data_index"))<='+data_amount+' ){   dojo.addClass(item,"'+eltClass+'"); } else { dojo.addClass(item,"ffg_empty_value ");}' );
             
             this.selectedAmount = null;
             if(this.selectedCard >0 ){
