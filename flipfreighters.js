@@ -587,7 +587,49 @@ function (dojo, declare) {
             // Preventing default browser reaction
             dojo.stopEvent( evt );
             
-            //TODO JSA onSelectOvertimeHour
+            let div_id = evt.currentTarget.id;
+            let div = dojo.query("#"+div_id);
+            let data_amount = parseInt(evt.currentTarget.getAttribute("data_index") );
+            
+            //div.toggleClass("ffg_positive_value").toggleClass("ffg_negative_value");
+            //TOGGLE with 3 Values : initial -> positive -> negative -> initial ->...
+            let eltClass = "";
+            if( dojo.hasClass(div_id, "ffg_empty_value") ){
+                eltClass = "ffg_positive_value";
+            } else if( dojo.hasClass(div_id, "ffg_positive_value") ){
+                eltClass = "ffg_negative_value";
+            } else {
+                eltClass = "ffg_empty_value";
+            }
+            div.removeClass("ffg_empty_value").removeClass("ffg_positive_value").removeClass("ffg_negative_value").addClass(eltClass);
+            
+            this.selectedAmount = null;
+            if(this.selectedCard >0 ){
+                let selectedCardDiv = dojo.query(".ffg_card.ffg_selected")[0] ;
+                let card_value = parseInt(selectedCardDiv.getAttribute("data_value") ) ;
+                let amount = parseInt(selectedCardDiv.getAttribute("data_amount") ) ;
+                let selectedCardModifierQuery = dojo.query(".ffg_card.ffg_selected .ffg_cardModifier");
+                let selectedCardModifier = selectedCardModifierQuery[0];
+                if(selectedCardModifier!=undefined) {
+                    if( dojo.hasClass(div_id, "ffg_positive_value") ){
+                        selectedCardModifier.innerHTML = "+"+data_amount;
+                        amount = card_value + data_amount;
+                    } else if( dojo.hasClass(div_id, "ffg_negative_value") ) {
+                        selectedCardModifier.innerHTML = "-"+data_amount;
+                        amount = card_value -data_amount;
+                    }
+                    else {
+                        selectedCardModifier.innerHTML = "";
+                        amount = card_value;
+                    }
+                    this.selectedAmount = amount;
+                    selectedCardDiv.setAttribute("data_amount", amount);
+                    selectedCardModifierQuery.removeClass("ffg_empty_value").removeClass("ffg_positive_value").removeClass("ffg_negative_value").addClass(eltClass);
+                }
+            }
+            
+            //TODO JSA onSelectOvertimeHour update possibles loads/moves
+            
         },
         
         onEndTurn: function( evt )

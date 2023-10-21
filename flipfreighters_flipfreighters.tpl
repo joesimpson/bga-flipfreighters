@@ -19,7 +19,9 @@
     <div id="ffg_cards" class="whiteblock">
         <!-- BEGIN ffg_cards -->
     
-            <div id="ffg_card_{INDEX}" class="ffg_card ffg_selectable" data_id="{CARD_ID}" data_suit="{CARD_SUIT}" data_value="{CARD_VALUE}"></div>
+            <div id="ffg_card_{INDEX}" class="ffg_card ffg_selectable" data_id="{CARD_ID}" data_suit="{CARD_SUIT}" data_value="{CARD_VALUE}" data_amount='0'>
+                <span id="ffg_cardModifier_{INDEX}" class="ffg_cardModifier" data_value="0"></span>
+            </div>
             
         <!-- END ffg_cards -->
     </div>
@@ -80,7 +82,7 @@
             
             <div id="ffg_board_overtime_wrapper">
                 <!-- BEGIN ffg_overtime_hour -->
-                <div id="ffg_overtime_{PLAYER_ID}_{INDEX}" class="ffg_overtime" data_index="{INDEX}"></div>
+                <div id="ffg_overtime_{PLAYER_ID}_{INDEX}" class="ffg_overtime ffg_empty_value" data_index="{INDEX}"></div>
                 <!-- END ffg_overtime_hour -->
             </div>
         </div>

@@ -1114,6 +1114,16 @@
     width: 50px;
     height: 50px;
     top: 932px;
+    z-index: 2;
+} 
+.ffg_overtime.ffg_empty_value{
+    outline: none;
+}
+.ffg_overtime.ffg_positive_value{
+    outline: 3px solid green;
+}
+.ffg_overtime.ffg_negative_value{
+    outline: 3px solid red;
 }
 .ffg_overtime[data_index='1']{
     left: 253px;
@@ -1144,6 +1154,25 @@
 }
 .ffg_overtime[data_index='5']:hover{
     left: 386px;
+}
+
+.ffg_cardModifier{
+    font-size: 80px;
+    font-style: italic;
+    font-weight: bold;
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    line-height: var(--ffg_card_display_height);
+    text-align: center;
+    color: blue;
+    text-shadow: 1px 1px 20px gold;
+}
+.ffg_cardModifier.ffg_positive_value{
+    color: green;
+}
+.ffg_cardModifier.ffg_negative_value{
+    color: red;
 }
 
 /* ---------------------------- ----------------------------   ---------------------------- */
