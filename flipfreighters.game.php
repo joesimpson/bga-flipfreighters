@@ -63,6 +63,8 @@ const CARGO_SUIT_DIAMOND = 4;
 const CARD_VALUE_MIN = 1;
 const CARD_VALUE_MAX = 6;
 
+const NB_OVERTIME_TOKENS = 5;
+
 const MAX_LOAD = 11;//CARD_VALUE_MAX + NB_OVERTIME_TOKENS
 
 class FlipFreighters extends Table

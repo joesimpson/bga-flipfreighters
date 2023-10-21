@@ -69,6 +69,7 @@ class view_flipfreighters_flipfreighters extends game_view
         $this->page->begin_block( "flipfreighters_flipfreighters", "ffg_player_truck_position" );
         $this->page->begin_block( "flipfreighters_flipfreighters", "ffg_player_truck_positions" );
         $this->page->begin_block( "flipfreighters_flipfreighters", "ffg_week_score" );
+        $this->page->begin_block( "flipfreighters_flipfreighters", "ffg_overtime_hour" );
         
         foreach( $players as $player_id => $player )
         { 
@@ -150,6 +151,13 @@ class view_flipfreighters_flipfreighters extends game_view
                 $this->page->insert_block( "ffg_week_score", array( 
                                                     "WK_PLAYER_ID" => $player_id,
                                                     "ROUND" => $k,
+                                                     ) );
+            }
+            
+            for($k=1; $k <= NB_OVERTIME_TOKENS;$k++){
+                $this->page->insert_block( "ffg_overtime_hour", array( 
+                                                    "PLAYER_ID" => $player_id,
+                                                    "INDEX" => $k,
                                                      ) );
             }
         }

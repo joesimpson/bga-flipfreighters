@@ -77,6 +77,12 @@
                 </div>
                 <!-- END ffg_week_score -->
             </div>
+            
+            <div id="ffg_board_overtime_wrapper">
+                <!-- BEGIN ffg_overtime_hour -->
+                <div id="ffg_overtime_{PLAYER_ID}_{INDEX}" class="ffg_overtime" data_index="{INDEX}"></div>
+                <!-- END ffg_overtime_hour -->
+            </div>
         </div>
     </div>
     

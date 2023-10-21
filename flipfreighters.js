@@ -96,6 +96,8 @@ function (dojo, declare) {
             dojo.query("#ffg_close_amount_list").connect( 'onclick', this, 'onCloseCargoAmountSelection' );
             dojo.query(".ffg_cargo_amount").connect( 'onclick', this, 'onSelectCargoAmount' );
 
+            dojo.query(".ffg_overtime").connect( 'onclick', this, 'onSelectOvertimeHour' );
+            
             // Setup game notifications to handle (see "setupNotifications" method below)
             this.setupNotifications();
 
@@ -574,6 +576,15 @@ function (dojo, declare) {
             }
             
             this.ajaxcallwrapper("moveTruck", {'cardId': cardId, 'truckId': truck_id, 'position': position,'isDelivery': isDelivery,});
+        },
+        
+        onSelectOvertimeHour: function( evt )
+        {
+            console.log( 'onSelectOvertimeHour',evt )
+            // Preventing default browser reaction
+            dojo.stopEvent( evt );
+            
+            //TODO JSA onSelectOvertimeHour
         },
         
         onEndTurn: function( evt )
