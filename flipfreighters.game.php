@@ -188,6 +188,7 @@ class FlipFreighters extends Table
         $result['constants'] = array( 
             'JOKER_TYPE' => JOKER_TYPE,
             'NB_ROUNDS' => NB_ROUNDS,
+            'CARD_VALUE_MAX' => CARD_VALUE_MAX,
         ); 
         
         //SOME STATS are directly displayed during the game, let's add them in the players array, as if it was in the player table:

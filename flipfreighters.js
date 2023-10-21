@@ -236,6 +236,8 @@ function (dojo, declare) {
             div.setAttribute("data_id",card_id);
             div.setAttribute("data_suit",color);
             div.setAttribute("data_value",value);
+            let amount = (this.constants.JOKER_TYPE == color) ? value : this.constants.CARD_VALUE_MAX;
+            div.setAttribute("data_amount",amount);
             dojo.addClass(divId,"ffg_selectable") ;
             
             //TODO JSA ADD some animation ?
@@ -336,6 +338,27 @@ function (dojo, declare) {
             return false;
         },
         
+        updateCargoAmountList: function(div_id,container_id,amount){
+            console.log( "updateCargoAmountList()", div_id,container_id,amount);
+            
+            dojo.query("#ffg_cargo_amount_list").removeClass("ffg_hidden");
+            dojo.query("#"+div_id).addClass("ffg_cargo_to_fill");
+            let divAmountList = dojo.query("#ffg_cargo_amount_list")[0];
+            dojo.setMarginBox(divAmountList, {  l: dojo.getMarginBox(dojo.query( "#"+div_id)[0]  ).l, t: dojo.getMarginBox(dojo.query("#"+div_id)[0]  ).t  } ); 
+            
+            dojo.query("#ffg_cargo_amount_loading").removeClass("ffg_no_display");
+            dojo.query(".ffg_cargo_amount").removeClass("ffg_selectable");
+            dojo.query(".ffg_cargo_amount").addClass("ffg_no_display");
+            
+            for(let k=1; k<= amount; k++){
+                dojo.query("#ffg_cargo_amount_list_"+k).removeClass("ffg_no_display");
+            }
+        
+            //TODO JSA don't call server for 1/2 trucks that we know allow all numbers
+            //CALL SERVER to get updated possible numbers :
+            this.ajaxcallwrapper("getPossibleLoads", {'containerId': container_id});
+        },
+        
         displayTruckScore: function(player_id, truckScore, truckDivId){
             console.log("displayTruckScore",player_id, truckScore, truckDivId);
             
@@ -427,6 +450,7 @@ function (dojo, declare) {
             let div_id = evt.currentTarget.id;
             let card_id= evt.currentTarget.getAttribute("data_id") ;
             let data_value= evt.currentTarget.getAttribute("data_value") ;
+            let data_amount= evt.currentTarget.getAttribute("data_amount") ;
             
             if(this.selectedCard == card_id ){
                 //IF ALREADY DISPLAYED , hide
@@ -440,7 +464,7 @@ function (dojo, declare) {
             dojo.addClass(div_id,"ffg_selected") ;
                 
             this.selectedCard = card_id;
-            this.selectedAmount = data_value;
+            this.selectedAmount = data_amount;
             this.displayPossibleLoads( card_id);
             this.displayPossibleMoves( card_id);
             
@@ -476,31 +500,12 @@ function (dojo, declare) {
             dojo.query(".ffg_cargo_to_fill").removeClass("ffg_cargo_to_fill");
             dojo.query("#ffg_cargo_amount_list").addClass("ffg_hidden");
             
+            let amount = this.selectedAmount;
+            
             if( cardSuit == this.constants.JOKER_TYPE){
-                dojo.query("#ffg_cargo_amount_list").removeClass("ffg_hidden");
-                dojo.query("#"+div_id).addClass("ffg_cargo_to_fill");
-                //let boardpos = dojo.position("ffg_board_current_player");
-                //let dx = dojo.position(div_id).x - boardpos.x;
-                //let dy = dojo.position(div_id).y - boardpos.y;
-                //let dx = dojo.coords(div_id).x;
-                //let dy = dojo.coords(div_id).y;
-                //dojo.query("#ffg_cargo_amount_list").style("left", dx +"px").style("top", dy +"px") ;
-                let divAmountList = dojo.query("#ffg_cargo_amount_list")[0];
-                dojo.setMarginBox(divAmountList, {  l: dojo.getMarginBox(dojo.query( "#"+div_id)[0]  ).l, t: dojo.getMarginBox(dojo.query("#"+div_id)[0]  ).t  } ); 
-                //this.placeOnObject( "ffg_cargo_amount_list", div_id);
-                //this.slideToObject( "ffg_cargo_amount_list", div_id).play();
-                
-                dojo.query("#ffg_cargo_amount_loading").removeClass("ffg_no_display");
-                dojo.query(".ffg_cargo_amount").removeClass("ffg_selectable");
-            
-                //TODO JSA don't call server for 1/2 trucks that we know allow all numbers
-                //CALL SERVER to get updated possible numbers :
-                this.ajaxcallwrapper("getPossibleLoads", {'containerId': container_id});
-            
+                this.updateCargoAmountList(div_id,container_id,amount);
                 return ;
             }
-            //TODO JSA GET amount from overtime hours
-            let amount = this.selectedAmount;
             
             this.ajaxcallwrapper("loadTruck", {'cardId': cardId, 'containerId': container_id, 'amount': amount});
         },
@@ -606,7 +611,9 @@ function (dojo, declare) {
             this.selectedAmount = null;
             if(this.selectedCard >0 ){
                 let selectedCardDiv = dojo.query(".ffg_card.ffg_selected")[0] ;
+                let card_type = parseInt(selectedCardDiv.getAttribute("data_suit") ) ;
                 let card_value = parseInt(selectedCardDiv.getAttribute("data_value") ) ;
+                if( this.constants.JOKER_TYPE == card_type) card_value = this.constants.CARD_VALUE_MAX;//FOR JOKER, suppose that the value is MAX
                 let amount = parseInt(selectedCardDiv.getAttribute("data_amount") ) ;
                 let selectedCardModifierQuery = dojo.query(".ffg_card.ffg_selected .ffg_cardModifier");
                 let selectedCardModifier = selectedCardModifierQuery[0];
@@ -625,6 +632,11 @@ function (dojo, declare) {
                     this.selectedAmount = amount;
                     selectedCardDiv.setAttribute("data_amount", amount);
                     selectedCardModifierQuery.removeClass("ffg_empty_value").removeClass("ffg_positive_value").removeClass("ffg_negative_value").addClass(eltClass);
+                    
+                    let ffg_cargo_to_fill = dojo.query(".ffg_cargo_to_fill")[0];
+                    if(ffg_cargo_to_fill != undefined){
+                        this.updateCargoAmountList(ffg_cargo_to_fill.id, ffg_cargo_to_fill.getAttribute("data_id") ,amount);
+                    }
                 }
             }
             
@@ -710,6 +722,9 @@ function (dojo, declare) {
                 let value = card.type_arg;     
                 this.playCardOnTable(i,card.id, color, value );
             }
+            
+            dojo.query(".ffg_card .ffg_cardModifier").removeClass("ffg_positive_value").removeClass("ffg_negative_value").addClass("ffg_empty_value");
+            dojo.query(".ffg_card .ffg_cardModifier").forEach(" item.innerHTML = ''"); 
         },  
         
         notif_possibleLoads: function( notif )

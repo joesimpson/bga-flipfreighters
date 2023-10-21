@@ -48,20 +48,29 @@ class view_flipfreighters_flipfreighters extends game_view
         $index =0;
         foreach( $cards as $card )
         {
+            $amount = $card['type_arg'];
+            if($card['type'] == JOKER_TYPE) $amount = CARD_VALUE_MAX;
             $this->page->insert_block( "ffg_cards", array( 
                                                     "INDEX" => $index,
                                                     "CARD_ID" => $card['id'],
                                                     "CARD_SUIT" => $card['type'],
                                                     "CARD_VALUE" => $card['type_arg'],
+                                                    "AMOUNT" => $amount,
                                                      ) );
             $index++;
         }
         
         $this->page->begin_block( "flipfreighters_flipfreighters", "ffg_cargo_amount_list" );
-        for($k=CARD_VALUE_MIN; $k<=CARD_VALUE_MAX; $k++ )
+        for($k=CARD_VALUE_MIN; $k<=MAX_LOAD; $k++ )
         {
+            $classes = "";
+            if($k>CARD_VALUE_MAX) {
+                $classes = "ffg_no_display";
+            }
+                
             $this->page->insert_block( "ffg_cargo_amount_list", array( 
                                                     "AMOUNT" => $k,
+                                                    "CLASSES" => $classes,
                                                      ) );
         }
 

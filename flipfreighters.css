@@ -254,7 +254,7 @@
     border-radius: 15%;
     outline: 2px solid black;
 }
-.ffg_cargo_amount{
+.ffg_cargo_amount, #ffg_arrow{
     width: var(--ffg_container_width);
     height: var(--ffg_container_width);
     outline: 4px dotted black;
@@ -470,6 +470,11 @@
     font-weight: initial;
 }
 
+.ffg_container[data_amount="10"] .ffg_container_number,
+.ffg_container[data_amount="11"] .ffg_container_number{
+    /** Only with overtime modifiers*/
+    font-size: calc(var(--ffg_container_width) * 0.9);
+}
 .ffg_truck_pos{
     width: var(--ffg_truck_position_small_size);
     height: var(--ffg_truck_position_small_size);

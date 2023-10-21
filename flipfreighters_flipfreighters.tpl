@@ -19,7 +19,7 @@
     <div id="ffg_cards" class="whiteblock">
         <!-- BEGIN ffg_cards -->
     
-            <div id="ffg_card_{INDEX}" class="ffg_card ffg_selectable" data_id="{CARD_ID}" data_suit="{CARD_SUIT}" data_value="{CARD_VALUE}" data_amount='0'>
+            <div id="ffg_card_{INDEX}" class="ffg_card ffg_selectable" data_id="{CARD_ID}" data_suit="{CARD_SUIT}" data_value="{CARD_VALUE}" data_amount='{AMOUNT}'>
                 <span id="ffg_cardModifier_{INDEX}" class="ffg_cardModifier" data_value="0"></span>
             </div>
             
@@ -32,10 +32,10 @@
                 
             <!-- LIST of amounts to select by for JOKER-->
             <div id="ffg_cargo_amount_list" class="whiteblock ffg_hidden">
-                <div id="ffg_arrow" class="ffg_cargo_amount ffg_arrow"><i class="fa fa-arrow-up"></i></div>
+                <div id="ffg_arrow" class="ffg_arrow"><i class="fa fa-arrow-up"></i></div>
                 <div id="ffg_cargo_amount_loading" class="ffg_cargo_amount"><i class="fa fa-spinner fa-spin"></i> </div>
                 <!-- BEGIN ffg_cargo_amount_list -->
-                    <div id="ffg_cargo_amount_list_{AMOUNT}" class="ffg_cargo_amount" data_amount="{AMOUNT}">
+                    <div id="ffg_cargo_amount_list_{AMOUNT}" class="ffg_cargo_amount {CLASSES}" data_amount="{AMOUNT}">
                         <span class="ffg_container_number">{AMOUNT}</span> 
                     </div>
                 <!-- END ffg_cargo_amount_list -->
