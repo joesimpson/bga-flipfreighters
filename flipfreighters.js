@@ -307,11 +307,14 @@ function (dojo, declare) {
         */
         cleanPossibleCardForPos: function(type, posId)
         {
-            console.log( "cleanPossibleCardForPos ... ",posId);
+            console.log( "cleanPossibleCardForPos ... ",type,posId);
             for(let i in this.possibleCards){
                 let pcard = this.possibleCards[i][type];
                 let index = pcard.indexOf(posId);
-                pcard.splice(index, 1);
+                if(index >=0){
+                    console.log( "cleanPossibleCardForPos ... delete index "+index+" for card "+i);
+                    pcard.splice(index, 1);
+                }
             }
             
         },
