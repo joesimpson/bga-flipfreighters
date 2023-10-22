@@ -446,6 +446,8 @@ function (dojo, declare) {
              
             dojo.query(".ffg_card.ffg_selected .ffg_cardModifier").removeClass("ffg_empty_value ffg_positive_value ffg_negative_value");
             
+            let delta = 0;
+            let addClass ="";
             let div_id = divCard.id;
             let div_parent = divCard.parentElement;
             let selectedCardDiv = dojo.query(".ffg_card.ffg_selected")[0] ;
@@ -466,8 +468,7 @@ function (dojo, declare) {
                     amount = amount +inc_val;
                     data_value = data_value + inc_val;
                 }
-                let delta = amount - card_value;
-                let addClass ="";
+                delta = amount - card_value;
                 if( delta>0 ){
                     selectedCardModifier.innerHTML ="+";
                     addClass = "ffg_positive_value";
@@ -491,6 +492,8 @@ function (dojo, declare) {
                 
                 dojo.query(".ffg_card.ffg_selected .ffg_cardModifier").addClass(addClass);
             }
+            
+            dojo.query(".ffg_overtime").forEach( ' dojo.removeClass(item,"ffg_empty_value ffg_positive_value ffg_negative_value"); if( parseInt(item.getAttribute("data_index"))<='+Math.abs(delta)+' ){   dojo.addClass(item,"'+addClass+'"); } else { dojo.addClass(item,"ffg_empty_value ");}' );
         },
         
         displayTruckScore: function(player_id, truckScore, truckDivId){
@@ -611,17 +614,27 @@ function (dojo, declare) {
         {
             console.log( 'onClickCardPlus',evt );
             
+            let delta_value = parseInt(dojo.query(".ffg_card.ffg_selected .ffg_cardModifier")[0].getAttribute("data_value") ) ;
+            if(Math.abs(delta_value +1) > this.counterOvertime[this.player_id].current_value ){
+                //We cannot use more tokens
+                return;
+            }
+                
             this.increaseOvertimeHoursOnCard(evt.currentTarget,1);
             
-            //TODO JSA select one more token 
         },
         onClickCardMinus: function( evt )
         {
             console.log( 'onClickCardMinus',evt );
             
+            let delta_value = parseInt(dojo.query(".ffg_card.ffg_selected .ffg_cardModifier")[0].getAttribute("data_value") ) ;
+            if( Math.abs(delta_value - 1) > this.counterOvertime[this.player_id].current_value ){
+                //We cannot use more tokens
+                return;
+            }
+            
             this.increaseOvertimeHoursOnCard(evt.currentTarget,-1);
             
-            //TODO JSA select one more token 
         },
         
         /**
