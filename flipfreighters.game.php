@@ -484,16 +484,22 @@ class FlipFreighters extends Table
         
         $trucks_positions = $playerBoard['trucks_positions'];
         $trucks_cargos = $playerBoard['trucks_cargos'];
+        $cardMovePower = ($card["type"] == JOKER_TYPE) ? CARD_VALUE_MAX : $card["type_arg"];
         foreach( $trucks_positions as $truck_position ){
             $truck_id = $truck_position['truck_id'];
             $material = $this->trucks_types[$truck_id];
             $truck_max_position = end($material['path_size']);//TODO JSA GAME RULES
             $truck_cargos = $trucks_cargos[$truck_id];
             $currentTruckPosition = $this->getCurrentTruckPositionInDatas($truck_position);
+            $truckState = $this->getCurrentTruckStateInDatas($truck_position);
+            if($truckState ==STATE_MOVE_DELIVERED_CONFIRMED || $truckState ==STATE_MOVE_DELIVERED_TO_CONFIRM ){
+                //You cannot move a delivered truck
+                continue;
+            }
             
-            for ($k =1; $k<= $truck_max_position; $k++ ) {
+            for ($k =$currentTruckPosition+1 ; $k<= min($currentTruckPosition + $cardMovePower,$truck_max_position); $k++ ) {
                 $position_id = $truck_id."_".$k;
-                if($this->isPossibleMoveWithCard($card,$currentTruckPosition,$truck_cargos,$truck_id,$k) == false ) {
+                if($this->isPossibleMoveWithCard($card,$currentTruckPosition,$truck_cargos,$truck_id,$k,$cardMovePower) == false ) {
                     continue;
                 }
                 $possibles[] = $position_id;
@@ -504,10 +510,9 @@ class FlipFreighters extends Table
     /**
     Return true if Move truck $truck_id with card $card to position $target_pos is possible according to current truck position and loaded cargos
     */
-    function isPossibleMoveWithCard($card,$currentTruckPosition,$truck_cargos,$truck_id,$target_pos)
+    function isPossibleMoveWithCard($card,$currentTruckPosition,$truck_cargos,$truck_id,$target_pos,$amount)
     { 
         $card_id = $card['id'];
-        //self::trace("isPossibleMoveWithCard($card_id,$truck_id,$target_pos)");
 
         $countCargoValues = $this->countCargoValues($truck_cargos);
         if($countCargoValues <1){
@@ -653,7 +658,7 @@ class FlipFreighters extends Table
     Return truck state and positions
     */
     function getTruckPositions($truckId,$player_id){
-        self::trace("getCurrentTruckPosition($truckId,$player_id)...");
+        self::trace("getTruckPositions($truckId,$player_id)...");
         
         $sql = $this->getSQLSelectTruckPositions($player_id);
         $sql = $sql." AND truck_id ='$truckId' ";
@@ -689,6 +694,36 @@ class FlipFreighters extends Table
         } 
         
         return $position;
+    }
+    
+    /**
+    Return current truck state according to positions
+    */
+    function getCurrentTruckState($truckId,$player_id){
+        self::trace("getCurrentTruckState($truckId,$player_id)...");
+        
+        $res = $this->getTruckPositions($truckId,$player_id);
+        
+        return $this->getCurrentTruckStateInDatas($res);
+    }
+    function getCurrentTruckStateInDatas($truck_datas){
+        $state = null;
+        
+        if(! isset($truck_datas)){
+            return null;
+        } 
+        
+        $confirmed_state = $truck_datas['confirmed_state'] ;
+        $not_confirmed_state = $truck_datas['not_confirmed_state'];
+
+        if( isset($confirmed_state)){
+            $state = $confirmed_state;
+        } 
+        if( isset($not_confirmed_state)){
+            $state = $not_confirmed_state;
+        } 
+        
+        return $state;
     }
     
     function updateLoadInTruck($player_id, $cargoId, $amount,$state,$cardId = null){
@@ -898,8 +933,6 @@ class FlipFreighters extends Table
         //ANTICHEAT CHECKS :
         if($amount == null || $amount<=0 || $amount> MAX_LOAD)
             throw new BgaVisibleSystemException( ("Incorrect quantity for loading this truck here"));
-        if($cardId == null )
-            throw new BgaVisibleSystemException( ("Unknown card"));
         $card = $this->cards->getCard($cardId);
         if($card == null )
             throw new BgaVisibleSystemException( ("Unknown card"));
@@ -958,21 +991,54 @@ class FlipFreighters extends Table
         $player_name = self::getCurrentPlayerName();
         self::trace("moveTruck($cardId, $truckId, $position,$isDelivery,$player_id,$player_name )");
         
-        //TODO JSA ANTICHEAT CHECKS :
+        //ANTICHEAT CHECKS :
+        if($cardId == null )
+            throw new BgaVisibleSystemException( ("Unknown card"));
+        $card = $this->cards->getCard($cardId);
+        if($card == null )
+            throw new BgaVisibleSystemException( ("Unknown card"));
+        if($card['location'] != DECK_LOCATION_DAY )
+            throw new BgaVisibleSystemException( ("You cannot play that card know"));
+        //TODO JSA check card not used
+        $card_suit = $card['type'];
+        if( !array_key_exists($truckId, $this->trucks_types ))
+            throw new BgaVisibleSystemException( ("Unknown truck"));
+        $fromPosition = $this->getCurrentTruckPosition($truckId,$player_id);
+        $truck_material = $this->trucks_types[$truckId];
+        $path_size = $truck_material ['path_size'];
+        $truck_max_position = end($path_size);
+        if($position <=$fromPosition || $position > $truck_max_position )
+            throw new BgaVisibleSystemException( ("Wrong position"));
+        $truckState = $this->getCurrentTruckState($truckId,$player_id);
+        if($truckState ==STATE_MOVE_DELIVERED_CONFIRMED || $truckState ==STATE_MOVE_DELIVERED_TO_CONFIRM )
+            throw new BgaVisibleSystemException( ("You cannot move a delivered truck"));
+        if($isDelivery && array_search($position,$path_size) ===FALSE)
+            throw new BgaVisibleSystemException( ("You cannot deliver here"));
         
+        //LOGIC CHECKS
+        $amount = $position - $fromPosition;
+        $truckDatas = $this->getTruckPositions($truckId,$player_id);
+        $truckCargos = $this->getTruckCargos($player_id,$truckId) [$truckId];
+        if($this->isPossibleMoveWithCard($card,$fromPosition,$truckCargos,$truckId,$position,$amount) == false ) {
+            throw new BgaVisibleSystemException( ("You cannot move to this place"));
+        }
+        $originalAvailableOvertime = $this->getPlayerAvailableOvertimeHours($player_id);
+        $usedOvertime = max(0,$amount - $card['type_arg']);
+        if( $card_suit == JOKER_TYPE) $usedOvertime = max(0,$amount - CARD_VALUE_MAX); 
+        if($usedOvertime > $originalAvailableOvertime)
+            throw new BgaVisibleSystemException( ("You don't have enough overtime hours to do that"));
         
         //REAL ACTION :
         $newState = STATE_MOVE_TO_CONFIRM;
         $truckScore = 0;
         if($isDelivery) $newState = STATE_MOVE_DELIVERED_TO_CONFIRM;
-        $fromPosition = $this->getCurrentTruckPosition($truckId,$player_id);
         $this->insertMoveTruck($player_id,$truckId, $fromPosition, $position, $newState,$cardId);
         $truckPositions = $this->getTruckPositions($truckId,$player_id);
         if($isDelivery) {
-            $truckCargos = $this->getTruckCargos($player_id,$truckId) [$truckId];
             $truckScore = $this->computeScore($player_id,$truckId,$truckCargos,$truckPositions);
         }
-        //TODO JSA setPlayerAvailableOvertimeHours
+        $availableOvertime = $originalAvailableOvertime - $usedOvertime;
+        $this->setPlayerAvailableOvertimeHours($player_id, $availableOvertime);
         
         //NOTIFY ACTION :
         self::notifyPlayer($player_id, "moveTruck", clienttranslate( 'You move a truck' ), array(
@@ -982,6 +1048,7 @@ class FlipFreighters extends Table
             'card_id' => $cardId,
             'truckState' => $truckPositions,
             'truckScore' => $truckScore,
+            'availableOvertime' => $availableOvertime,
         ) );
             //TODO JSA send possiblePositions (LOAD become impossible)
         

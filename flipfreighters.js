@@ -881,6 +881,7 @@ function (dojo, declare) {
             
             this.displayTruckScore(this.player_id, notif.args.truckScore,truckDivId);    
             this.increasePlayerScore(this.player_id,notif.args.truckScore);
+            this.updatePlayerOvertimeHours(this.player_id,notif.args.availableOvertime);
             
             //unselect card
             this.unselectCard();
