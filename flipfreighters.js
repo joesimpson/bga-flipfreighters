@@ -178,6 +178,7 @@ function (dojo, declare) {
 
                 case 'playerTurn':
                     this.addActionButton( 'ffg_button_endturn', _('End turn'), 'onEndTurn' ); 
+                    this.addActionButton( 'ffg_button_cancelturn', _('Restart turn'), 'onCancelTurn',null, false, 'red' );
                     break;
                 }
             }  

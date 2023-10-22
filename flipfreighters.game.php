@@ -765,6 +765,23 @@ class FlipFreighters extends Table
         $this->DbQuery("UPDATE freighter_move SET fmove_state= $newState WHERE fmove_state = $oldState");
     }
     
+    /** This function MUST cancel actions BEFORE the previous method confirmTurnActions() can SAVE them
+    */
+    function cancelTurnActions($player_id){
+        self::trace( "cancelTurnActions($player_id)...");
+
+        $oldState = STATE_LOAD_TO_CONFIRM;
+        $newState = STATE_LOAD_INITIAL;
+        $this->DbQuery("UPDATE freighter_cargo SET cargo_state= $newState, cargo_amount = NULL, cargo_card_id = NULL WHERE cargo_state = $oldState");
+        
+        $oldState1 = STATE_MOVE_TO_CONFIRM;
+        $oldState2 = STATE_MOVE_DELIVERED_TO_CONFIRM;
+        $this->DbQuery("DELETE FROM freighter_move WHERE fmove_state in ( $oldState1, $oldState2) ");
+        
+        //TODO JSA how to cancel overtime hours ?
+        
+    }
+    
     function sumCargoValues($cargos){
         self::dump( 'sumCargoValues', $cargos );
         $sum = 0;
@@ -1102,6 +1119,10 @@ class FlipFreighters extends Table
         $player_id = self::getCurrentPlayerId();
         $player_name = self::getCurrentPlayerName();
         self::trace("cancelTurn($player_id)");
+        
+        $this->cancelTurnActions($player_id);
+        
+        //TODO JSA notif player to refresh UI datas
        
         self::notifyAllPlayers("cancelTurn", clienttranslate( '${player_name} restarts his turn' ), array(
             'player_id' => $player_id,
