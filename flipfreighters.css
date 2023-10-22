@@ -1129,10 +1129,10 @@
 }
 .ffg_overtime.ffg_selectable{
     cursor: pointer;
+    outline: 3px solid blue;
 }
 .ffg_overtime:not(.ffg_selectable){
     cursor: initial;
-    outline: 3px dashed red;
 }
 .ffg_overtime.ffg_selectable .ffg_icon_overtime_used{
     visibility:hidden;
@@ -1154,9 +1154,6 @@
     top: 932px;
     z-index: 2;
 } 
-.ffg_overtime.ffg_empty_value{
-    outline: none;
-}
 .ffg_overtime.ffg_positive_value{
     outline: 3px solid green;
 }
