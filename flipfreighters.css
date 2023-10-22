@@ -1140,14 +1140,24 @@
 .ffg_overtime:not(.ffg_selectable){
     cursor: initial;
 }
-.ffg_overtime.ffg_selectable .ffg_icon_overtime_used{
-    visibility:hidden;
+.ffg_overtime.ffg_selectable .ffg_icon_overtime_used,
+.ffg_overtime:not(.ffg_positive_value) .ffg_icon_overtime_plus,
+.ffg_overtime:not(.ffg_negative_value) .ffg_icon_overtime_minus{
+    display: none;
 }
-.ffg_icon_overtime_used{
+.ffg_icon_overtime_used,
+.ffg_icon_overtime_plus,
+.ffg_icon_overtime_minus{
     color: red;
     position: relative;
     left: -5px;
     top: -10px;
+}
+.ffg_icon_overtime_plus{
+    color: green;
+}
+.ffg_icon_overtime_minus{
+    color: red;
 }
 .ffg_overtime.ffg_selectable:hover{
     /*outline: 3px solid green;*/

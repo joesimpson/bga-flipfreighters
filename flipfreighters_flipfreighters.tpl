@@ -86,6 +86,8 @@
             <div id="ffg_board_overtime_wrapper">
                 <!-- BEGIN ffg_overtime_hour -->
                 <div id="ffg_overtime_{PLAYER_ID}_{INDEX}" class="ffg_overtime ffg_empty_value" data_player="{PLAYER_ID}" data_index="{INDEX}">
+                    <i class="fa fa-plus fa-2x ffg_icon_overtime_plus"></i>
+                    <i class="fa fa-minus fa-2x ffg_icon_overtime_minus"></i>
                     <i class="fa fa-times fa-3x ffg_icon_overtime_used"></i>
                 </div>
                 <!-- END ffg_overtime_hour -->
