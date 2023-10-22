@@ -492,14 +492,10 @@ class FlipFreighters extends Table
             $truck_cargos = $trucks_cargos[$truck_id];
             $currentTruckPosition = $this->getCurrentTruckPositionInDatas($truck_position);
             $truckState = $this->getCurrentTruckStateInDatas($truck_position);
-            if($truckState ==STATE_MOVE_DELIVERED_CONFIRMED || $truckState ==STATE_MOVE_DELIVERED_TO_CONFIRM ){
-                //You cannot move a delivered truck
-                continue;
-            }
             
             for ($k =$currentTruckPosition+1 ; $k<= min($currentTruckPosition + $cardMovePower,$truck_max_position); $k++ ) {
                 $position_id = $truck_id."_".$k;
-                if($this->isPossibleMoveWithCard($card,$currentTruckPosition,$truck_cargos,$truck_id,$k,$cardMovePower) == false ) {
+                if($this->isPossibleMoveWithCard($card,$currentTruckPosition,$truckState,$truck_cargos,$truck_id,$k,$cardMovePower) == false ) {
                     continue;
                 }
                 $possibles[] = $position_id;
@@ -510,7 +506,7 @@ class FlipFreighters extends Table
     /**
     Return true if Move truck $truck_id with card $card to position $target_pos is possible according to current truck position and loaded cargos
     */
-    function isPossibleMoveWithCard($card,$currentTruckPosition,$truck_cargos,$truck_id,$target_pos,$amount)
+    function isPossibleMoveWithCard($card,$currentTruckPosition,$truckState,$truck_cargos,$truck_id,$target_pos,$amount)
     { 
         $card_id = $card['id'];
 
@@ -519,9 +515,11 @@ class FlipFreighters extends Table
             //TRUCK Cannot move before being loaded
             return false;
         }
-
-        //TODO JSA isPossibleMoveWithCard
-             
+        if($truckState ==STATE_MOVE_DELIVERED_CONFIRMED || $truckState ==STATE_MOVE_DELIVERED_TO_CONFIRM ){
+            //You cannot move a delivered truck
+           return false;
+        }
+        
         return true;
     }
     
@@ -1009,17 +1007,19 @@ class FlipFreighters extends Table
         $truck_max_position = end($path_size);
         if($position <=$fromPosition || $position > $truck_max_position )
             throw new BgaVisibleSystemException( ("Wrong position"));
-        $truckState = $this->getCurrentTruckState($truckId,$player_id);
-        if($truckState ==STATE_MOVE_DELIVERED_CONFIRMED || $truckState ==STATE_MOVE_DELIVERED_TO_CONFIRM )
-            throw new BgaVisibleSystemException( ("You cannot move a delivered truck"));
         if($isDelivery && array_search($position,$path_size) ===FALSE)
             throw new BgaVisibleSystemException( ("You cannot deliver here"));
         
         //LOGIC CHECKS
+        $truckState = $this->getCurrentTruckState($truckId,$player_id);
+        /* check Done in isPossibleMoveWithCard
+        if($truckState ==STATE_MOVE_DELIVERED_CONFIRMED || $truckState ==STATE_MOVE_DELIVERED_TO_CONFIRM )
+            throw new BgaVisibleSystemException( ("You cannot move a delivered truck"));
+        */
         $amount = $position - $fromPosition;
         $truckDatas = $this->getTruckPositions($truckId,$player_id);
         $truckCargos = $this->getTruckCargos($player_id,$truckId) [$truckId];
-        if($this->isPossibleMoveWithCard($card,$fromPosition,$truckCargos,$truckId,$position,$amount) == false ) {
+        if($this->isPossibleMoveWithCard($card,$fromPosition,$truckState,$truckCargos,$truckId,$position,$amount) == false ) {
             throw new BgaVisibleSystemException( ("You cannot move to this place"));
         }
         $originalAvailableOvertime = $this->getPlayerAvailableOvertimeHours($player_id);
