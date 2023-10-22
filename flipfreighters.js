@@ -107,6 +107,9 @@ function (dojo, declare) {
 
             dojo.query(".ffg_overtime").connect( 'onclick', this, 'onSelectOvertimeHour' );
             
+            dojo.query(".ffg_button_card_plus").connect( 'onclick', this, 'onClickCardPlus' );
+            dojo.query(".ffg_button_card_minus").connect( 'onclick', this, 'onClickCardMinus' );
+            
             // Setup game notifications to handle (see "setupNotifications" method below)
             this.setupNotifications();
 
@@ -346,6 +349,7 @@ function (dojo, declare) {
             this.selectedAmount = null;
             this.selectedCargoContainer = null;
             dojo.query(".ffg_card").removeClass("ffg_selected") ;
+            dojo.query(".ffg_card_wrapper").removeClass("ffg_selected") ;
             dojo.query(".ffg_container").removeClass("ffg_selectable") ;
             dojo.query(".ffg_truck_pos").removeClass("ffg_selectable") ;
             dojo.query(".ffg_cargo_amount").removeClass("ffg_selectable");
@@ -417,38 +421,75 @@ function (dojo, declare) {
                 let div_id = this.selectedOvertimeToken;
                 let data_index = parseInt(dojo.query("#"+div_id)[0].getAttribute("data_index") ); 
                 let selectedCardDiv = dojo.query(".ffg_card.ffg_selected")[0] ;
-                let card_type = parseInt(selectedCardDiv.getAttribute("data_suit") ) ;
-                let card_value = parseInt(selectedCardDiv.getAttribute("data_value") ) ;
-                if( this.constants.JOKER_TYPE == card_type) card_value = this.constants.CARD_VALUE_MAX;//FOR JOKER, suppose that the value is MAX
-                let amount = parseInt(selectedCardDiv.getAttribute("data_amount") ) ;
-                let selectedCardModifierQuery = dojo.query(".ffg_card.ffg_selected .ffg_cardModifier");
-                let selectedCardModifier = selectedCardModifierQuery[0];
-                if(selectedCardModifier!=undefined) {
-                    if( dojo.hasClass(div_id, "ffg_positive_value") ){
-                        selectedCardModifier.innerHTML = "+"+data_index;
-                        amount = card_value + data_index;
-                    } else if( dojo.hasClass(div_id, "ffg_negative_value") ) {
-                        selectedCardModifier.innerHTML = "-"+data_index;
-                        amount = card_value -data_index;
-                    }
-                    else {
-                        selectedCardModifier.innerHTML = "";
-                        amount = card_value;
-                    }
-                    this.selectedAmount = amount;
-                    selectedCardDiv.setAttribute("data_amount", amount);
-                    
-                    let ffg_cargo_to_fill = dojo.query(".ffg_cargo_to_fill")[0];
-                    if(ffg_cargo_to_fill != undefined){
-                        this.updateCargoAmountList(ffg_cargo_to_fill.id, ffg_cargo_to_fill.getAttribute("data_id") ,amount);
-                    }
+                if( dojo.hasClass(div_id, "ffg_positive_value") ){
+                    data_index = data_index;
+                } else if( dojo.hasClass(div_id, "ffg_negative_value") ) {
+                    data_index = -data_index;
                 }
-                    
-                if(dojo.hasClass(this.selectedOvertimeToken, "ffg_negative_value") ) {
-                    dojo.query(".ffg_card.ffg_selected .ffg_cardModifier").addClass("ffg_negative_value");
-                } else if( dojo.hasClass(div_id, "ffg_positive_value") ) {
-                    dojo.query(".ffg_card.ffg_selected .ffg_cardModifier").addClass("ffg_positive_value");
+                else {
+                    data_index = 0;
                 }
+                
+                this.setOvertimeHoursOnCard(selectedCardDiv,data_index);
+            }
+        },
+        
+        setOvertimeHoursOnCard: function(divCard, set_val)
+        {
+            console.log( "setOvertimeHoursOnCard()",divCard.id, null, set_val);
+            this.increaseOvertimeHoursOnCard(divCard,null,set_val);
+        },
+        
+        increaseOvertimeHoursOnCard: function(divCard, inc_val, set_val = undefined)
+        {
+            console.log( "increaseOvertimeHoursOnCard()",divCard.id,inc_val,set_val);
+             
+            dojo.query(".ffg_card.ffg_selected .ffg_cardModifier").removeClass("ffg_empty_value ffg_positive_value ffg_negative_value");
+            
+            let div_id = divCard.id;
+            let div_parent = divCard.parentElement;
+            let selectedCardDiv = dojo.query(".ffg_card.ffg_selected")[0] ;
+            let card_type = parseInt(selectedCardDiv.getAttribute("data_suit") ) ;
+            let card_value = parseInt(selectedCardDiv.getAttribute("data_value") ) ;
+            if( this.constants.JOKER_TYPE == card_type) card_value = this.constants.CARD_VALUE_MAX;//FOR JOKER, suppose that the value is MAX
+            let amount = parseInt(selectedCardDiv.getAttribute("data_amount") ) ;
+            let selectedCardModifierQuery = dojo.query(".ffg_card.ffg_selected .ffg_cardModifier");
+            let selectedCardModifier = selectedCardModifierQuery[0];
+            if(selectedCardModifier!=undefined) {
+                let data_value = parseInt(selectedCardModifier.getAttribute("data_value") ) ;
+                
+                if(set_val != undefined){
+                    amount = card_value + set_val;
+                    data_value = set_val;
+                }
+                else {
+                    amount = amount +inc_val;
+                    data_value = data_value + inc_val;
+                }
+                let delta = amount - card_value;
+                let addClass ="";
+                if( delta>0 ){
+                    selectedCardModifier.innerHTML ="+";
+                    addClass = "ffg_positive_value";
+                } else if( delta<0 ) {
+                    selectedCardModifier.innerHTML ="";
+                    addClass = "ffg_negative_value";
+                }
+                else {
+                    selectedCardModifier.innerHTML = "";
+                    addClass = "ffg_empty_value";
+                }
+                selectedCardModifier.innerHTML = selectedCardModifier.innerHTML +delta;
+                this.selectedAmount = amount;
+                selectedCardDiv.setAttribute("data_amount", amount);
+
+                let ffg_cargo_to_fill = dojo.query(".ffg_cargo_to_fill")[0];
+                if(ffg_cargo_to_fill != undefined){
+                    this.updateCargoAmountList(ffg_cargo_to_fill.id, ffg_cargo_to_fill.getAttribute("data_id") ,this.selectedAmount);
+                }
+                selectedCardModifier.setAttribute("data_value",data_value) ;
+                
+                dojo.query(".ffg_card.ffg_selected .ffg_cardModifier").addClass(addClass);
             }
         },
         
@@ -537,6 +578,7 @@ function (dojo, declare) {
             dojo.stopEvent( evt );
             
             dojo.query(".ffg_card").removeClass("ffg_selected") ;
+            dojo.query(".ffg_card_wrapper").removeClass("ffg_selected") ;
             dojo.query("#ffg_cargo_amount_list").addClass("ffg_hidden");
             dojo.query(".ffg_cargo_to_fill").removeClass("ffg_cargo_to_fill");
             
@@ -555,6 +597,7 @@ function (dojo, declare) {
             } //ELSE continue to SHOW
             
             dojo.addClass(div_id,"ffg_selected") ;
+            dojo.query("#"+evt.currentTarget.parentElement.id ).addClass("ffg_selected") ; 
                 
             this.selectedCard = card_id;
             this.selectedAmount = data_amount;
@@ -563,8 +606,24 @@ function (dojo, declare) {
             this.displayPossibleLoads( card_id);
             this.displayPossibleMoves( card_id);
 
+        },     
+        onClickCardPlus: function( evt )
+        {
+            console.log( 'onClickCardPlus',evt );
             
-        },        
+            this.increaseOvertimeHoursOnCard(evt.currentTarget,1);
+            
+            //TODO JSA select one more token 
+        },
+        onClickCardMinus: function( evt )
+        {
+            console.log( 'onClickCardMinus',evt );
+            
+            this.increaseOvertimeHoursOnCard(evt.currentTarget,-1);
+            
+            //TODO JSA select one more token 
+        },
+        
         /**
         Click Handler for the trucks cargo containers : 
         */

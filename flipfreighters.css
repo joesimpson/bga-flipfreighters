@@ -200,6 +200,12 @@
     background-position-y: -300%;
 }
 
+
+
+.ffg_card_wrapper:not(.ffg_selected) .bgabutton{
+    display: none;
+}
+
 /* 
 ---------------------------- ----------------------------   ---------------------------- 
 ----------------------------  CENTRAL ZONE  : BOARD         ---------------------------- 
@@ -1202,6 +1208,9 @@
     text-align: center;
     color: blue;
     text-shadow: 1px 1px 20px gold;
+}
+.ffg_cardModifier.ffg_empty_value{
+    visibility: hidden;
 }
 .ffg_cardModifier.ffg_positive_value{
     color: green;
