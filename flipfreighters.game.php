@@ -772,11 +772,11 @@ class FlipFreighters extends Table
 
         $oldState = STATE_LOAD_TO_CONFIRM;
         $newState = STATE_LOAD_INITIAL;
-        $this->DbQuery("UPDATE freighter_cargo SET cargo_state= $newState, cargo_amount = NULL, cargo_card_id = NULL WHERE cargo_state = $oldState");
+        $this->DbQuery("UPDATE freighter_cargo SET cargo_state= $newState, cargo_amount = NULL, cargo_card_id = NULL WHERE cargo_state = $oldState AND cargo_player_id ='$player_id'");
         
         $oldState1 = STATE_MOVE_TO_CONFIRM;
         $oldState2 = STATE_MOVE_DELIVERED_TO_CONFIRM;
-        $this->DbQuery("DELETE FROM freighter_move WHERE fmove_state in ( $oldState1, $oldState2) ");
+        $this->DbQuery("DELETE FROM freighter_move WHERE fmove_state in ( $oldState1, $oldState2) AND fmove_player_id ='$player_id'");
         
         //TODO JSA how to cancel overtime hours ?
         
