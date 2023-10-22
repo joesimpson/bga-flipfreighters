@@ -905,9 +905,11 @@ class FlipFreighters extends Table
             throw new BgaVisibleSystemException( ("Unknown card"));
         if($card['location'] != DECK_LOCATION_DAY )
             throw new BgaVisibleSystemException( ("You cannot play that card know"));
+        $card_suit = $card['type'];
         
         $originalAvailableOvertime = $this->getPlayerAvailableOvertimeHours($player_id);
-        $usedOvertime = abs($amount - $card['type_arg']); //TODO JSA JOKER_TYPE
+        $usedOvertime = abs($amount - $card['type_arg']);
+        if( $card_suit == JOKER_TYPE) $usedOvertime = max(0,$amount - CARD_VALUE_MAX); //IF joker is used for a low value, don't consider overtime
         if($usedOvertime > $originalAvailableOvertime)
             throw new BgaVisibleSystemException( ("You don't have enough overtime hours to do that"));
         
