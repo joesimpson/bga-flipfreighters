@@ -1134,6 +1134,15 @@
     cursor: initial;
     outline: 3px dashed red;
 }
+.ffg_overtime.ffg_selectable .ffg_icon_overtime_used{
+    visibility:hidden;
+}
+.ffg_icon_overtime_used{
+    color: red;
+    position: relative;
+    left: -5px;
+    top: -10px;
+}
 .ffg_overtime.ffg_selectable:hover{
     /*outline: 3px solid green;*/
     background-image: url('img/board.jpg');
