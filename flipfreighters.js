@@ -40,6 +40,7 @@ function (dojo, declare) {
             this.currentRound = 1;
             
             this.counterOvertime={};
+            this.selectedOvertimeToken = null;
         },
         
         /*
@@ -407,6 +408,51 @@ function (dojo, declare) {
             this.ajaxcallwrapper("getPossibleLoads", {'containerId': container_id});
         },
         
+        displayOvertimeHoursOnCard: function()
+        {
+            console.log( "displayOvertimeHoursOnCard()");
+             
+            dojo.query(".ffg_card.ffg_selected .ffg_cardModifier").removeClass("ffg_empty_value ffg_positive_value ffg_negative_value");
+            
+            if(this.selectedCard >0 && this.selectedOvertimeToken != undefined){
+                let div_id = this.selectedOvertimeToken;
+                let data_index = parseInt(dojo.query("#"+div_id)[0].getAttribute("data_index") ); 
+                let selectedCardDiv = dojo.query(".ffg_card.ffg_selected")[0] ;
+                let card_type = parseInt(selectedCardDiv.getAttribute("data_suit") ) ;
+                let card_value = parseInt(selectedCardDiv.getAttribute("data_value") ) ;
+                if( this.constants.JOKER_TYPE == card_type) card_value = this.constants.CARD_VALUE_MAX;//FOR JOKER, suppose that the value is MAX
+                let amount = parseInt(selectedCardDiv.getAttribute("data_amount") ) ;
+                let selectedCardModifierQuery = dojo.query(".ffg_card.ffg_selected .ffg_cardModifier");
+                let selectedCardModifier = selectedCardModifierQuery[0];
+                if(selectedCardModifier!=undefined) {
+                    if( dojo.hasClass(div_id, "ffg_positive_value") ){
+                        selectedCardModifier.innerHTML = "+"+data_index;
+                        amount = card_value + data_index;
+                    } else if( dojo.hasClass(div_id, "ffg_negative_value") ) {
+                        selectedCardModifier.innerHTML = "-"+data_index;
+                        amount = card_value -data_index;
+                    }
+                    else {
+                        selectedCardModifier.innerHTML = "";
+                        amount = card_value;
+                    }
+                    this.selectedAmount = amount;
+                    selectedCardDiv.setAttribute("data_amount", amount);
+                    
+                    let ffg_cargo_to_fill = dojo.query(".ffg_cargo_to_fill")[0];
+                    if(ffg_cargo_to_fill != undefined){
+                        this.updateCargoAmountList(ffg_cargo_to_fill.id, ffg_cargo_to_fill.getAttribute("data_id") ,amount);
+                    }
+                }
+                    
+                if(dojo.hasClass(this.selectedOvertimeToken, "ffg_negative_value") ) {
+                    dojo.query(".ffg_card.ffg_selected .ffg_cardModifier").addClass("ffg_negative_value");
+                } else if( dojo.hasClass(div_id, "ffg_positive_value") ) {
+                    dojo.query(".ffg_card.ffg_selected .ffg_cardModifier").addClass("ffg_positive_value");
+                }
+            }
+        },
+        
         displayTruckScore: function(player_id, truckScore, truckDivId){
             console.log("displayTruckScore",player_id, truckScore, truckDivId);
             
@@ -510,13 +556,14 @@ function (dojo, declare) {
             } //ELSE continue to SHOW
             
             dojo.addClass(div_id,"ffg_selected") ;
-            
-            //TODO JSA get selected overtime
                 
             this.selectedCard = card_id;
             this.selectedAmount = data_amount;
+            this.displayOvertimeHoursOnCard();
+            
             this.displayPossibleLoads( card_id);
             this.displayPossibleMoves( card_id);
+
             
         },        
         /**
@@ -642,6 +689,7 @@ function (dojo, declare) {
             // Preventing default browser reaction
             dojo.stopEvent( evt );
             
+            this.selectedOvertimeToken = null;
             let div_id = evt.currentTarget.id;
             let div = dojo.query("#"+div_id);
             let data_amount = parseInt(evt.currentTarget.getAttribute("data_index") );
@@ -666,36 +714,10 @@ function (dojo, declare) {
             dojo.query(".ffg_overtime").forEach( ' dojo.removeClass(item,"ffg_empty_value ffg_positive_value ffg_negative_value"); if( parseInt(item.getAttribute("data_index"))<='+data_amount+' ){   dojo.addClass(item,"'+eltClass+'"); } else { dojo.addClass(item,"ffg_empty_value ");}' );
             
             this.selectedAmount = null;
-            if(this.selectedCard >0 ){
-                let selectedCardDiv = dojo.query(".ffg_card.ffg_selected")[0] ;
-                let card_type = parseInt(selectedCardDiv.getAttribute("data_suit") ) ;
-                let card_value = parseInt(selectedCardDiv.getAttribute("data_value") ) ;
-                if( this.constants.JOKER_TYPE == card_type) card_value = this.constants.CARD_VALUE_MAX;//FOR JOKER, suppose that the value is MAX
-                let amount = parseInt(selectedCardDiv.getAttribute("data_amount") ) ;
-                let selectedCardModifierQuery = dojo.query(".ffg_card.ffg_selected .ffg_cardModifier");
-                let selectedCardModifier = selectedCardModifierQuery[0];
-                if(selectedCardModifier!=undefined) {
-                    if( dojo.hasClass(div_id, "ffg_positive_value") ){
-                        selectedCardModifier.innerHTML = "+"+data_amount;
-                        amount = card_value + data_amount;
-                    } else if( dojo.hasClass(div_id, "ffg_negative_value") ) {
-                        selectedCardModifier.innerHTML = "-"+data_amount;
-                        amount = card_value -data_amount;
-                    }
-                    else {
-                        selectedCardModifier.innerHTML = "";
-                        amount = card_value;
-                    }
-                    this.selectedAmount = amount;
-                    selectedCardDiv.setAttribute("data_amount", amount);
-                    selectedCardModifierQuery.removeClass("ffg_empty_value").removeClass("ffg_positive_value").removeClass("ffg_negative_value").addClass(eltClass);
-                    
-                    let ffg_cargo_to_fill = dojo.query(".ffg_cargo_to_fill")[0];
-                    if(ffg_cargo_to_fill != undefined){
-                        this.updateCargoAmountList(ffg_cargo_to_fill.id, ffg_cargo_to_fill.getAttribute("data_id") ,amount);
-                    }
-                }
-            }
+            this.selectedOvertimeToken = div_id;
+            
+            this.displayOvertimeHoursOnCard();
+            dojo.query(".ffg_card.ffg_selected .ffg_cardModifier").addClass(eltClass);
             
             //TODO JSA onSelectOvertimeHour update possibles loads/moves
             
