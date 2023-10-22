@@ -724,6 +724,19 @@ class FlipFreighters extends Table
         return $state;
     }
     
+    function getPlayerPossibleCards($player_id ){
+        $dayCards = $this->getCurrentDayCards();
+        $possibleCards = array();
+        $playerBoard = $this->getPlayerBoard($player_id);
+        foreach( $dayCards as $dayCard){
+            $possibleCards[$dayCard['id']] = array(
+                "LOAD" => $this->getPossibleLoadsWithCard($dayCard,$playerBoard),
+                "MOVE" => $this->getPossibleMovesWithCard($dayCard,$playerBoard),
+                );
+        }
+        return $possibleCards;
+    }
+    
     function updateLoadInTruck($player_id, $cargoId, $amount,$state,$cardId = null){
         
         $this->DbQuery("UPDATE freighter_cargo SET cargo_amount= $amount, cargo_card_id= $cardId, cargo_state= $state WHERE cargo_key='$cargoId' AND cargo_player_id ='$player_id' ");
@@ -974,7 +987,11 @@ class FlipFreighters extends Table
             'state' => $newState,
             'availableOvertime' => $availableOvertime,
         ) );
-            //TODO JSA send possiblePositions (MOVE become possible)
+        
+        //resend possiblePositions (MOVE become possible)
+        self::notifyPlayer($player_id, "possibleCards", '', array(
+            'possibleCards' => $this->getPlayerPossibleCards($player_id ),
+        ) );
         
         //Should not be public but the framework prefers to get minimum 1 notifyAll per action ?...
         self::notifyAllPlayers("loadTruckPublic", '', '' );
@@ -1050,7 +1067,11 @@ class FlipFreighters extends Table
             'truckScore' => $truckScore,
             'availableOvertime' => $availableOvertime,
         ) );
-            //TODO JSA send possiblePositions (LOAD become impossible)
+        
+        //resend possiblePositions (MOVE become possible)
+        self::notifyPlayer($player_id, "possibleCards", '', array(
+            'possibleCards' => $this->getPlayerPossibleCards($player_id ),
+        ) );
         
         //Should not be public but the framework prefers to get minimum 1 notifyAll per action ?...
         self::notifyAllPlayers("moveTruckPublic", '', '' );
@@ -1101,21 +1122,12 @@ class FlipFreighters extends Table
     
     function argPlayerTurn(){
         $players = self::loadPlayersBasicInfos();
-        $dayCards = $this->getCurrentDayCards();
         
         $privateDatas = array ();
         
         foreach($players as $player_id => $player){
-            $possibleCards = array();
-            $playerBoard = $this->getPlayerBoard($player_id);
-            foreach( $dayCards as $dayCard){
-                $possibleCards[$dayCard['id']] = array(
-                    "LOAD" => $this->getPossibleLoadsWithCard($dayCard,$playerBoard),
-                    "MOVE" => $this->getPossibleMovesWithCard($dayCard,$playerBoard),
-                    );
-            }
             $privateDatas[$player_id] = array(
-                'possibleCards' => $possibleCards,
+                'possibleCards' => $this->getPlayerPossibleCards($player_id ),
             );
         }
         

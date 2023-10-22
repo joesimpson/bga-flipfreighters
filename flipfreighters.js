@@ -856,6 +856,7 @@ function (dojo, declare) {
             dojo.subscribe( 'possibleLoads', this, "notif_possibleLoads" );
             dojo.subscribe( 'loadTruck', this, "notif_loadTruck" );
             dojo.subscribe( 'moveTruck', this, "notif_moveTruck" );
+            dojo.subscribe( 'possibleCards', this, "notif_possibleCards" );
             dojo.subscribe( 'endTurnScore', this, "notif_endTurnScore" );
             dojo.subscribe( 'newWeekScore', this, "notif_newWeekScore" );
         },  
@@ -890,6 +891,16 @@ function (dojo, declare) {
             
         },  
 
+        notif_possibleCards: function( notif )
+        {
+            console.log( 'notif_possibleCards',notif );
+              
+            this.possibleCards = [];
+            if(notif.args.possibleCards !=undefined){
+                this.possibleCards = notif.args.possibleCards;
+            } 
+            
+        },  
         notif_loadTruck: function( notif )
         {
             console.log( 'notif_loadTruck',notif );
