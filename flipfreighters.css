@@ -271,7 +271,7 @@
     border-radius: 15%;
     outline: 2px solid black;
 }
-.ffg_cargo_amount, #ffg_arrow{
+.ffg_cargo_amount, #ffg_arrow, #ffg_cargo_amount_loading{
     width: var(--ffg_container_width);
     height: var(--ffg_container_width);
     outline: 4px dotted black;

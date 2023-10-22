@@ -396,8 +396,7 @@ function (dojo, declare) {
             dojo.setMarginBox(divAmountList, {  l: dojo.getMarginBox(dojo.query( "#"+div_id)[0]  ).l, t: dojo.getMarginBox(dojo.query("#"+div_id)[0]  ).t  } ); 
             
             dojo.query("#ffg_cargo_amount_loading").removeClass("ffg_no_display");
-            dojo.query(".ffg_cargo_amount").removeClass("ffg_selectable");
-            dojo.query(".ffg_cargo_amount").addClass("ffg_no_display");
+            dojo.query(".ffg_cargo_amount").removeClass("ffg_selectable").addClass("ffg_no_display");
             
             for(let k=1; k<= amount; k++){
                 dojo.query("#ffg_cargo_amount_list_"+k).removeClass("ffg_no_display");
