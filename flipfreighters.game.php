@@ -197,7 +197,11 @@ class FlipFreighters extends Table
             for($k=1; $k <= NB_ROUNDS;$k++){
                 $result['players'][$player_id]["score_week".$k] = self::getStat( "score_week".$k, $player_id );
             }
-            $result['players'][$player_id]['availableOvertime'] = $this->getPlayerAvailableOvertimeHours($player_id);
+            
+            $availableOvertime = $this->getPlayerAvailableOvertimeHours($player_id);
+            if($player_id  == $current_player_id) $availableOvertime = $this->getPlayerAvailableOvertimeHoursPrivateState($player_id);
+            $result['players'][$player_id]['availableOvertime'] = $availableOvertime;
+            
         }
   
         return $result;
@@ -585,6 +589,8 @@ class FlipFreighters extends Table
         }
         //self::dump("getPlayerBoard($player_id) trucks_positions AFTER ",$trucks_positions);
         
+        //TODO JSA get cards spend overtime
+        
         return array( 
             "trucks_cargos" => $trucks_cargos,
             "trucks_positions" => $trucks_positions,
@@ -737,19 +743,19 @@ class FlipFreighters extends Table
         return $possibleCards;
     }
     
-    function updateLoadInTruck($player_id, $cargoId, $amount,$state,$cardId = null){
+    function updateLoadInTruck($player_id, $cargoId, $amount,$state,$cardId,$overtimeUsed){
         
-        $this->DbQuery("UPDATE freighter_cargo SET cargo_amount= $amount, cargo_card_id= $cardId, cargo_state= $state WHERE cargo_key='$cargoId' AND cargo_player_id ='$player_id' ");
+        $this->DbQuery("UPDATE freighter_cargo SET cargo_amount= $amount, cargo_card_id= $cardId, cargo_state= $state, cargo_overtime_used=$overtimeUsed WHERE cargo_key='$cargoId' AND cargo_player_id ='$player_id' ");
     }
     
-    function insertMoveTruck($player_id,$truckId, $fromPosition, $toPosition, $newState,$cardId){
-        $this->DbQuery("INSERT INTO freighter_move VALUES ('$player_id', '$truckId', $fromPosition, $toPosition, $newState, $cardId); ");
+    function insertMoveTruck($player_id,$truckId, $fromPosition, $toPosition, $newState,$cardId,$overtimeUsed){
+        $this->DbQuery("INSERT INTO `freighter_move`(`fmove_player_id`, `fmove_truck_id`, `fmove_position_from`, `fmove_position_to`, `fmove_state`, `fmove_card_id`, `fmove_overtime_used`) VALUES ('$player_id', '$truckId', $fromPosition, $toPosition, $newState, $cardId, $overtimeUsed); ");
     }
     
     /**
     CONFIRM all players actions by updating to the corresponding state
     */
-    function confirmTurnActions(){
+    function confirmTurnActions($players){
         self::trace( "confirmTurnActions()...");
 
         $oldState = STATE_LOAD_TO_CONFIRM;
@@ -763,6 +769,13 @@ class FlipFreighters extends Table
         $oldState = STATE_MOVE_DELIVERED_TO_CONFIRM;
         $newState = STATE_MOVE_DELIVERED_CONFIRMED;
         $this->DbQuery("UPDATE freighter_move SET fmove_state= $newState WHERE fmove_state = $oldState");
+        
+        foreach($players as $player_id => $player){
+            ///Set the public data about spent overtime by getting the private info 
+            $privateInfo = $this-> getPlayerAvailableOvertimeHoursPrivateState($player_id);
+            $this->setPlayerAvailableOvertimeHours($player_id,$privateInfo);
+        }
+        
     }
     
     /** This function MUST cancel actions BEFORE the previous method confirmTurnActions() can SAVE them
@@ -772,14 +785,11 @@ class FlipFreighters extends Table
 
         $oldState = STATE_LOAD_TO_CONFIRM;
         $newState = STATE_LOAD_INITIAL;
-        $this->DbQuery("UPDATE freighter_cargo SET cargo_state= $newState, cargo_amount = NULL, cargo_card_id = NULL WHERE cargo_state = $oldState AND cargo_player_id ='$player_id'");
+        $this->DbQuery("UPDATE freighter_cargo SET cargo_state= $newState, cargo_amount = NULL, cargo_card_id = NULL, cargo_overtime_used = 0 WHERE cargo_state = $oldState AND cargo_player_id ='$player_id'");
         
         $oldState1 = STATE_MOVE_TO_CONFIRM;
         $oldState2 = STATE_MOVE_DELIVERED_TO_CONFIRM;
         $this->DbQuery("DELETE FROM freighter_move WHERE fmove_state in ( $oldState1, $oldState2) AND fmove_player_id ='$player_id'");
-        
-        //TODO JSA how to cancel overtime hours ?
-        
     }
     
     function sumCargoValues($cargos){
@@ -897,6 +907,19 @@ class FlipFreighters extends Table
     function getPlayerAvailableOvertimeHours($player_id){
         return NB_OVERTIME_TOKENS - $this->getUniqueValueFromDB("SELECT player_ffg_overtime_used FROM player WHERE player_id='$player_id'");
     }
+    /**
+    Return the total number of available tokens, also counting the one used during this turn : don't send this info to other players
+    */
+    function getPlayerAvailableOvertimeHoursPrivateState($player_id){
+        $spent = $this->getUniqueValueFromDB("SELECT SUM(overtime_hours ) FROM (
+            SELECT SUM(`cargo_overtime_used`) 'overtime_hours' FROM `freighter_cargo` WHERE `cargo_player_id` = '$player_id'
+                UNION ALL
+            SELECT SUM(`fmove_overtime_used`) 'overtime_hours' FROM `freighter_move` WHERE `fmove_player_id` = '$player_id'
+        ) subq ");
+        if($spent == null) $spent = 0; 
+        
+        return NB_OVERTIME_TOKENS - $spent;
+    }
     
     function setPlayerAvailableOvertimeHours($player_id, $nb){
         $used = NB_OVERTIME_TOKENS - $nb;
@@ -968,7 +991,7 @@ class FlipFreighters extends Table
             throw new BgaVisibleSystemException( ("You cannot play that card know"));
         $card_suit = $card['type'];
         
-        $originalAvailableOvertime = $this->getPlayerAvailableOvertimeHours($player_id);
+        $originalAvailableOvertime = $this->getPlayerAvailableOvertimeHoursPrivateState($player_id);
         $usedOvertime = abs($amount - $card['type_arg']);
         if( $card_suit == JOKER_TYPE) $usedOvertime = max(0,$amount - CARD_VALUE_MAX); //IF joker is used for a low value, don't consider overtime
         if($usedOvertime > $originalAvailableOvertime)
@@ -992,9 +1015,8 @@ class FlipFreighters extends Table
         
         //REAL ACTION :
         $newState = STATE_LOAD_TO_CONFIRM;
-        $this->updateLoadInTruck($player_id,$containerId, $amount, $newState,$cardId);
+        $this->updateLoadInTruck($player_id,$containerId, $amount, $newState,$cardId,$usedOvertime);
         $availableOvertime = $originalAvailableOvertime - $usedOvertime;
-        $this->setPlayerAvailableOvertimeHours($player_id, $availableOvertime);
         
         //NOTIFY ACTION :
         self::notifyPlayer($player_id, "loadTruck", clienttranslate( 'You load a truck with ${amount} goods' ), array(
@@ -1056,7 +1078,7 @@ class FlipFreighters extends Table
         if($this->isPossibleMoveWithCard($card,$fromPosition,$truckState,$truckCargos,$truckId,$position,$amount) == false ) {
             throw new BgaVisibleSystemException( ("You cannot move to this place"));
         }
-        $originalAvailableOvertime = $this->getPlayerAvailableOvertimeHours($player_id);
+        $originalAvailableOvertime = $this->getPlayerAvailableOvertimeHoursPrivateState($player_id);
         $usedOvertime = max(0,$amount - $card['type_arg']);
         if( $card_suit == JOKER_TYPE) $usedOvertime = max(0,$amount - CARD_VALUE_MAX); 
         if($usedOvertime > $originalAvailableOvertime)
@@ -1066,13 +1088,12 @@ class FlipFreighters extends Table
         $newState = STATE_MOVE_TO_CONFIRM;
         $truckScore = 0;
         if($isDelivery) $newState = STATE_MOVE_DELIVERED_TO_CONFIRM;
-        $this->insertMoveTruck($player_id,$truckId, $fromPosition, $position, $newState,$cardId);
+        $this->insertMoveTruck($player_id,$truckId, $fromPosition, $position, $newState,$cardId,$usedOvertime);
         $truckPositions = $this->getTruckPositions($truckId,$player_id);
         if($isDelivery) {
             $truckScore = $this->computeScore($player_id,$truckId,$truckCargos,$truckPositions);
         }
         $availableOvertime = $originalAvailableOvertime - $usedOvertime;
-        $this->setPlayerAvailableOvertimeHours($player_id, $availableOvertime);
         
         //NOTIFY ACTION :
         self::notifyPlayer($player_id, "moveTruck", clienttranslate( 'You move a truck' ), array(
@@ -1127,6 +1148,10 @@ class FlipFreighters extends Table
         self::notifyAllPlayers("cancelTurn", clienttranslate( '${player_name} restarts his turn' ), array(
             'player_id' => $player_id,
             'player_name' => $player_name,
+        ) );
+        
+        self::notifyPlayer($player_id,"cancelTurnDatas", '', array(
+            'availableOvertime' => $this->getPlayerAvailableOvertimeHoursPrivateState($player_id),
         ) );
         
         $this->gamestate->setPlayersMultiactive(array ($player_id), 'next', false);
@@ -1228,7 +1253,7 @@ class FlipFreighters extends Table
     
         $week = $this->getCurrentWeekLocation();
         
-        $this->confirmTurnActions();
+        $this->confirmTurnActions($players);
         
         //TODO JSA notify all players actions
         

@@ -31,14 +31,15 @@ CREATE TABLE IF NOT EXISTS `card` (
 
 
 -- add a custom field to the standard "player" table
-ALTER TABLE `player` ADD `player_ffg_overtime_used` INT UNSIGNED NOT NULL DEFAULT '0';
+ALTER TABLE `player` ADD `player_ffg_overtime_used` INT UNSIGNED NOT NULL DEFAULT 0;
 
 CREATE TABLE IF NOT EXISTS `freighter_cargo` (
   `cargo_player_id` int(10) unsigned NOT NULL COMMENT 'Id of player who owns the truck/board',
   `cargo_key` varchar(32) NOT NULL COMMENT 'Id of one truck cargo containing the truck id and the cargo index',
-  `cargo_amount` int(2) COMMENT 'Quantity of loaded goods in this cargo',
-  `cargo_state` int(10) DEFAULT 0 COMMENT 'LOAD status : [0: EMPTY, 1: UNCONFIRMED, 2 : CONFIRMED, ] ',
+  `cargo_amount` int(2) unsigned COMMENT 'Quantity of loaded goods in this cargo',
+  `cargo_state` int(10) unsigned NOT NULL DEFAULT 0 COMMENT 'LOAD status : [0: EMPTY, 1: UNCONFIRMED, 2 : CONFIRMED, ] ',
   `cargo_card_id` int(10) unsigned COMMENT 'Id of card used to load the cargo',
+  `cargo_overtime_used` int(1) unsigned NOT NULL DEFAULT 0 COMMENT 'Number of spent overtime hours to load the cargo',
   PRIMARY KEY (`cargo_player_id`, `cargo_key`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT 'save infos related to each truck cargo';
 
@@ -46,9 +47,10 @@ CREATE TABLE IF NOT EXISTS `freighter_cargo` (
 CREATE TABLE IF NOT EXISTS `freighter_move` (
   `fmove_player_id` int(10) unsigned NOT NULL COMMENT 'Id of player who owns the truck/board',
   `fmove_truck_id` varchar(32) NOT NULL COMMENT 'Id of moved truck',
-  `fmove_position_from` int(2) NOT NULL COMMENT 'Truck position BEFORE moving',
-  `fmove_position_to` int(2) NOT NULL COMMENT 'Truck position AFTER moving',
-  `fmove_state` int(10) DEFAULT 1 COMMENT 'Move status : [ 1: UNCONFIRMED, 2 : CONFIRMED, 3: DELIVERED, 4 : DELIVERED_CONFIRMED, ] ',
-  `fmove_card_id` int(10) unsigned COMMENT 'Id of card used to move truck',
+  `fmove_position_from` int(2) unsigned NOT NULL COMMENT 'Truck position BEFORE moving',
+  `fmove_position_to` int(2) unsigned NOT NULL COMMENT 'Truck position AFTER moving',
+  `fmove_state` int(10) unsigned NOT NULL DEFAULT 1 COMMENT 'Move status : [ 1: UNCONFIRMED, 2 : CONFIRMED, 3: DELIVERED, 4 : DELIVERED_CONFIRMED, ] ',
+  `fmove_card_id` int(10) unsigned NOT NULL COMMENT 'Id of card used to move truck',
+  `fmove_overtime_used` int(1) unsigned NOT NULL DEFAULT 0 COMMENT 'Number of spent overtime hours to do this move',
   PRIMARY KEY (`fmove_player_id`, `fmove_truck_id`,`fmove_position_from`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT 'save infos related to each truck move';

@@ -858,8 +858,11 @@ function (dojo, declare) {
             dojo.subscribe( 'loadTruck', this, "notif_loadTruck" );
             dojo.subscribe( 'moveTruck', this, "notif_moveTruck" );
             dojo.subscribe( 'possibleCards', this, "notif_possibleCards" );
+            dojo.subscribe( 'cancelTurnDatas', this, "notif_cancelTurnDatas" );
+            
             dojo.subscribe( 'endTurnScore', this, "notif_endTurnScore" );
             dojo.subscribe( 'newWeekScore', this, "notif_newWeekScore" );
+            
         },  
         
         //  from this point and below, you can write your game notifications handling methods
@@ -988,6 +991,14 @@ function (dojo, declare) {
             }
             
         },
+        
+        notif_cancelTurnDatas: function( notif )
+        {
+            console.log( 'notif_cancelTurnDatas',notif );
+            
+            this.updatePlayerOvertimeHours(this.player_id,notif.args.availableOvertime);
+            
+        },  
         
         notif_endTurnScore: function( notif )
         {
