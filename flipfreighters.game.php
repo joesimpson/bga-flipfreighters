@@ -238,6 +238,10 @@ class FlipFreighters extends Table
         In this space, you can put any utility methods useful for your game logic
     */
     
+    function isCurrentPlayerId($player_id)
+    {
+        return self::getCurrentPlayerId() == $player_id;
+    }
     
     /**
     Init the deck component with  52 cards:
@@ -599,7 +603,7 @@ class FlipFreighters extends Table
     }
     
     function getSQLSelectTruckCargos($player_id,$truck_id,$cargo_id){
-        $sql = "SELECT SUBSTRING(cargo_key FROM 1 FOR 6) truck_id, cargo_key id,cargo_amount  amount, cargo_state state,cargo_card_id card_id, SUBSTRING(cargo_key FROM 8 FOR 2) cargo_index
+        $sql = "SELECT SUBSTRING(cargo_key FROM 1 FOR 6) truck_id, cargo_key id,cargo_amount  amount, cargo_state state,cargo_card_id card_id, cargo_overtime_used overtime, SUBSTRING(cargo_key FROM 8 FOR 2) cargo_index
             FROM freighter_cargo
             WHERE cargo_player_id ='$player_id' ";
         if(isset($truck_id) ){
@@ -793,25 +797,25 @@ class FlipFreighters extends Table
     }
     
     function sumCargoValues($cargos){
-        self::dump( 'sumCargoValues', $cargos );
+        //self::dump( 'sumCargoValues', $cargos );
         $sum = 0;
         foreach($cargos as $cargo){
             if(isset ($cargo['amount'] ) ){
                 $sum += $cargo['amount'];
             }
         }
-        self::trace( "sumCargoValues()... => $sum");
+        //self::trace( "sumCargoValues()... => $sum");
         return $sum;
     }
     function countCargoValues($cargos){
-        self::dump( 'countCargoValues', $cargos );
+        //self::dump( 'countCargoValues', $cargos );
         $sum = 0;
         foreach($cargos as $cargo){
             if(isset ($cargo['amount'] ) ){
                 $sum += 1;
             }
         }
-        self::trace( "countCargoValues()... => $sum");
+        //self::trace( "countCargoValues()... => $sum");
         return $sum;
     }
     

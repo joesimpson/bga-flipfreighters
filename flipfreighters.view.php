@@ -43,21 +43,10 @@ class view_flipfreighters_flipfreighters extends game_view
         /*********** Place your code below:  ************/
         
         $cards = $this->game->getCurrentDayCards();
-        
-        $this->page->begin_block( "flipfreighters_flipfreighters", "ffg_cards" );
-        $index =0;
+        $cardsWithOvertime = array();
         foreach( $cards as $card )
         {
-            $amount = $card['type_arg'];
-            if($card['type'] == JOKER_TYPE) $amount = CARD_VALUE_MAX;
-            $this->page->insert_block( "ffg_cards", array( 
-                                                    "INDEX" => $index,
-                                                    "CARD_ID" => $card['id'],
-                                                    "CARD_SUIT" => $card['type'],
-                                                    "CARD_VALUE" => $card['type_arg'],
-                                                    "AMOUNT" => $amount,
-                                                     ) );
-            $index++;
+            $cardsWithOvertime[$card["id"]] = $card["type_arg"];
         }
         
         $this->page->begin_block( "flipfreighters_flipfreighters", "ffg_cargo_amount_list" );
@@ -92,13 +81,21 @@ class view_flipfreighters_flipfreighters extends game_view
             {
                 foreach( $truck_cargos as $truck_cargo )
                 {
+                    $card_id = $truck_cargo['card_id'];
+                    $card_overtime = $truck_cargo['overtime'];
+                    
+                    if(array_key_exists($card_id,$cardsWithOvertime) && $this->game->isCurrentPlayerId($player_id) ){
+                        $cardsWithOvertime[$card_id] = $truck_cargo['amount'] ;
+                    }
+                    
                     $this->page->insert_block( "ffg_player_trucks_cargo", array( 
                                                         "PLAYER_ID" => $player_id,
                                                         "CONTAINER_ID" => $truck_cargo['id'],
                                                         "TRUCK_ID" => $truck_cargo['truck_id'],
                                                         "AMOUNT" => $truck_cargo['amount'],
                                                         "STATE" => $truck_cargo['state'],
-                                                        "CARD_ID" => $truck_cargo['card_id'],
+                                                        "CARD_ID" => $card_id,
+                                                        "SPENT_OVERTIME" => $card_overtime,
                                                          ) );
                 }
             }
@@ -169,6 +166,33 @@ class view_flipfreighters_flipfreighters extends game_view
                                                     "INDEX" => $k,
                                                      ) );
             }
+        }
+        
+        $this->page->begin_block( "flipfreighters_flipfreighters", "ffg_cards" );
+        $index =0;
+        
+        //$this->game->dump("VIEW cardsWithOvertime :", $cardsWithOvertime);
+        foreach( $cards as $card )
+        {
+            $card_id = $card['id'];
+            $card_value = $card['type_arg'];
+            $amount = $card_value;
+            if($card['type'] == JOKER_TYPE) $amount = CARD_VALUE_MAX;
+            $modifier = 0;
+            
+            // IF current player already used overtime on this card, let's set this info
+                $amount = $cardsWithOvertime[$card_id];
+                $modifier = $amount - $card_value;
+                
+            $this->page->insert_block( "ffg_cards", array( 
+                                                    "INDEX" => $index,
+                                                    "CARD_ID" => $card_id,
+                                                    "CARD_SUIT" => $card['type'],
+                                                    "CARD_VALUE" => $card_value,
+                                                    "AMOUNT" => $amount,
+                                                    "MODIFIER" => $modifier,
+                                                     ) );
+            $index++;
         }
 
         /*********** Do not change anything below this line  ************/

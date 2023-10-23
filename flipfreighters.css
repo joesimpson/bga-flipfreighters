@@ -1219,7 +1219,7 @@
     color: blue;
     text-shadow: 1px 1px 20px gold;
 }
-.ffg_cardModifier.ffg_empty_value{
+.ffg_cardModifier.ffg_empty_value, .ffg_cardModifier[data_value="0"]{
     visibility: hidden;
 }
 .ffg_cardModifier.ffg_positive_value{

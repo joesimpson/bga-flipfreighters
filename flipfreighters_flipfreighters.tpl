@@ -22,7 +22,7 @@
             <a href="#" id="ffg_button_card_plus_{INDEX}" class="ffg_button_card_plus bgabutton bgabutton_green" onclick="return false;"><span>+1</span></a>
             <a href="#" id="ffg_button_card_minus_{INDEX}" class="ffg_button_card_minus bgabutton bgabutton_red" onclick="return false;"><span>-1</span></a>
             <div id="ffg_card_{INDEX}" class="ffg_card ffg_selectable" data_id="{CARD_ID}" data_suit="{CARD_SUIT}" data_value="{CARD_VALUE}" data_amount='{AMOUNT}'>
-                <span id="ffg_cardModifier_{INDEX}" class="ffg_cardModifier" data_value="0"></span>
+                <span id="ffg_cardModifier_{INDEX}" class="ffg_cardModifier" data_value="{MODIFIER}"></span>
             </div>
         </div>
             
@@ -48,7 +48,7 @@
             <div id="ffg_board_trucks_wrapper">
                 <!-- BEGIN ffg_player_trucks_cargo -->
             
-                    <div id="ffg_container_{PLAYER_ID}_{CONTAINER_ID}" class="ffg_container" data_id="{CONTAINER_ID}"  data_player="{PLAYER_ID}" data_truck="{TRUCK_ID}" data_amount="{AMOUNT}" data_state="{STATE}" data_card="{CARD_ID}">
+                    <div id="ffg_container_{PLAYER_ID}_{CONTAINER_ID}" class="ffg_container" data_id="{CONTAINER_ID}"  data_player="{PLAYER_ID}" data_truck="{TRUCK_ID}" data_amount="{AMOUNT}" data_state="{STATE}" data_card="{CARD_ID}" data_overtime="{SPENT_OVERTIME}">
                         <span class="ffg_container_number">{AMOUNT}</span> 
                     </div>
                     

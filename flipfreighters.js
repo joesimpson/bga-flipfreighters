@@ -90,6 +90,8 @@ function (dojo, declare) {
             this.material = gamedatas.material;
             this.dayCards = gamedatas.dayCards;
             
+            dojo.query(".ffg_card").forEach(this.updateOvertimeHourOnCard);
+            
             this.initTooltips(this.material.tooltips);
             
             this.addTooltipToClass( "ffg_overtime_wrapper", _("Available overtime hours tokens"), '' );
@@ -435,6 +437,41 @@ function (dojo, declare) {
             }
         },
         
+        resetOvertimeHourOnCard: function(cardDiv){
+            console.log( "resetOvertimeHourOnCard()",cardDiv);
+            let cardModifier =  dojo.query("#"+cardDiv.id+" .ffg_cardModifier")[0];
+            let amount = parseInt(cardDiv.getAttribute("data_amount") ) ;
+            let card_value = parseInt(cardDiv.getAttribute("data_value") ) ;
+            cardDiv.setAttribute("data_amount", card_value);
+            cardModifier.setAttribute("data_value",0) ;
+            
+            this.updateOvertimeHourOnCard(cardDiv);
+        },
+        updateOvertimeHourOnCard: function(cardDiv){
+            console.log( "updateOvertimeHourOnCard()",cardDiv);
+            let cardModifier =  dojo.query("#"+cardDiv.id+" .ffg_cardModifier")[0];
+            let amount = parseInt(cardDiv.getAttribute("data_amount") ) ;
+            let card_value = parseInt(cardDiv.getAttribute("data_value") ) ;
+
+            let addClass ="";
+            let delta = amount - card_value;
+            if( delta>0 ){
+                cardModifier.innerHTML ="+";
+                addClass = "ffg_positive_value";
+            } else if( delta<0 ) {
+                cardModifier.innerHTML ="";
+                addClass = "ffg_negative_value";
+            }
+            else {
+                cardModifier.innerHTML = "";
+                addClass = "ffg_empty_value";
+            }
+            cardModifier.innerHTML = cardModifier.innerHTML +delta;
+            dojo.addClass(cardModifier,addClass);
+
+            return addClass;
+        },
+        
         setOvertimeHoursOnCard: function(divCard, set_val)
         {
             console.log( "setOvertimeHoursOnCard()",divCard.id, null, set_val);
@@ -449,8 +486,6 @@ function (dojo, declare) {
             
             let delta = 0;
             let addClass ="";
-            let div_id = divCard.id;
-            let div_parent = divCard.parentElement;
             let selectedCardDiv = dojo.query(".ffg_card.ffg_selected")[0] ;
             let card_type = parseInt(selectedCardDiv.getAttribute("data_suit") ) ;
             let card_value = parseInt(selectedCardDiv.getAttribute("data_value") ) ;
@@ -470,28 +505,16 @@ function (dojo, declare) {
                     data_value = data_value + inc_val;
                 }
                 delta = amount - card_value;
-                if( delta>0 ){
-                    selectedCardModifier.innerHTML ="+";
-                    addClass = "ffg_positive_value";
-                } else if( delta<0 ) {
-                    selectedCardModifier.innerHTML ="";
-                    addClass = "ffg_negative_value";
-                }
-                else {
-                    selectedCardModifier.innerHTML = "";
-                    addClass = "ffg_empty_value";
-                }
-                selectedCardModifier.innerHTML = selectedCardModifier.innerHTML +delta;
                 this.selectedAmount = amount;
                 selectedCardDiv.setAttribute("data_amount", amount);
+                selectedCardModifier.setAttribute("data_value",data_value) ;
+                
+                addClass = this.updateOvertimeHourOnCard(selectedCardDiv);
 
                 let ffg_cargo_to_fill = dojo.query(".ffg_cargo_to_fill")[0];
                 if(ffg_cargo_to_fill != undefined){
                     this.updateCargoAmountList(ffg_cargo_to_fill.id, ffg_cargo_to_fill.getAttribute("data_id") ,this.selectedAmount);
                 }
-                selectedCardModifier.setAttribute("data_value",data_value) ;
-                
-                dojo.query(".ffg_card.ffg_selected .ffg_cardModifier").addClass(addClass);
             }
             
             dojo.query(".ffg_overtime").forEach( ' dojo.removeClass(item,"ffg_empty_value ffg_positive_value ffg_negative_value"); if( parseInt(item.getAttribute("data_index"))<='+Math.abs(delta)+' ){   dojo.addClass(item,"'+addClass+'"); } else { dojo.addClass(item,"ffg_empty_value ");}' );
@@ -997,6 +1020,7 @@ function (dojo, declare) {
             console.log( 'notif_cancelTurnDatas',notif );
             
             this.updatePlayerOvertimeHours(this.player_id,notif.args.availableOvertime);
+            dojo.query(".ffg_card").forEach( dojo.hitch(this, "resetOvertimeHourOnCard"));
             
         },  
         
