@@ -102,7 +102,7 @@ function (dojo, declare) {
             // TODO: Set up your game interface here, according to "gamedatas"
             
             dojo.query(".ffg_card").connect( 'onclick', this, 'onSelectCard' );
-            dojo.query(".ffg_not_drawn_pos").connect( 'onclick', this, 'onSelectTruckPos' );
+            dojo.query(".ffg_truck_pos").connect( 'onclick', this, 'onSelectTruckPos' );
             
             dojo.query("#ffg_close_amount_list").connect( 'onclick', this, 'onCloseCargoAmountSelection' );
             dojo.query(".ffg_cargo_amount").connect( 'onclick', this, 'onSelectCargoAmount' );
@@ -412,6 +412,16 @@ function (dojo, declare) {
             //TODO JSA don't call server for 1/2 trucks that we know allow all numbers
             //CALL SERVER to get updated possible numbers :
             this.ajaxcallwrapper("getPossibleLoads", {'containerId': container_id});
+        },
+        
+        resetContainer: function(containerDiv){
+            console.log( "resetContainer()",containerDiv);
+            containerDiv.setAttribute("data_amount", "");
+            containerDiv.setAttribute("data_state","0") ;
+            containerDiv.setAttribute("data_card","") ;
+            containerDiv.setAttribute("data_overtime","") ;
+            let numberDiv = dojo.query("#"+containerDiv.id+">.ffg_container_number")[0];
+            numberDiv.innerHTML = "";
         },
         
         displayOvertimeHoursOnCard: function()
@@ -1021,6 +1031,31 @@ function (dojo, declare) {
             
             this.updatePlayerOvertimeHours(this.player_id,notif.args.availableOvertime);
             dojo.query(".ffg_card").forEach( dojo.hitch(this, "resetOvertimeHourOnCard"));
+            
+            this.possibleCards = [];
+            if(notif.args.possibleCards !=undefined){
+                this.possibleCards = notif.args.possibleCards;
+            } 
+            
+            //Clean containers :
+            let playerContainers = dojo.query(".ffg_container[data_player='"+this.player_id+"'][data_state="+this.constants.STATE_LOAD_TO_CONFIRM+"]");
+            playerContainers.forEach( dojo.hitch(this, "resetContainer"));
+            
+            //Clean truck positions :
+            dojo.query(".ffg_truck_pos.ffg_not_confirmed_pos[data_player='"+this.player_id+"']").addClass("ffg_not_drawn_pos").removeClass("ffg_not_confirmed_pos");
+            dojo.query(".ffg_truck[data_player='"+this.player_id+"']:not([data_confirmed_state='"+this.constants.STATE_MOVE_DELIVERED_CONFIRMED+"']:not([data_confirmed_state='"+this.constants.STATE_MOVE_DELIVERED_TO_CONFIRM+"'])").forEach( (e) => { 
+                dojo.attr(e,"data_not_confirmed_state", ""); 
+                dojo.attr(e,"data_not_confirmed_position","");
+                dojo.attr(e,"data_score","0");
+                }
+            );
+            //Clean trucks scores
+            dojo.query(".ffg_truck[data_player='"+this.player_id+"'][data_score='0'] .ffg_score_number").forEach( (e) => { 
+                e.innerHTML = "0";
+            }
+            );
+            
+            this.updatePlayerScore(this.player_id,notif.args.newScore );
             
         },  
         

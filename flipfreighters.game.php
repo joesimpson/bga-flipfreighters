@@ -178,7 +178,6 @@ class FlipFreighters extends Table
         $result['turn_number'] = self::getGameStateValue( 'turn_number');
         $result['dayCards'] = $this->getCurrentDayCards();
         
-        $trucks = $this->trucks_types;
         $result['material'] = array( 
             'card_types' =>  $this->card_types,
             'trucks_types' =>  $this->trucks_types,
@@ -189,6 +188,9 @@ class FlipFreighters extends Table
             'JOKER_TYPE' => JOKER_TYPE,
             'NB_ROUNDS' => NB_ROUNDS,
             'CARD_VALUE_MAX' => CARD_VALUE_MAX,
+            'STATE_LOAD_TO_CONFIRM' => STATE_LOAD_TO_CONFIRM,
+            'STATE_MOVE_DELIVERED_TO_CONFIRM' => STATE_MOVE_DELIVERED_TO_CONFIRM,
+            'STATE_MOVE_DELIVERED_CONFIRMED' => STATE_MOVE_DELIVERED_CONFIRMED,
         ); 
         
         //SOME STATS are directly displayed during the game, let's add them in the players array, as if it was in the player table:
@@ -1156,6 +1158,8 @@ class FlipFreighters extends Table
         
         self::notifyPlayer($player_id,"cancelTurnDatas", '', array(
             'availableOvertime' => $this->getPlayerAvailableOvertimeHoursPrivateState($player_id),
+            'possibleCards' => $this->getPlayerPossibleCards($player_id ),
+            'newScore' => $this->dbGetScore($player_id),
         ) );
         
         $this->gamestate->setPlayersMultiactive(array ($player_id), 'next', false);
