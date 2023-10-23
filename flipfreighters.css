@@ -893,23 +893,26 @@
 .ffg_truck[data_id='truck1']>.ffg_truck_score{
     top: 585px; 
     left: 889px;
-    background-color: rgba(255,255,255, 0.5);
 } 
 .ffg_truck[data_id='truck2']>.ffg_truck_score{
     top: 498px; 
     left: 371px;
-    background-color: rgba(255,255,255, 0.5);
 } 
 .ffg_truck[data_id='truck3']>.ffg_truck_score{
     top: 381px; 
     left: 1004px;
     width: 83px;
-    background-color: rgba(255,255,255, 0.5);
 } 
 .ffg_truck[data_id='truck4']>.ffg_truck_score{
     top: 355px; 
     left: 1122px;
     width: 83px;
+} 
+.ffg_truck[data_id='truck1']>.ffg_truck_score>.ffg_score_number,
+.ffg_truck[data_id='truck2']>.ffg_truck_score>.ffg_score_number,
+.ffg_truck[data_id='truck3']>.ffg_truck_score>.ffg_score_number,
+.ffg_truck[data_id='truck4']>.ffg_truck_score>.ffg_score_number{
+    /* 1/2 opaque back when score is written */
     background-color: rgba(255,255,255, 0.5);
 } 
 .ffg_truck[data_id='truck5']>.ffg_truck_score{
