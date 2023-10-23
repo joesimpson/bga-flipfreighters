@@ -154,9 +154,18 @@
 .ffg_card.ffg_selected{
     outline: 5px dashed blue;
 }
+.ffg_card.ffg_selectable{
+    cursor: pointer;
+}
+.ffg_card:not(.ffg_selectable){
+    opacity: 0.5 !important;
+    cursor: default;
+}
 .ffg_card.ffg_selectable:hover {
     scale: 1.15;
     cursor: pointer;
+    margin-bottom: 20px;
+    margin-top: 20px;
 }
 
 .ffg_card[data_value='2']{
@@ -1221,6 +1230,7 @@
     text-align: center;
     color: blue;
     text-shadow: 1px 1px 20px gold;
+    cursor: inherit;
 }
 .ffg_cardModifier.ffg_empty_value, .ffg_cardModifier[data_value="0"]{
     visibility: hidden;

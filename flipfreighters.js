@@ -143,6 +143,7 @@ function (dojo, declare) {
                         this.possibleCards = args.args._private.possibleCards;
                     }
                 } 
+                this.updatePossibleCards();
                 break;
                 
             case 'endTurn':
@@ -386,14 +387,35 @@ function (dojo, declare) {
             console.log( "existPossibleCard()", this.possibleCards);
             
             for(let i in this.possibleCards){
-                let pcard = this.possibleCards[i];
-                if( pcard["LOAD"].length > 0 ) return true;
-                if( pcard["MOVE"].length > 0 ) return true;
+                if(this.isPossibleCard(i)) return true;
             }
             
             return false;
         },
         
+        isPossibleCard: function(cardIndex)
+        {
+            console.log( "isPossibleCard()", cardIndex);
+         
+            let pcard = this.possibleCards[cardIndex];
+            if( pcard["LOAD"].length > 0 ) return true;
+            if( pcard["MOVE"].length > 0 ) return true; 
+        
+            return false;
+        },
+        
+        updatePossibleCards: function()
+        {
+            console.log( "updatePossibleCards()");
+         
+            dojo.query(".ffg_card").removeClass("ffg_selectable");
+            
+            for(let card_id in this.possibleCards){
+                if(this.isPossibleCard(card_id)){
+                    dojo.query(".ffg_card[data_id='"+card_id+"']").addClass("ffg_selectable");
+                }
+            }
+        },
         updateCargoAmountList: function(div_id,container_id,amount){
             console.log( "updateCargoAmountList()", div_id,container_id,amount);
             
@@ -623,6 +645,12 @@ function (dojo, declare) {
             let data_value= evt.currentTarget.getAttribute("data_value") ;
             let data_amount= evt.currentTarget.getAttribute("data_amount") ;
             
+            if( ! dojo.hasClass( div_id, 'ffg_selectable' ) )
+            {
+                // This is not a possible action => the click does nothing
+                return ;
+            }
+            
             if(this.selectedCard == card_id ){
                 //IF ALREADY DISPLAYED , hide
                 console.log("onSelectCard() => Hide :",card_id);
@@ -851,6 +879,8 @@ function (dojo, declare) {
             // Preventing default browser reaction
             dojo.stopEvent( evt );
             
+            this.unselectCard();
+            
             this.confirmationDialog(_("Are you sure you want to cancel your whole turn ?"), () => {
                 this.ajaxcallwrapperNoCheck("cancelTurn", { });
             });
@@ -934,7 +964,9 @@ function (dojo, declare) {
             this.possibleCards = [];
             if(notif.args.possibleCards !=undefined){
                 this.possibleCards = notif.args.possibleCards;
-            } 
+            }
+            
+            this.updatePossibleCards();
             
         },  
         notif_loadTruck: function( notif )
@@ -1035,6 +1067,7 @@ function (dojo, declare) {
             if(notif.args.possibleCards !=undefined){
                 this.possibleCards = notif.args.possibleCards;
             } 
+            this.updatePossibleCards();
             
             //Clean containers :
             let playerContainers = dojo.query(".ffg_container[data_player='"+this.player_id+"'][data_state="+this.constants.STATE_LOAD_TO_CONFIRM+"]");

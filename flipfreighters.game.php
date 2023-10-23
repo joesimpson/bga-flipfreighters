@@ -372,6 +372,34 @@ class FlipFreighters extends Table
         }
         return false;
     }
+    
+    function cardAlreadyUsed($player_id,$card,$trucks_cargos){
+        //self::dump("cardAlreadyUsed($card_id)...",$trucks_cargos);
+        
+        $card_id = $card["id"];
+        
+        //LOOK FOR at least 1 cargo :
+        foreach( $trucks_cargos as $truck_id => $cargos )
+        {
+            foreach( $cargos as $cargo )
+            {
+                if(isset ($cargo['card_id'] ) && $cargo['card_id'] == $card_id){
+                   return true;
+                }
+
+            }
+        }
+        
+        //look for positions card_id, but not in the array of last confirmed and last not confirmed_pos : look at all positions of this player
+        $power = $this->getCardUsedPowerForMoves($player_id, $card_id);
+        $card_value = $card["type_arg"];
+        if($power >= $card_value ) {
+            //NO remaining moves for this card
+            return true;
+        }
+        
+        return false;
+    }
     /**
     Return all possibles cargo positions for this card according to its color and value, and according to already loaded trucks from player board
     Example : input : "5 of Hearts" 
@@ -388,8 +416,16 @@ class FlipFreighters extends Table
     { 
         $possibles = array();
         
+        $player_id = $playerBoard['player_id'];
         $trucks_cargos = $playerBoard['trucks_cargos'];
         $trucks_positions = $playerBoard['trucks_positions'];
+        
+        //IF CARD ALREADY USED => KO
+        if( $this->cardAlreadyUsed($player_id,$card, $trucks_cargos)) return $possibles;
+            
+        //IF CARD ALREADY USED for a move => KO
+        $cardUsedPower = $this->getCardUsedPowerForMoves($player_id, $card["id"]);
+        if($cardUsedPower >0) return $possibles;
         
         //Loop over each container 
         foreach( $trucks_cargos as $truck_id => $cargos )
@@ -417,6 +453,7 @@ class FlipFreighters extends Table
         //$card_id = $card['id'];
         //self::dump("isPossibleLoadWithCard($card_id)", $container);
         //self::dump("isPossibleLoadWithCard($card_id)", $truck);
+        
         //IF Container is not empty KO
         if( array_key_exists('amount',$container) && $container['amount']>0 ) {
             return false;
@@ -495,8 +532,15 @@ class FlipFreighters extends Table
     { 
         $possibles = array();
         
+        $player_id = $playerBoard['player_id'];
         $trucks_positions = $playerBoard['trucks_positions'];
         $trucks_cargos = $playerBoard['trucks_cargos'];
+        
+        //IF CARD ALREADY USED => KO
+        if( $this->cardAlreadyUsed($player_id,$card,$trucks_cargos)) return $possibles;
+        
+        $cardUsedPower = $this->getCardUsedPowerForMoves($player_id, $card["id"]);
+        
         $cardMovePower = $card["type_arg"];
         foreach( $trucks_positions as $truck_position ){
             $truck_id = $truck_position['truck_id'];
@@ -508,7 +552,7 @@ class FlipFreighters extends Table
             
             for ($k =$currentTruckPosition+1 ; $k<= min($currentTruckPosition + $cardMovePower,$truck_max_position); $k++ ) {
                 $position_id = $truck_id."_".$k;
-                if($this->isPossibleMoveWithCard($card,$currentTruckPosition,$truckState,$truck_cargos,$truck_id,$k,$cardMovePower) == false ) {
+                if($this->isPossibleMoveWithCard($card,$currentTruckPosition,$truckState,$truck_cargos,$truck_id,$k,$cardMovePower,$cardUsedPower) == false ) {
                     continue;
                 }
                 $possibles[] = $position_id;
@@ -519,7 +563,7 @@ class FlipFreighters extends Table
     /**
     Return true if Move truck $truck_id with card $card to position $target_pos is possible according to current truck position and loaded cargos
     */
-    function isPossibleMoveWithCard($card,$currentTruckPosition,$truckState,$truck_cargos,$truck_id,$target_pos,$amount)
+    function isPossibleMoveWithCard($card,$currentTruckPosition,$truckState,$truck_cargos,$truck_id,$target_pos,$cardMovePower,$cardUsedPower)
     { 
         $card_id = $card['id'];
 
@@ -531,6 +575,12 @@ class FlipFreighters extends Table
         if($truckState ==STATE_MOVE_DELIVERED_CONFIRMED || $truckState ==STATE_MOVE_DELIVERED_TO_CONFIRM ){
             //You cannot move a delivered truck
            return false;
+        }
+        
+        $moveSize = $target_pos - $currentTruckPosition;
+        if($cardMovePower - $cardUsedPower < $moveSize ) {
+            //NOT enough power to do this move
+            return false;
         }
         
         return true;
@@ -601,6 +651,7 @@ class FlipFreighters extends Table
         //TODO JSA get cards spend overtime
         
         return array( 
+            "player_id" => $player_id,
             "trucks_cargos" => $trucks_cargos,
             "trucks_positions" => $trucks_positions,
             "trucks_scores" => $trucks_scores,
@@ -737,6 +788,17 @@ class FlipFreighters extends Table
         } 
         
         return $state;
+    }
+    
+    function getCardUsedPowerForMoves($player_id, $card_id){
+        $sql = " SELECT `fmove_card_id`, SUM( `fmove_position_to`- `fmove_position_from` - `fmove_overtime_used` ) as `card_used_power`  FROM `freighter_move` where fmove_player_id = '$player_id' and `fmove_card_id` = $card_id group by `fmove_card_id` ";
+        
+        $res = $this->getObjectFromDB($sql);
+        
+        if(isset($res)){
+            return $res["card_used_power"];
+        }
+        return 0; 
     }
     
     function getPlayerPossibleCards($player_id ){
@@ -1084,7 +1146,9 @@ class FlipFreighters extends Table
         $amount = $position - $fromPosition;
         $truckDatas = $this->getTruckPositions($truckId,$player_id);
         $truckCargos = $this->getTruckCargos($player_id,$truckId) [$truckId];
-        if($this->isPossibleMoveWithCard($card,$fromPosition,$truckState,$truckCargos,$truckId,$position,$amount) == false ) {
+        $cardMovePower = $card['type_arg'];
+        $cardUsedPower = $this->getCardUsedPowerForMoves($player_id, $cardId);
+        if($this->isPossibleMoveWithCard($card,$fromPosition,$truckState,$truckCargos,$truckId,$position,$cardMovePower,$cardUsedPower) == false ) {
             throw new BgaVisibleSystemException( ("You cannot move to this place"));
         }
         $originalAvailableOvertime = $this->getPlayerAvailableOvertimeHoursPrivateState($player_id);
