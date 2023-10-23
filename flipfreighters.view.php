@@ -120,7 +120,8 @@ class view_flipfreighters_flipfreighters extends game_view
                 $cargo_value_filter = $truck_material ['cargo_value_filter'];
                 
                 $this->page->reset_subblocks( 'ffg_player_truck_position' ); 
-                
+                 //TODO JSA look for cardsWithOvertime 
+                 
                 for ($k =1; $k<= $truck_max_position; $k++ )
                 { //POSITIONS start at 1
                     $classes = " ffg_not_drawn_pos";
@@ -176,13 +177,15 @@ class view_flipfreighters_flipfreighters extends game_view
         {
             $card_id = $card['id'];
             $card_value = $card['type_arg'];
-            $amount = $card_value;
-            if($card['type'] == JOKER_TYPE) $amount = CARD_VALUE_MAX;
-            $modifier = 0;
             
             // IF current player already used overtime on this card, let's set this info
-                $amount = $cardsWithOvertime[$card_id];
-                $modifier = $amount - $card_value;
+            $amount = $cardsWithOvertime[$card_id];
+            $modifier = $amount - $card_value;
+            if( $card['type'] == JOKER_TYPE){
+                //Never consider a negative modifier on Jokers
+                $modifier = max(0,$modifier); 
+                $amount = $modifier + $card_value;
+            }
                 
             $this->page->insert_block( "ffg_cards", array( 
                                                     "INDEX" => $index,

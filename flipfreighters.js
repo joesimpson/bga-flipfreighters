@@ -271,8 +271,8 @@ function (dojo, declare) {
             div.setAttribute("data_id",card_id);
             div.setAttribute("data_suit",color);
             div.setAttribute("data_value",value);
-            let amount = (this.constants.JOKER_TYPE == color) ? value : this.constants.CARD_VALUE_MAX;
-            div.setAttribute("data_amount",amount);
+            let amount = value;
+            div.setAttribute("data_amount",value);
             dojo.addClass(divId,"ffg_selectable") ;
             
             //TODO JSA ADD some animation ?
@@ -499,7 +499,6 @@ function (dojo, declare) {
             let selectedCardDiv = dojo.query(".ffg_card.ffg_selected")[0] ;
             let card_type = parseInt(selectedCardDiv.getAttribute("data_suit") ) ;
             let card_value = parseInt(selectedCardDiv.getAttribute("data_value") ) ;
-            if( this.constants.JOKER_TYPE == card_type) card_value = this.constants.CARD_VALUE_MAX;//FOR JOKER, suppose that the value is MAX
             let amount = parseInt(selectedCardDiv.getAttribute("data_amount") ) ;
             let selectedCardModifierQuery = dojo.query(".ffg_card.ffg_selected .ffg_cardModifier");
             let selectedCardModifier = selectedCardModifierQuery[0];

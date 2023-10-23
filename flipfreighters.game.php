@@ -21,7 +21,8 @@ require_once( APP_GAMEMODULE_PATH.'module/table/table.game.php' );
 
 //TODO JSA constants file
 const JOKER_TYPE = 5;
-const JOKER_VALUE = 15;
+//const JOKER_VALUE = 15;
+const JOKER_VALUE = 6; // USE CARD_VALUE_MAX in order to have the maximum value when using overtime hours tokens
 
 const NB_CARDS_BY_WEEK = 15;// BY ROUND
 const NB_CARDS_BY_TURN = 3;
@@ -397,7 +398,7 @@ class FlipFreighters extends Table
             
             foreach( $cargos as $container_id => $container )
             {
-                if($this->isPossibleLoadWithCard($card,$container,$truck,$cargos) == false ) {
+                if($this->isPossibleLoadWithCard($card,$container,$truck,$cargos, false) == false ) {
                     continue;
                 }
                 $possibles[] = $container_id;
@@ -407,8 +408,10 @@ class FlipFreighters extends Table
     }
     /**
     Return true if LOAD truck $container with card $card is possible according to current truck position and loaded cargos
+    
+    if $strictValue is TRUE, then look only for the value of the card, else look for all Joker possible values
     */
-    function isPossibleLoadWithCard($card,$container,$truck,$cargos)
+    function isPossibleLoadWithCard($card,$container,$truck,$cargos, $strictValue)
     { 
         // 'id' absent with php array datas
         //$card_id = $card['id'];
@@ -433,11 +436,11 @@ class FlipFreighters extends Table
         $card_value = $card['type_arg'];
         $cargo_index = $container['cargo_index']; //From 0 
         
-        $isJoker = ($card_value == JOKER_VALUE); // LOOK for value because we will hack it after joker value is chosen
+        $isJoker = ($card_suit == JOKER_TYPE);
         
         if(CARGO_TYPE_ORDERED_VALUES == $cargo_value_filter ){ // Truck 1-6
             $target_value = $containers[$cargo_index];
-            if($isJoker){//COnsider that joker is THAT VALUE, or it won't be playable
+            if(!$strictValue && $isJoker){//COnsider that joker is THAT VALUE, or it won't be playable
                 $card_value = $target_value;
             }
             if($this->hasInferiorValueLoaded($cargos, $card_value)){ 
@@ -447,7 +450,7 @@ class FlipFreighters extends Table
         }
         if(CARGO_TYPE_REVERSE_ORDERED_VALUES == $cargo_value_filter ){ // Truck 6-1
             $target_value = $containers[$cargo_index];
-            if($isJoker){//COnsider that joker is THAT VALUE, or it won't be playable
+            if(!$strictValue && $isJoker){//COnsider that joker is THAT VALUE, or it won't be playable
                 $card_value = $target_value;
             }
             if($this->hasSuperiorValueLoaded($cargos, $card_value)){ 
@@ -455,7 +458,7 @@ class FlipFreighters extends Table
                 return false;
             }
         }
-        if($isJoker){//AFTER previous checks, a joker is always possible
+        if(!$strictValue && $isJoker){//AFTER previous checks, a joker is always possible
             return true;
         }
         if( ! $this->isInSuitFilter($card_suit,$containers_suit_filter,$cargo_index )){
@@ -494,7 +497,7 @@ class FlipFreighters extends Table
         
         $trucks_positions = $playerBoard['trucks_positions'];
         $trucks_cargos = $playerBoard['trucks_cargos'];
-        $cardMovePower = ($card["type"] == JOKER_TYPE) ? CARD_VALUE_MAX : $card["type_arg"];
+        $cardMovePower = $card["type_arg"];
         foreach( $trucks_positions as $truck_position ){
             $truck_id = $truck_position['truck_id'];
             $material = $this->trucks_types[$truck_id];
@@ -966,7 +969,7 @@ class FlipFreighters extends Table
         for( $k =1; $k<= MAX_LOAD; $k++ )
         {
             $card = array( "type" => $cardSuit, "type_arg" => $k, );
-            if($this->isPossibleLoadWithCard($card,$container,$truckDatas,$truckCargos) == true ) {
+            if($this->isPossibleLoadWithCard($card,$container,$truckDatas,$truckCargos,true) == true ) {
                 $possibles[] = $k;
             }
         }
@@ -1014,7 +1017,7 @@ class FlipFreighters extends Table
         $truckDatas = $this->getTruckPositions($truck_id,$player_id);
         $truckCargos = $this->getTruckCargos($player_id,$truck_id) [$truck_id];
         $card['type_arg'] = $amount; //Don't save this in card, but allow to run rules on this value
-        if($this->isPossibleLoadWithCard($card,$container,$truckDatas,$truckCargos) == false ) {
+        if($this->isPossibleLoadWithCard($card,$container,$truckDatas,$truckCargos,true) == false ) {
             throw new BgaVisibleSystemException( ("You cannot load at this place"));
         }
         
@@ -1086,7 +1089,6 @@ class FlipFreighters extends Table
         }
         $originalAvailableOvertime = $this->getPlayerAvailableOvertimeHoursPrivateState($player_id);
         $usedOvertime = max(0,$amount - $card['type_arg']);
-        if( $card_suit == JOKER_TYPE) $usedOvertime = max(0,$amount - CARD_VALUE_MAX); 
         if($usedOvertime > $originalAvailableOvertime)
             throw new BgaVisibleSystemException( ("You don't have enough overtime hours to do that"));
         
