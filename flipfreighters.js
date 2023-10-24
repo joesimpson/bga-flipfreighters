@@ -71,12 +71,11 @@ function (dojo, declare) {
                 // Setting up players boards if needed
             
                 let playerContainers = dojo.query(".ffg_container[data_player='"+player_id+"']");
-                let playerTrucks = dojo.query(".ffg_truck[data_player='"+player_id+"']");
                     
                 if(this.player_id == player_id){ //CURRENT player
                     playerContainers.connect( 'onclick', this, 'onSelectLoadTarget' );
-                    this.displayPlayerScores(player);
                 }
+                this.displayPlayerScores(player);
                 this.displayPlayerPanel(player_id,player);
                 this.initPayerAvatar(player_id);
                 
@@ -629,13 +628,9 @@ function (dojo, declare) {
         
         updatePlayerWeekScore: function(player_id, round,weekscore) {
             console.log("updatePlayerWeekScore",player_id, weekscore , round);
-            if(this.player_id == player_id){//CURRENT player
-                let numberDiv = dojo.query("#ffg_week_score_"+player_id+"_"+round+" .ffg_score_number")[0];
-                numberDiv.innerHTML = weekscore;
-            }
-            else {
-                //TODO JSA displayer other players elsewhere
-            }
+            
+            let numberDiv = dojo.query("#ffg_week_score_"+player_id+"_"+round+" .ffg_score_number")[0];
+            numberDiv.innerHTML = weekscore;
         },
         
         /**
