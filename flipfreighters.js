@@ -1175,7 +1175,8 @@ function (dojo, declare) {
         notif_endTurnScore: function( notif )
         {
             console.log( 'notif_endTurnScore',notif );
-            this.updatePlayerWeekScore(notif.args.player_id,notif.args.k,notif.args.nb );
+            //Week score will be displayed when week really ends, not before
+            //this.updatePlayerWeekScore(notif.args.player_id,notif.args.k,notif.args.nb );
             this.updatePlayerScore(notif.args.player_id,notif.args.newScore );
         },
         
