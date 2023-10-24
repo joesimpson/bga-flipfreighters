@@ -43,6 +43,7 @@ const STATE_MOVE_CONFIRMED = 2;
 const STATE_MOVE_DELIVERED_TO_CONFIRM = 3;
 const STATE_MOVE_DELIVERED_CONFIRMED = 4;
 
+const SCORE_BY_REMAINING_OVERTIME = 2;
 const SCORE_TYPE_NUMBER_OF_GOODS_X5 = 1;
 const SCORE_TYPE_NUMBER_OF_GOODS_3_TO_30 = 2;
 const SCORE_TYPE_SUM_GOODS_X1 = 3;
@@ -116,12 +117,13 @@ class FlipFreighters extends Table
  
         // Create players
         // Note: if you added some extra field on "player" table in the database (dbmodel.sql), you can initialize it there.
-        $sql = "INSERT INTO player (player_id, player_color, player_canal, player_name, player_avatar) VALUES ";
+        $sql = "INSERT INTO player (player_id, player_color, player_canal, player_name, player_avatar, player_score) VALUES ";
         $values = array();
+        $initScore = NB_OVERTIME_TOKENS * SCORE_BY_REMAINING_OVERTIME;
         foreach( $players as $player_id => $player )
         {
             $color = array_shift( $default_colors );
-            $values[] = "('".$player_id."','$color','".$player['player_canal']."','".addslashes( $player['player_name'] )."','".addslashes( $player['player_avatar'] )."')";
+            $values[] = "('".$player_id."','$color','".$player['player_canal']."','".addslashes( $player['player_name'] )."','".addslashes( $player['player_avatar'] )."', $initScore)";
         }
         $sql .= implode( ',', $values );
         self::DbQuery( $sql );
@@ -1025,7 +1027,7 @@ class FlipFreighters extends Table
             $score += self::getStat( "score_week".$k, $player_id );
         }
         
-        $score += 2 * $this->getPlayerAvailableOvertimeHours($player_id);
+        $score += SCORE_BY_REMAINING_OVERTIME * $this->getPlayerAvailableOvertimeHours($player_id);
         
         return $score;
     }
