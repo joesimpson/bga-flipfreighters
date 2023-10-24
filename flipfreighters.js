@@ -77,14 +77,14 @@ function (dojo, declare) {
                     playerContainers.connect( 'onclick', this, 'onSelectLoadTarget' );
                     this.displayPlayerScores(player);
                 }
-                else {
-                    //TODO JSA update other players, instead of destroying them (destroy for now because it is displayed in the same place for every one)
-                    playerContainers.forEach(dojo.destroy);
-                    playerTrucks.forEach(dojo.destroy);
-                    dojo.query(".ffg_overtime[data_player='"+player_id+"']").forEach(dojo.destroy);
-                }
                 this.displayPlayerPanel(player_id,player);
                 
+            }
+            // TODO: Set up your game interface here, according to "gamedatas"
+            
+            if(!this.isSpectator){
+                //Display current player board first :
+                dojo.place("ffg_board_player_container_"+this.player_id, "ffg_all_players_board_wrap","first");
             }
             
             this.material = gamedatas.material;
@@ -99,15 +99,13 @@ function (dojo, declare) {
             
             dojo.query("#playerBoardSliderSize").connect( 'oninput', this, 'onBoardSliderChange' );
             
-            // TODO: Set up your game interface here, according to "gamedatas"
-            
             dojo.query(".ffg_card").connect( 'onclick', this, 'onSelectCard' );
-            dojo.query(".ffg_truck_pos").connect( 'onclick', this, 'onSelectTruckPos' );
+            dojo.query(".ffg_current_player .ffg_truck_pos").connect( 'onclick', this, 'onSelectTruckPos' );
             
             dojo.query("#ffg_close_amount_list").connect( 'onclick', this, 'onCloseCargoAmountSelection' );
-            dojo.query(".ffg_cargo_amount").connect( 'onclick', this, 'onSelectCargoAmount' );
+            dojo.query(".ffg_current_player .ffg_cargo_amount").connect( 'onclick', this, 'onSelectCargoAmount' );
 
-            dojo.query(".ffg_overtime").connect( 'onclick', this, 'onSelectOvertimeHour' );
+            dojo.query(".ffg_current_player .ffg_overtime").connect( 'onclick', this, 'onSelectOvertimeHour' );
             
             dojo.query(".ffg_button_card_plus").connect( 'onclick', this, 'onClickCardPlus' );
             dojo.query(".ffg_button_card_minus").connect( 'onclick', this, 'onClickCardMinus' );

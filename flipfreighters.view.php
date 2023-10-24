@@ -68,10 +68,16 @@ class view_flipfreighters_flipfreighters extends game_view
         $this->page->begin_block( "flipfreighters_flipfreighters", "ffg_player_truck_positions" );
         $this->page->begin_block( "flipfreighters_flipfreighters", "ffg_week_score" );
         $this->page->begin_block( "flipfreighters_flipfreighters", "ffg_overtime_hour" );
+        $this->page->begin_block( "flipfreighters_flipfreighters", "ffg_playerBoard" );
         
         foreach( $players as $player_id => $player )
         { 
-            
+            $this->page->reset_subblocks( 'ffg_player_trucks_cargo' ); 
+            $this->page->reset_subblocks( 'ffg_player_truck_position' ); 
+            $this->page->reset_subblocks( 'ffg_player_truck_positions' ); 
+            $this->page->reset_subblocks( 'ffg_week_score' ); 
+            $this->page->reset_subblocks( 'ffg_overtime_hour' ); 
+                                                     
             $player_board = $this->game->getPlayerBoard($player_id);
             $trucks_cargos = $player_board['trucks_cargos'];
         
@@ -167,6 +173,17 @@ class view_flipfreighters_flipfreighters extends game_view
                                                     "INDEX" => $k,
                                                      ) );
             }
+            
+            $playerClass = "";
+            if($this->game->isCurrentPlayerId($player_id) ){
+                $playerClass = "ffg_current_player";
+            }
+            $this->page->insert_block( "ffg_playerBoard", array( 
+                                                    "PLAYER_ID" => $player_id,
+                                                    "PLAYER_CLASS" => $playerClass,
+                                                    "PLAYER_NAME" => $player['player_name'],
+                                                    "PLAYER_COLOR" => $player['player_color'],
+                                                     ) );
         }
         
         $this->page->begin_block( "flipfreighters_flipfreighters", "ffg_cards" );

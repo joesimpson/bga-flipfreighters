@@ -29,15 +29,17 @@
         <!-- END ffg_cards -->
     </div>
     
-    <!-- TODO JSA Display other players boards somewhere-->
-    <div id="ffg_board_current_player_container">
-        <div id="ffg_board_current_player" class="ffg_board" style="outline-color: #0000ff;">
+<div id="ffg_all_players_board_wrap" class="">
+    <!-- BEGIN ffg_playerBoard -->
+     
+    <div id="ffg_board_player_container_{PLAYER_ID}" class="ffg_board_container {PLAYER_CLASS}" data_player_id="{PLAYER_ID}">
+        <div id="ffg_board_player_{PLAYER_ID}" class="ffg_board" style="outline-color: #{PLAYER_COLOR};">
             
-            <span class="ffg_playerFaceUp_title"><h3>
-                <span style="color:#0000ff; outline-color:#0000ff;">joesimpson0</span>
+            <span class="ffg_board_title"><h3>
+                <span style="color:#{PLAYER_COLOR}; outline-color:#{PLAYER_COLOR};">{PLAYER_NAME}</span>
             </h3></span>
             
-            <!-- LIST of amounts to select by for JOKER-->
+            <!-- LIST of amounts to select by for JOKER : TODO JSA Could be outside of players loop  -->
             <div id="ffg_cargo_amount_list" class="whiteblock ffg_hidden">
                 <div id="ffg_arrow" class="ffg_arrow"><i class="fa fa-arrow-up"></i></div>
                 <div id="ffg_cargo_amount_loading" class=""><i class="fa fa-spinner fa-spin"></i> </div>
@@ -98,6 +100,8 @@
             </div>
         </div>
     </div>
+    <!-- END ffg_playerBoard -->
+</div>
     
 </div>
 
