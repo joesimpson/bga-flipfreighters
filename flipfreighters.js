@@ -960,6 +960,8 @@ function (dojo, declare) {
                 this.playCardOnTable(i,card.id, color, value );
             }
             
+            this.updatePlayersOvertimeHours(notif.args.availableOvertimes);
+            dojo.query(".ffg_card").forEach( dojo.hitch(this, "resetOvertimeHourOnCard"));
             dojo.query(".ffg_card .ffg_cardModifier").removeClass("ffg_positive_value").removeClass("ffg_negative_value").addClass("ffg_empty_value");
             dojo.query(".ffg_card .ffg_cardModifier").forEach(" item.innerHTML = ''"); 
         },  

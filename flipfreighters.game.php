@@ -1333,6 +1333,8 @@ class FlipFreighters extends Table
     { 
         self::trace("stNewTurn()");
         
+        $players = self::loadPlayersBasicInfos();
+        
         $turn = self::incGameStateValue( 'turn_number',1 );
         
         //Flip three cards face up from the draw deck  :
@@ -1341,11 +1343,19 @@ class FlipFreighters extends Table
         
         $maxTurn = NB_CARDS_BY_WEEK / NB_CARDS_BY_TURN;
         
+        $availableOvertimes = array();
+        foreach($players as $player_id => $player){ 
+            $availableOvertime = $this->getPlayerAvailableOvertimeHours($player_id);
+            $availableOvertimes[$player_id] = array('availableOvertime' => $availableOvertime );
+            
+        }
+        
         //NOTIF ALL about new cards
         self::notifyAllPlayers( "newTurn", clienttranslate( 'Day ${day}/${max} : the game draws new cards' ), array( 
             'newCards' => $newCards,
             'day' => $turn,
             'max' => $maxTurn,
+            'availableOvertimes' => $availableOvertimes,
         ) );
         
         $this->gamestate->nextState( 'next' );
