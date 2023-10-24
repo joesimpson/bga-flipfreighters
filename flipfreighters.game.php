@@ -601,7 +601,8 @@ class FlipFreighters extends Table
         
         $trucks = $this->trucks_types;
         
-        //TODO JSA : may be unnecessary if we use material container_ids to retrieve possibles actions, so we insert only when loaded ?
+        /*
+        // may be unnecessary if we use material container_ids to retrieve possibles actions, so we insert only when loaded ?
         //Step 1 : prepare an entry for all possible cargo in every players trucks :
         $sql = "INSERT INTO freighter_cargo (cargo_player_id, cargo_key) VALUES ";
         $values = array();
@@ -615,6 +616,8 @@ class FlipFreighters extends Table
         }
         $sql .= implode( ',', $values );
         self::DbQuery( $sql );
+        */
+        
     }
     
     function getPlayerBoard($player_id){
@@ -647,8 +650,6 @@ class FlipFreighters extends Table
                 );
             }
             
-            //TODO JSA DO the same with cargo load
-            
             $trucks_scores[$truck_type_id] = $this->computeScore($player_id,$truck_type_id, $trucks_cargos[$truck_type_id], $trucks_positions[$truck_type_id] ); 
         }
         //self::dump("getPlayerBoard($player_id) trucks_positions AFTER ",$trucks_positions);
@@ -677,13 +678,59 @@ class FlipFreighters extends Table
     function getTruckCargos($player_id,$truck_id = null){
         $sql = $this->getSQLSelectTruckCargos($player_id,$truck_id,null);
         $trucks_cargos = $this->getDoubleKeyCollectionFromDB( $sql);
+        
+        //LOOP ON EACH TRUCK to add trucks which are not selected by this player yet
+        foreach ($this->trucks_types as $truck_type_id =>  $truck_type){
+            if($truck_id !=null && $truck_id != $truck_type_id) continue;
+                
+            if( ! array_key_exists($truck_type_id, $trucks_cargos ) ){
+                $trucks_cargos[$truck_type_id] = array ();
+            }
+        
+            //LOOP ON EACH CARGOS to add cargos which are not selected by this player yet
+            foreach( $truck_type['containers'] as $container_id => $container ){
+                $cargo_key = $truck_type_id."_".$container_id;
+                if( ! array_key_exists($cargo_key, $trucks_cargos[$truck_type_id] ) ){
+                    $trucks_cargos[$truck_type_id][$cargo_key] = $this->getEmptyTruckCargo($player_id,$truck_type_id, $container_id);
+                }
+            }
+        }
+        
         return $trucks_cargos;    
     }
     function getTruckContainer($player_id,$cargo_id){
         $sql = $this->getSQLSelectTruckCargos($player_id,null,$cargo_id);
         $datas = $this->getObjectFromDB($sql);
-        self::dump("getTruckContainer($player_id,$cargo_id)", $datas);            
+        self::dump("getTruckContainer($player_id,$cargo_id)", $datas);   
+        
+        if( $datas == null){
+            //Cargo is not inserted yet...
+            $cargoTruckIdAndCargoIndex = explode("_", $cargo_id);
+            $truck_type_id = $cargoTruckIdAndCargoIndex[0];
+            $cargo_index = $cargoTruckIdAndCargoIndex[1];
+            
+            $truckMaterial = $this->trucks_types[$truck_type_id];
+            if( isset($truckMaterial ) ){//IF truck is defined
+                $truckMaterialCargos = $truckMaterial['containers'];
+                if( array_key_exists($cargo_index,$truckMaterialCargos ) ){//IF truck cargo is defined
+                    $datas = $this->getEmptyTruckCargo($player_id,$truck_type_id, $cargo_index);
+                }
+            }
+        }   
         return $datas;    
+    }
+    
+    function getEmptyTruckCargo($player_id,$truck_id, $cargo_index){
+        $cargo_key = $truck_id."_".$cargo_index;
+        return array (
+            "truck_id" => $truck_id,
+            "id" => $cargo_key,
+            "amount" => null,
+            "state" => STATE_LOAD_INITIAL,
+            "card_id" => null,
+            "overtime" => 0,
+            "cargo_index" => $cargo_index,
+        ); 
     }
     
     function getSQLSelectTruckPositions($player_id = null){
@@ -823,8 +870,13 @@ class FlipFreighters extends Table
             );
     }
     
+    function insertLoadInTruck($player_id, $cargoId, $amount,$state,$cardId,$overtimeUsed){
+        $this->DbQuery("INSERT INTO freighter_cargo (cargo_player_id, cargo_key,cargo_amount,cargo_card_id,cargo_state,cargo_overtime_used ) VALUES ( '$player_id', '$cargoId', $amount,$cardId,$state, $overtimeUsed ) ");
+    }
+    /**
+    Deprecated : we only insert when necessary, so ne need for update for now
+    */
     function updateLoadInTruck($player_id, $cargoId, $amount,$state,$cardId,$overtimeUsed){
-        
         $this->DbQuery("UPDATE freighter_cargo SET cargo_amount= $amount, cargo_card_id= $cardId, cargo_state= $state, cargo_overtime_used=$overtimeUsed WHERE cargo_key='$cargoId' AND cargo_player_id ='$player_id' ");
     }
     
@@ -862,10 +914,12 @@ class FlipFreighters extends Table
     */
     function cancelTurnActions($player_id){
         self::trace( "cancelTurnActions($player_id)...");
-
         $oldState = STATE_LOAD_TO_CONFIRM;
+        /*
         $newState = STATE_LOAD_INITIAL;
         $this->DbQuery("UPDATE freighter_cargo SET cargo_state= $newState, cargo_amount = NULL, cargo_card_id = NULL, cargo_overtime_used = 0 WHERE cargo_state = $oldState AND cargo_player_id ='$player_id'");
+        */
+        $this->DbQuery("DELETE FROM freighter_cargo WHERE cargo_state = $oldState AND cargo_player_id ='$player_id'");
         
         $oldState1 = STATE_MOVE_TO_CONFIRM;
         $oldState2 = STATE_MOVE_DELIVERED_TO_CONFIRM;
@@ -1131,7 +1185,7 @@ class FlipFreighters extends Table
         
         //REAL ACTION :
         $newState = STATE_LOAD_TO_CONFIRM;
-        $this->updateLoadInTruck($player_id,$containerId, $amount, $newState,$cardId,$usedOvertime);
+        $this->insertLoadInTruck($player_id,$containerId, $amount, $newState,$cardId,$usedOvertime);
         $availableOvertime = $originalAvailableOvertime - $usedOvertime;
         
         //NOTIFY ACTION :
