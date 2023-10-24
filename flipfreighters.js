@@ -478,6 +478,12 @@ function (dojo, declare) {
             //CALL SERVER to get updated possible numbers :
             this.ajaxcallwrapper("getPossibleLoads", {'containerId': container_id});
         },
+        closeCargoAmountList: function(){
+            console.log( "closeCargoAmountList()");
+            dojo.query(".ffg_cargo_to_fill").removeClass("ffg_cargo_to_fill");
+            dojo.query("#ffg_cargo_amount_list").addClass("ffg_hidden");
+            this.selectedCargoContainer = null;
+        },
         
         resetContainer: function(containerDiv){
             console.log( "resetContainer()",containerDiv);
@@ -585,10 +591,12 @@ function (dojo, declare) {
                 selectedCardModifier.setAttribute("data_value",data_value) ;
                 
                 addClass = this.updateOvertimeHourOnCard(selectedCardDiv);
-
+                
                 let ffg_cargo_to_fill = dojo.query(".ffg_cargo_to_fill")[0];
                 if(ffg_cargo_to_fill != undefined){
-                    this.updateCargoAmountList(ffg_cargo_to_fill.id, ffg_cargo_to_fill.getAttribute("data_id") ,this.selectedAmount);
+                    //this.updateCargoAmountList(ffg_cargo_to_fill.id, ffg_cargo_to_fill.getAttribute("data_id") ,this.selectedAmount);
+                    //Updating will cause error "Please wait, an action is already in progress" because we call another action at the end of this method: we close this popup instead 
+                    this.closeCargoAmountList();
                 }
             }
             
@@ -831,10 +839,7 @@ function (dojo, declare) {
             // Preventing default browser reaction
             dojo.stopEvent( evt );
             
-            dojo.query(".ffg_cargo_to_fill").removeClass("ffg_cargo_to_fill");
-            dojo.query("#ffg_cargo_amount_list").addClass("ffg_hidden");
-            
-            this.selectedCargoContainer = null;
+            this.closeCargoAmountList();
         },
 
         /**
@@ -1029,7 +1034,7 @@ function (dojo, declare) {
             
             let card_id = notif.args.cardId;
             if(card_id !=undefined){
-                //SPECIFIC CASE, retrieve 1 card infos
+                //SPECIFIC CASE, retrieve 1 card infos via getPossibleActionsForCard
                 this.possibleCards[card_id] = [];
                 if(notif.args.possibleCards !=undefined){
                     this.possibleCards[card_id] = notif.args.possibleCards;
