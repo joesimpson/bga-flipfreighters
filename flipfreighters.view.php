@@ -178,6 +178,9 @@ class view_flipfreighters_flipfreighters extends game_view
             if($this->game->isCurrentPlayerId($player_id) ){
                 $playerClass = "ffg_current_player";
             }
+            else {
+                $playerClass = "ffg_other_player";
+            }
             $this->page->insert_block( "ffg_playerBoard", array( 
                                                     "PLAYER_ID" => $player_id,
                                                     "PLAYER_CLASS" => $playerClass,

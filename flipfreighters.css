@@ -1178,6 +1178,7 @@
     cursor: initial;
 }
 .ffg_overtime.ffg_selectable .ffg_icon_overtime_used,
+.ffg_overtime.ffg_selectable_for_others .ffg_icon_overtime_used,
 .ffg_overtime:not(.ffg_positive_value) .ffg_icon_overtime_plus,
 .ffg_overtime:not(.ffg_negative_value) .ffg_icon_overtime_minus{
     display: none;

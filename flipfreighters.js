@@ -284,7 +284,21 @@ function (dojo, declare) {
             console.log( "updatePlayerOvertimeHours" ,player_id, nb); 
             this.counterOvertime[player_id].toValue(nb);
             
-            dojo.query(".ffg_overtime[data_player='"+player_id+"']").forEach( ' dojo.removeClass(item,"ffg_empty_value ffg_positive_value ffg_negative_value ffg_selectable"); if( parseInt(item.getAttribute("data_index"))<='+nb+' ){   dojo.addClass(item,"ffg_empty_value ffg_selectable"); } else { dojo.addClass(item,"ffg_empty_value ");}' );
+            let selectableClass = "";
+            if(player_id == this.player_id){//CURRENT PLAYER
+                selectableClass = "ffg_selectable";
+            }
+            else {
+                selectableClass = "ffg_selectable_for_others";
+            }
+            
+            dojo.query(".ffg_overtime[data_player='"+player_id+"']").forEach( (item) => {  
+                dojo.removeClass(item,"ffg_empty_value ffg_positive_value ffg_negative_value ffg_selectable ffg_selectable_for_others"); 
+                if( parseInt(item.getAttribute("data_index"))<=nb ){
+                    dojo.addClass(item,selectableClass); 
+                } 
+                dojo.addClass(item,"ffg_empty_value ");
+            });
         },
         
         playCardOnTable: function( row,card_id, color, value )
