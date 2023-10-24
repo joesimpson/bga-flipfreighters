@@ -572,16 +572,19 @@ class FlipFreighters extends Table
         $countCargoValues = $this->countCargoValues($truck_cargos);
         if($countCargoValues <1){
             //TRUCK Cannot move before being loaded
+            self::trace("isPossibleMoveWithCard($card_id) : KO Cannot move before being loaded (with $countCargoValues) ");
             return false;
         }
         if($truckState ==STATE_MOVE_DELIVERED_CONFIRMED || $truckState ==STATE_MOVE_DELIVERED_TO_CONFIRM ){
             //You cannot move a delivered truck
+            self::trace("isPossibleMoveWithCard($card_id) : KO You cannot move a delivered truck (with state $truckState) ");
            return false;
         }
         
         $moveSize = $target_pos - $currentTruckPosition;
         if($cardMovePower - $cardUsedPower < $moveSize ) {
             //NOT enough power to do this move
+            self::trace("isPossibleMoveWithCard($card_id) : KO NOT enough power to do this move (cardMovePower $cardMovePower, cardUsedPower=$cardUsedPower, moveSize=$moveSize) ");
             return false;
         }
         
@@ -1190,8 +1193,8 @@ class FlipFreighters extends Table
         //LOGIC CHECKS
         $truckState = $this->getCurrentTruckState($truckId,$player_id);
         $truckCargos = $trucks_cargos [$truckId];
-        $card['type_arg'] = $amount; //Don't save this in card, but allow to run rules on this value
         $cardMovePower = $card['type_arg'];
+        $card['type_arg'] = $amount; //Don't save this in card, but allow to run rules on this value
         $cardUsedPower = $this->getCardUsedPowerForMoves($player_id, $cardId);
         if($this->isPossibleMoveWithCard($card,$fromPosition,$truckState,$truckCargos,$truckId,$position,$cardMovePower,$cardUsedPower) == false ) {
             throw new BgaVisibleSystemException( ("You cannot move to this place"));
