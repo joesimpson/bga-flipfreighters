@@ -754,6 +754,11 @@ function (dojo, declare) {
                 //We cannot use more tokens
                 return;
             }
+            let card_value = parseInt(dojo.query(".ffg_card.ffg_selected")[0].getAttribute("data_value") ) ;
+            if( card_value + delta_value <=0 ){
+                // we cannot use values under 1
+                return;
+            }
             
             this.increaseOvertimeHoursOnCard(evt.currentTarget,-1);
             
