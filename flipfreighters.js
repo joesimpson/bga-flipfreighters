@@ -132,6 +132,7 @@ function (dojo, declare) {
             case 'newTurn':
                 //Prepare to flip all cards :
                 dojo.query(".ffg_card").forEach("dojo.removeClass(item,'ffg_card_back');"); 
+                this.unselectCard();
                 break;
                
             case 'playerTurn':
