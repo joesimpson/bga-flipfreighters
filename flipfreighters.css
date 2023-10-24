@@ -114,7 +114,7 @@
     text-shadow: 1px 1px 5px black;
 }
 
-.trh_player_panel_details{
+.ffg_player_panel_details{
     text-align: center;
 }
 
@@ -233,15 +233,34 @@
     margin-left: 20px;
     margin-top: 10px;
     position: relative;
+    outline: 10px solid black;
+    border-radius: 20px;
 }
 #ffg_board_current_player_container{
     transform: scale(var(--ffg_board_display_scale));
     transform-origin: top left;
     width: calc(var(--ffg_board_display_width) * var(--ffg_board_display_scale)  );
     height: calc(var(--ffg_board_display_height) * var(--ffg_board_display_scale)  );
+    margin-top: 20px;
 }
 
 
+/** Board Player NAMES*/
+.ffg_playerFaceUp_title { display:block; }
+.ffg_playerFaceUp_title h3{ 
+    text-align:center; 
+    position:relative;
+    /** Move the title to place it on the top border */
+    top: -10px;
+    /*! margin-bottom: 10px; */
+}
+.ffg_playerFaceUp_title h3 span{
+    text-shadow: 1px 1px 1px black;
+    border-radius: 20px;
+    outline: 3px solid black;
+    padding: 5px 15px;
+    background-color: white;
+}
 
 .ffg_container{
     width: var(--ffg_container_width);

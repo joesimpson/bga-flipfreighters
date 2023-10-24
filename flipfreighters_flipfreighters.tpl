@@ -31,8 +31,12 @@
     
     <!-- TODO JSA Display other players boards somewhere-->
     <div id="ffg_board_current_player_container">
-        <div id="ffg_board_current_player" class="ffg_board">
-                
+        <div id="ffg_board_current_player" class="ffg_board" style="outline-color: #0000ff;">
+            
+            <span class="ffg_playerFaceUp_title"><h3>
+                <span style="color:#0000ff; outline-color:#0000ff;">joesimpson0</span>
+            </h3></span>
+            
             <!-- LIST of amounts to select by for JOKER-->
             <div id="ffg_cargo_amount_list" class="whiteblock ffg_hidden">
                 <div id="ffg_arrow" class="ffg_arrow"><i class="fa fa-arrow-up"></i></div>
