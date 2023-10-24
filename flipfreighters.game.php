@@ -1181,24 +1181,21 @@ class FlipFreighters extends Table
         if( $this->cardAlreadyUsed($player_id,$card, $trucks_cargos))  {
             throw new BgaVisibleSystemException( ("You already used that card"));
         }
+        $amount = $position - $fromPosition;
+        $originalAvailableOvertime = $this->getPlayerAvailableOvertimeHoursPrivateState($player_id);
+        $usedOvertime = max(0,$amount - $card['type_arg']);
+        if($usedOvertime > $originalAvailableOvertime)
+            throw new BgaVisibleSystemException( ("You don't have enough overtime hours to do that"));
         
         //LOGIC CHECKS
         $truckState = $this->getCurrentTruckState($truckId,$player_id);
-        /* check Done in isPossibleMoveWithCard
-        if($truckState ==STATE_MOVE_DELIVERED_CONFIRMED || $truckState ==STATE_MOVE_DELIVERED_TO_CONFIRM )
-            throw new BgaVisibleSystemException( ("You cannot move a delivered truck"));
-        */
-        $amount = $position - $fromPosition;
         $truckCargos = $trucks_cargos [$truckId];
+        $card['type_arg'] = $amount; //Don't save this in card, but allow to run rules on this value
         $cardMovePower = $card['type_arg'];
         $cardUsedPower = $this->getCardUsedPowerForMoves($player_id, $cardId);
         if($this->isPossibleMoveWithCard($card,$fromPosition,$truckState,$truckCargos,$truckId,$position,$cardMovePower,$cardUsedPower) == false ) {
             throw new BgaVisibleSystemException( ("You cannot move to this place"));
         }
-        $originalAvailableOvertime = $this->getPlayerAvailableOvertimeHoursPrivateState($player_id);
-        $usedOvertime = max(0,$amount - $card['type_arg']);
-        if($usedOvertime > $originalAvailableOvertime)
-            throw new BgaVisibleSystemException( ("You don't have enough overtime hours to do that"));
         
         //REAL ACTION :
         $newState = STATE_MOVE_TO_CONFIRM;
