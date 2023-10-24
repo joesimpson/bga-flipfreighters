@@ -515,10 +515,11 @@ function (dojo, declare) {
             console.log( "increaseOvertimeHoursOnCard()",divCard.id,inc_val,set_val);
              
             dojo.query(".ffg_card.ffg_selected .ffg_cardModifier").removeClass("ffg_empty_value ffg_positive_value ffg_negative_value");
-            
+                        
             let delta = 0;
             let addClass ="";
             let selectedCardDiv = dojo.query(".ffg_card.ffg_selected")[0] ;
+            let card_id = parseInt(selectedCardDiv.getAttribute("data_id") ) ;
             let card_type = parseInt(selectedCardDiv.getAttribute("data_suit") ) ;
             let card_value = parseInt(selectedCardDiv.getAttribute("data_value") ) ;
             let amount = parseInt(selectedCardDiv.getAttribute("data_amount") ) ;
@@ -549,6 +550,14 @@ function (dojo, declare) {
             }
             
             dojo.query(".ffg_overtime").forEach( ' dojo.removeClass(item,"ffg_empty_value ffg_positive_value ffg_negative_value"); if( parseInt(item.getAttribute("data_index"))<='+Math.abs(delta)+' ){   dojo.addClass(item,"'+addClass+'"); } else { dojo.addClass(item,"ffg_empty_value ");}' );
+            
+            //disable buttons and enable them again after receiving notif
+            dojo.query(".ffg_button_card_plus").removeClass("ffg_selectable");
+            dojo.query(".ffg_button_card_minus").removeClass("ffg_selectable");
+            dojo.query(".ffg_overtime.ffg_selectable").addClass("ffg_selectable_wait");
+            
+            //CALL SERVER to refresh possible actions for this card ;
+            this.ajaxcallwrapper("getPossibleActionsForCard", {'cardId': card_id,'amount': this.selectedAmount});
         },
         
         displayTruckScore: function(player_id, truckScore, truckDivId){
@@ -635,21 +644,22 @@ function (dojo, declare) {
             // Preventing default browser reaction
             dojo.stopEvent( evt );
             
-            dojo.query(".ffg_card").removeClass("ffg_selected") ;
-            dojo.query(".ffg_card_wrapper").removeClass("ffg_selected") ;
-            dojo.query("#ffg_cargo_amount_list").addClass("ffg_hidden");
-            dojo.query(".ffg_cargo_to_fill").removeClass("ffg_cargo_to_fill");
-            
             let div_id = evt.currentTarget.id;
-            let card_id= evt.currentTarget.getAttribute("data_id") ;
-            let data_value= evt.currentTarget.getAttribute("data_value") ;
-            let data_amount= evt.currentTarget.getAttribute("data_amount") ;
             
             if( ! dojo.hasClass( div_id, 'ffg_selectable' ) )
             {
                 // This is not a possible action => the click does nothing
                 return ;
             }
+            
+            dojo.query(".ffg_card").removeClass("ffg_selected") ;
+            dojo.query(".ffg_card_wrapper").removeClass("ffg_selected") ;
+            dojo.query("#ffg_cargo_amount_list").addClass("ffg_hidden");
+            dojo.query(".ffg_cargo_to_fill").removeClass("ffg_cargo_to_fill");
+            
+            let card_id= evt.currentTarget.getAttribute("data_id") ;
+            let data_value= evt.currentTarget.getAttribute("data_value") ;
+            let data_amount= evt.currentTarget.getAttribute("data_amount") ;
             
             if(this.selectedCard == card_id ){
                 //IF ALREADY DISPLAYED , hide
@@ -675,18 +685,30 @@ function (dojo, declare) {
         {
             console.log( 'onClickCardPlus',evt );
             
+            let div_id = evt.currentTarget.id;
+            if(! dojo.hasClass( div_id, 'ffg_selectable' ) )
+            {
+                return ;
+            }
+            
             let delta_value = parseInt(dojo.query(".ffg_card.ffg_selected .ffg_cardModifier")[0].getAttribute("data_value") ) ;
             if(Math.abs(delta_value +1) > this.counterOvertime[this.player_id].current_value ){
                 //We cannot use more tokens
                 return;
             }
-                
+            
             this.increaseOvertimeHoursOnCard(evt.currentTarget,1);
             
         },
         onClickCardMinus: function( evt )
         {
             console.log( 'onClickCardMinus',evt );
+            
+            let div_id = evt.currentTarget.id;
+            if(! dojo.hasClass( div_id, 'ffg_selectable' ) )
+            {
+                return ;
+            }
             
             let delta_value = parseInt(dojo.query(".ffg_card.ffg_selected .ffg_cardModifier")[0].getAttribute("data_value") ) ;
             if( Math.abs(delta_value - 1) > this.counterOvertime[this.player_id].current_value ){
@@ -821,16 +843,16 @@ function (dojo, declare) {
             // Preventing default browser reaction
             dojo.stopEvent( evt );
             
-            this.selectedOvertimeToken = null;
             let div_id = evt.currentTarget.id;
             let div = dojo.query("#"+div_id);
             let data_amount = parseInt(evt.currentTarget.getAttribute("data_index") );
             
-            if( ! dojo.hasClass( div_id, 'ffg_selectable' ) )
+            if( ! dojo.hasClass( div_id, 'ffg_selectable' ) ||  dojo.hasClass( div_id, 'ffg_selectable_wait' ) )
             {
                 // This is not a possible action => the click does nothing
                 return ;
             }
+            this.selectedOvertimeToken = null;
             
             //div.toggleClass("ffg_positive_value").toggleClass("ffg_negative_value");
             //TOGGLE with 3 Values : initial -> positive -> negative -> initial ->...
@@ -850,8 +872,6 @@ function (dojo, declare) {
             
             this.displayOvertimeHoursOnCard();
             dojo.query(".ffg_card.ffg_selected .ffg_cardModifier").addClass(eltClass);
-            
-            //TODO JSA onSelectOvertimeHour update possibles loads/moves
             
         },
         
@@ -960,13 +980,29 @@ function (dojo, declare) {
         notif_possibleCards: function( notif )
         {
             console.log( 'notif_possibleCards',notif );
-              
-            this.possibleCards = [];
-            if(notif.args.possibleCards !=undefined){
-                this.possibleCards = notif.args.possibleCards;
+            
+            let card_id = notif.args.cardId;
+            if(card_id !=undefined){
+                //SPECIFIC CASE, retrieve 1 card infos
+                this.possibleCards[card_id] = [];
+                if(notif.args.possibleCards !=undefined){
+                    this.possibleCards[card_id] = notif.args.possibleCards;
+                }
+                this.displayPossibleLoads( card_id);
+                this.displayPossibleMoves( card_id);
+            }  
+            else { //GENERAL CASE, get all 3 cards infos
+                this.possibleCards = [];
+                if(notif.args.possibleCards !=undefined){
+                    this.possibleCards = notif.args.possibleCards;
+                }
             }
             
             this.updatePossibleCards();
+            
+            dojo.query(".ffg_button_card_plus").addClass("ffg_selectable");
+            dojo.query(".ffg_button_card_minus").addClass("ffg_selectable");
+            dojo.query(".ffg_overtime.ffg_selectable_wait").removeClass("ffg_selectable_wait");
             
         },  
         notif_loadTruck: function( notif )

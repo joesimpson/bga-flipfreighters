@@ -92,6 +92,21 @@
         self::ajaxResponse( );
     }
 
+    public function getPossibleActionsForCard()
+    {
+        self::setAjaxMode();     
+
+        // Retrieve arguments
+        // Note: these arguments correspond to what has been sent through the javascript "ajaxcall" method
+        $cardId = self::getArg( "cardId", AT_posint, true );
+        $amount = self::getArg( "amount", AT_posint, true );
+
+        // Then, call the appropriate method in your game logic 
+        $this->game->getPossibleActionsForCard($cardId, $amount  );
+
+        self::ajaxResponse( );
+    }
+    
     public function moveTruck()
     {
         self::setAjaxMode();     

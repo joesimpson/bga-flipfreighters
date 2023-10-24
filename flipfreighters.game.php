@@ -808,12 +808,16 @@ class FlipFreighters extends Table
         $possibleCards = array();
         $playerBoard = $this->getPlayerBoard($player_id);
         foreach( $dayCards as $dayCard){
-            $possibleCards[$dayCard['id']] = array(
-                "LOAD" => $this->getPossibleLoadsWithCard($dayCard,$playerBoard),
-                "MOVE" => $this->getPossibleMovesWithCard($dayCard,$playerBoard),
-                );
+            $possibleCards[$dayCard['id']] = $this->getPlayerPossibleCardArray($dayCard,$playerBoard);
         }
         return $possibleCards;
+    }
+    
+    function getPlayerPossibleCardArray($card,$playerBoard ){
+        return array(
+            "LOAD" => $this->getPossibleLoadsWithCard($card,$playerBoard),
+            "MOVE" => $this->getPossibleMovesWithCard($card,$playerBoard),
+            );
     }
     
     function updateLoadInTruck($player_id, $cargoId, $amount,$state,$cardId,$overtimeUsed){
@@ -1045,6 +1049,35 @@ class FlipFreighters extends Table
         ) );
     }
 
+    /**
+    ACTION to refresh UI list of possibles places for LOAD or MOVE action (with overtime hours). 
+    $amount is the card value +/- overtime
+    */
+    function getPossibleActionsForCard($cardId, $amount ){
+        self::checkAction( 'getPossibleActionsForCard' ); 
+        
+        $player_id = self::getCurrentPlayerId();
+        $player_name = self::getCurrentPlayerName();
+        self::trace("getPossibleActionsForCard($cardId, $amount,$player_id,$player_name )");
+        
+        $card = $this->cards->getCard($cardId);
+        if($card == null )
+            throw new BgaVisibleSystemException( ("Unknown card"));
+        if($card['location'] != DECK_LOCATION_DAY )
+            throw new BgaVisibleSystemException( ("You cannot play that card know"));
+        
+        $card_suit = $card['type'];
+        $card['type_arg'] = $amount; //Don't save this in card, but allow to run rules on this value
+        $playerBoard = $this->getPlayerBoard($player_id);
+        
+        $possibles = $this->getPlayerPossibleCardArray($card,$playerBoard);
+        
+        //send possiblePositions 
+        self::notifyPlayer($player_id, "possibleCards", '', array(
+            'cardId' => $cardId,
+            'possibleCards' => $possibles,
+        ) );
+    }
     function loadTruck($cardId, $containerId, $amount )
     {
         // Check that this is the player's turn and that it is a "possible action" at this game state (see states.inc.php)
