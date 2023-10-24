@@ -374,9 +374,10 @@ class FlipFreighters extends Table
     }
     
     function cardAlreadyUsed($player_id,$card,$trucks_cargos){
-        //self::dump("cardAlreadyUsed($card_id)...",$trucks_cargos);
         
         $card_id = $card["id"];
+        self::trace("cardAlreadyUsed($player_id,$card_id)...");
+        //self::dump("cardAlreadyUsed($player_id,$card_id)...",$trucks_cargos);
         
         //LOOK FOR at least 1 cargo :
         foreach( $trucks_cargos as $truck_id => $cargos )
@@ -392,6 +393,7 @@ class FlipFreighters extends Table
         
         //look for positions card_id, but not in the array of last confirmed and last not confirmed_pos : look at all positions of this player
         $power = $this->getCardUsedPowerForMoves($player_id, $card_id);
+        self::trace("cardAlreadyUsed($player_id,$card_id)... used power =$power");
         $card_value = $card["type_arg"];
         if($power >= $card_value ) {
             //NO remaining moves for this card
@@ -1076,8 +1078,15 @@ class FlipFreighters extends Table
         
         //LOGIC CHECK :
         $truck_id = $container['truck_id'];
-        $truckDatas = $this->getTruckPositions($truck_id,$player_id);
-        $truckCargos = $this->getTruckCargos($player_id,$truck_id) [$truck_id];
+        $playerBoard = $this->getPlayerBoard($player_id);
+        $trucks_cargos = $playerBoard['trucks_cargos'];
+        $trucks_positions = $playerBoard['trucks_positions'];
+        $truckDatas = $trucks_positions[$truck_id];
+        $truckCargos = $trucks_cargos [$truck_id];
+        $cardUsedPower = $this->getCardUsedPowerForMoves($player_id, $cardId);//>0 if card used for part of a move
+        if( $this->cardAlreadyUsed($player_id,$card, $trucks_cargos) || $cardUsedPower >0)  {//ANTICHEAT
+            throw new BgaVisibleSystemException( ("You already used that card"));
+        }
         $card['type_arg'] = $amount; //Don't save this in card, but allow to run rules on this value
         if($this->isPossibleLoadWithCard($card,$container,$truckDatas,$truckCargos,true) == false ) {
             throw new BgaVisibleSystemException( ("You cannot load at this place"));
@@ -1124,7 +1133,6 @@ class FlipFreighters extends Table
             throw new BgaVisibleSystemException( ("Unknown card"));
         if($card['location'] != DECK_LOCATION_DAY )
             throw new BgaVisibleSystemException( ("You cannot play that card know"));
-        //TODO JSA check card not used
         $card_suit = $card['type'];
         if( !array_key_exists($truckId, $this->trucks_types ))
             throw new BgaVisibleSystemException( ("Unknown truck"));
@@ -1136,6 +1144,10 @@ class FlipFreighters extends Table
             throw new BgaVisibleSystemException( ("Wrong position"));
         if($isDelivery && array_search($position,$path_size) ===FALSE)
             throw new BgaVisibleSystemException( ("You cannot deliver here"));
+        $trucks_cargos = $this->getTruckCargos($player_id);
+        if( $this->cardAlreadyUsed($player_id,$card, $trucks_cargos))  {
+            throw new BgaVisibleSystemException( ("You already used that card"));
+        }
         
         //LOGIC CHECKS
         $truckState = $this->getCurrentTruckState($truckId,$player_id);
@@ -1144,8 +1156,7 @@ class FlipFreighters extends Table
             throw new BgaVisibleSystemException( ("You cannot move a delivered truck"));
         */
         $amount = $position - $fromPosition;
-        $truckDatas = $this->getTruckPositions($truckId,$player_id);
-        $truckCargos = $this->getTruckCargos($player_id,$truckId) [$truckId];
+        $truckCargos = $trucks_cargos [$truckId];
         $cardMovePower = $card['type_arg'];
         $cardUsedPower = $this->getCardUsedPowerForMoves($player_id, $cardId);
         if($this->isPossibleMoveWithCard($card,$fromPosition,$truckState,$truckCargos,$truckId,$position,$cardMovePower,$cardUsedPower) == false ) {
