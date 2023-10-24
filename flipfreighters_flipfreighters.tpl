@@ -35,9 +35,9 @@
     <div id="ffg_board_player_container_{PLAYER_ID}" class="ffg_board_container {PLAYER_CLASS}" data_player_id="{PLAYER_ID}">
         <div id="ffg_board_player_{PLAYER_ID}" class="ffg_board" style="outline-color: #{PLAYER_COLOR};">
             
-            <span class="ffg_board_title"><h3>
-                <span style="color:#{PLAYER_COLOR}; outline-color:#{PLAYER_COLOR};">{PLAYER_NAME}</span>
-            </h3></span>
+            <span class="ffg_board_title"><h1>
+                <span style="color:#{PLAYER_COLOR}; outline-color:#{PLAYER_COLOR};"><img id="ffg_player_avatar_{PLAYER_ID}" class="emblem ffg_player_avatar" src="" alt="">{PLAYER_NAME}</span>
+            </h1></span>
             
             <!-- LIST of amounts to select by for JOKER : TODO JSA Could be outside of players loop  -->
             <div id="ffg_cargo_amount_list" class="whiteblock ffg_hidden">

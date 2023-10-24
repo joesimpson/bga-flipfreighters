@@ -244,13 +244,13 @@
 
 /** Board Player NAMES*/
 .ffg_board_title { display:block; }
-.ffg_board_title h3{ 
+.ffg_board_title h1{ 
     text-align:center; 
     position:relative;
     /** Move the title to place it on the top border */
-    top: -10px;
+    top: -15px;
 }
-.ffg_board_title h3 span{
+.ffg_board_title h1 span{
     text-shadow: 1px 1px 1px black;
     border-radius: 20px;
     outline: 3px solid black;
@@ -258,6 +258,15 @@
     background-color: white;
     cursor: default;
 }
+.ffg_player_avatar{
+    width: 32px;
+    height: 32px;
+    border-radius: 25px;
+    overflow: hidden;
+    vertical-align: top;
+    margin-right: 10px;
+}
+
 
 .ffg_container{
     width: var(--ffg_container_width);

@@ -78,6 +78,7 @@ function (dojo, declare) {
                     this.displayPlayerScores(player);
                 }
                 this.displayPlayerPanel(player_id,player);
+                this.initPayerAvatar(player_id);
                 
             }
             // TODO: Set up your game interface here, according to "gamedatas"
@@ -217,6 +218,36 @@ function (dojo, declare) {
 
             this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/" + action + ".html", args, this, (result) => { }, handler);
         },
+        
+        /*
+        Init board avatar with the same as displayed by BGA player panel,
+        */
+        initPayerAvatar: function( player_id) {
+            console.log( "initPayerAvatar ... " ,player_id);
+            
+            /*
+            let bgaAvatar = dojo.query("#overall_player_board_"+player_id+" img#avatar_"+player_id) [0];
+            if(bgaAvatar == undefined) return ;
+            let imgsrc = bgaAvatar.getAttribute("src");
+            */
+            let imgsrc = this.getPlayerAvatar(player_id);
+            let ffgAvatar = dojo.query("#ffg_player_avatar_"+player_id) [0];
+            dojo.attr(ffgAvatar, "src", imgsrc); 
+        },     
+        // Studio cookBook function
+        getPlayerAvatar: function(playerId) {
+            let avatarURL = '';
+
+            if (null != $('avatar_' + playerId)) {
+                let smallAvatarURL = dojo.attr('avatar_' + playerId, 'src');
+                avatarURL = smallAvatarURL;
+            }
+            else {
+                avatarURL = 'https://x.boardgamearena.net/data/data/avatar/default_32.jpg';
+            }
+
+            return avatarURL;
+        },        
         
         initTooltips: function (ffg_tooltips){
             console.log( "initTooltips ... " ,ffg_tooltips);
