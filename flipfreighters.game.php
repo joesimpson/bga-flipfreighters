@@ -1249,7 +1249,7 @@ class FlipFreighters extends Table
         //LOGIC CHECKS
         $truckState = $this->getCurrentTruckState($truckId,$player_id);
         $truckCargos = $trucks_cargos [$truckId];
-        $cardMovePower = $card['type_arg'];
+        $cardMovePower = $card['type_arg'] + $usedOvertime;
         $card['type_arg'] = $amount; //Don't save this in card, but allow to run rules on this value
         $cardUsedPower = $this->getCardUsedPowerForMoves($player_id, $cardId);
         if($this->isPossibleMoveWithCard($card,$fromPosition,$truckState,$truckCargos,$truckId,$position,$cardMovePower,$cardUsedPower) == false ) {
