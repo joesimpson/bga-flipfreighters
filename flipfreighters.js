@@ -388,12 +388,10 @@ function (dojo, declare) {
             }
         },
         
-        updateLoad: function(datas)
+        updateLoad: function(player_id,containerId,amount,state,card_id,overtime)
         {
-            console.log( "updateLoad ... ",datas);
+            console.log( "updateLoad ... ",player_id,containerId,amount,state,card_id,overtime);
             
-            let player_id = datas.player_id;
-            let containerId = datas.id;
             let containerDivId = "ffg_container_"+player_id+"_"+containerId;
             let div = dojo.query("#"+containerDivId)[0];
             if(div == undefined) {
@@ -401,51 +399,50 @@ function (dojo, declare) {
                 return;
             }
             //UPDATE div datas :
-            div.setAttribute("data_amount",datas.amount);
-            div.setAttribute("data_state",datas.state);
-            div.setAttribute("data_card",datas.card_id);
-            div.setAttribute("data_overtime",datas.overtime);
+            div.setAttribute("data_amount",amount);
+            div.setAttribute("data_state",state);
+            div.setAttribute("data_card",card_id);
+            div.setAttribute("data_overtime",overtime);
             
             //ffg_container_number
             let numberDiv = dojo.query("#"+containerDivId+">.ffg_container_number")[0];
-            numberDiv.innerHTML=datas.amount;
+            numberDiv.innerHTML=amount;
             
         },
-        updateMove: function(datas)
+        updateMove: function(player_id,truck_id,position,fromPosition,confirmed_position,confirmed_state,not_confirmed_state,not_confirmed_position,truckScore,cssPos)
         {
-            console.log( "updateMove ... ",datas);
-            //TODO JSA factorize notif_moveTruck
+            console.log( "updateMove ... ",player_id,truck_id,position,fromPosition,confirmed_position,confirmed_state,not_confirmed_state,not_confirmed_position,truckScore,cssPos);
             
-            let truckDivId = "ffg_truck_"+datas.player_id+"_"+datas.truck_id;
+            let truckDivId = "ffg_truck_"+player_id+"_"+truck_id;
             let truckDiv = dojo.query("#"+truckDivId)[0];
             if(truckDiv == undefined) {
                 console.log( "updateMove ...ERROR not found truck", truckDivId );
                 return;
             }
             
-            let posId = datas.truck_id+"_"+datas.confirmed_position;
-            let posDivId = "ffg_truck_pos_"+datas.player_id+"_"+posId;
+            let posId = truck_id+"_"+position;
+            let posDivId = "ffg_truck_pos_"+player_id+"_"+posId;
             let div = dojo.query("#"+posDivId)[0];
             if(div == undefined) {
                 console.log( "updateMove ...ERROR not found truck position", posDivId );
                 return;
             }
             //UPDATE truck div datas :
-            truckDiv.setAttribute("data_confirmed_state",datas.confirmed_state);
-            truckDiv.setAttribute("data_confirmed_position",datas.confirmed_position);
-            truckDiv.setAttribute("data_not_confirmed_state",datas.not_confirmed_state);
-            truckDiv.setAttribute("data_not_confirmed_position",datas.not_confirmed_position);
-            //TODO JSA send truckScore
-            //truckDiv.setAttribute("data_score",data.truckScore);
-            //this.displayTruckScore(data.player_id, data.truckScore,truckDivId);   
+            truckDiv.setAttribute("data_confirmed_state",confirmed_state);
+            truckDiv.setAttribute("data_confirmed_position",confirmed_position);
+            truckDiv.setAttribute("data_not_confirmed_state",not_confirmed_state);
+            truckDiv.setAttribute("data_not_confirmed_position",not_confirmed_position);
+            truckDiv.setAttribute("data_score",truckScore);
+            this.displayTruckScore(player_id, truckScore,truckDivId);   
+            this.increasePlayerScore(player_id,truckScore);
             
             //Update possible moves by removing the one we did  (and the corresponding previous places too !)
-            for (let k=1 ; k<= datas.confirmed_position; k++ ){
-                let posId = datas.truck_id+"_"+k;
+            for (let k=fromPosition ; k<= position; k++ ){
+                let posId = truck_id+"_"+k;
                 //UPDATE div classes :
-                let posDivId = "ffg_truck_pos_"+datas.player_id+"_"+posId;
+                let posDivId = "ffg_truck_pos_"+player_id+"_"+posId;
                 dojo.removeClass(posDivId,"ffg_not_drawn_pos ffg_not_confirmed_pos ffg_selectable") ;
-                dojo.addClass(posDivId,"ffg_confirmed_pos") ;
+                dojo.addClass(posDivId,cssPos ) ;
             }
         },
         
@@ -1123,19 +1120,8 @@ function (dojo, declare) {
             console.log( 'notif_loadTruck',notif );
             
             let containerDivId = "ffg_container_"+this.player_id+"_"+notif.args.containerId;
-            let div = dojo.query("#"+containerDivId)[0];
-            if(div == undefined) {
-                console.log( "notif_loadTruck ...ERROR not found truck container", containerDivId );
-                return;
-            }
-            //UPDATE div datas :
-            div.setAttribute("data_amount",notif.args.amount);
-            div.setAttribute("data_state",notif.args.state);
-            div.setAttribute("data_card",notif.args.card_id);
             
-            //ffg_container_number
-            let numberDiv = dojo.query("#"+containerDivId+">.ffg_container_number")[0];
-            numberDiv.innerHTML=notif.args.amount;
+            this.updateLoad(this.player_id,notif.args.containerId,notif.args.amount,notif.args.state,notif.args.card_id,notif.args.usedOvertime);
             
             this.updatePlayerOvertimeHours(this.player_id,notif.args.availableOvertime);
             
@@ -1158,49 +1144,19 @@ function (dojo, declare) {
         {
             console.log( 'notif_moveTruck',notif );
             
-            let truckDivId = "ffg_truck_"+this.player_id+"_"+notif.args.truckId;
-            let truckDiv = dojo.query("#"+truckDivId)[0];
-            if(truckDiv == undefined) {
-                console.log( "notif_moveTruck ...ERROR not found truck", truckDivId );
-                return;
-            }
+            this.updateMove(this.player_id, notif.args.truckId,notif.args.position, parseInt(notif.args.fromPosition) +1,notif.args.truckState.confirmed_position,notif.args.truckState.confirmed_state,notif.args.truckState.not_confirmed_state,notif.args.truckState.not_confirmed_position, notif.args.truckScore,"ffg_not_confirmed_pos");
             
-            let posId = notif.args.truckId+"_"+notif.args.position;
-            let posDivId = "ffg_truck_pos_"+this.player_id+"_"+posId;
-            let div = dojo.query("#"+posDivId)[0];
-            if(div == undefined) {
-                console.log( "notif_moveTruck ...ERROR not found truck position", posDivId );
-                return;
-            }
-            //UPDATE truck div datas :
-            truckDiv.setAttribute("data_confirmed_state",notif.args.truckState.confirmed_state);
-            truckDiv.setAttribute("data_confirmed_position",notif.args.truckState.confirmed_position);
-            truckDiv.setAttribute("data_not_confirmed_state",notif.args.truckState.not_confirmed_state);
-            truckDiv.setAttribute("data_not_confirmed_position",notif.args.truckState.not_confirmed_position);
-            truckDiv.setAttribute("data_score",notif.args.truckScore);
-            
-            this.displayTruckScore(this.player_id, notif.args.truckScore,truckDivId);    
-            this.increasePlayerScore(this.player_id,notif.args.truckScore);
             this.updatePlayerOvertimeHours(this.player_id,notif.args.availableOvertime);
             
             //unselect card
             this.unselectCard();
             
-            //TODO JSA DISABLE THIS CARD FOR FURTHER ACTIONS
-            
             //Update possible moves by removing the one we did  (and the corresponding previous places too !)
             for (let k=parseInt(notif.args.fromPosition) +1 ; k<= notif.args.position; k++ ){
                 let posId = notif.args.truckId+"_"+k;
                 console.log( 'notif_moveTruck() ... Removing possible position',posId );
+                //TODO JSA CLEAN, this should be obsolete with each turn sending new possibleCards 
                 this.cleanPossibleCardForPos("MOVE",posId);
-                
-                //UPDATE div classes :
-                let posDivId = "ffg_truck_pos_"+this.player_id+"_"+posId;
-                dojo.removeClass(posDivId,"ffg_not_drawn_pos") ;
-                dojo.addClass(posDivId,"ffg_not_confirmed_pos") ;
-                
-                //Remove possible selection of this place
-                dojo.removeClass(posDivId,"ffg_selectable") ;
             }
             
         },
@@ -1243,17 +1199,17 @@ function (dojo, declare) {
         notif_endTurnActions: function( notif )
         {
             console.log( 'notif_endTurnActions',notif );
-            //TODO JSA notif_endTurnActions
+
             let listActions = notif.args.listActions;
             for (let i in listActions.trucks_cargos){
                 let load = listActions.trucks_cargos[i];
-                this.updateLoad(load);
+                this.updateLoad(load.player_id,load.id,load.amount,load.state,load.card_id,load.overtime);
             }
             for (let i in listActions.trucks_positions){
                 let player = listActions.trucks_positions[i];
                 for (let j in player){
                     let move = player[j];
-                    this.updateMove(move);
+                    this.updateMove(move.player_id, move.truck_id,move.confirmed_position, 1,move.confirmed_position,move.confirmed_state,move.not_confirmed_state,move.not_confirmed_position, move.truckScore,"ffg_confirmed_pos");
                 }
             }
             

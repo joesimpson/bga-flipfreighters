@@ -910,10 +910,17 @@ class FlipFreighters extends Table
         
         $states = array(STATE_MOVE_TO_CONFIRM, STATE_MOVE_DELIVERED_TO_CONFIRM);
         $trucks_positions = $this->getDoubleKeyCollectionFromDB( $this->getSQLSelectTruckPositions(null, $states  ) );
-        /* TODO JSA loop trucks_positions
-        if($isDelivery) {
-            $truckScore = $this->computeScore($player_id,$truckId,$truckCargos,$truckPositions);
-        }*/
+        foreach($trucks_positions as $player_id => $truck){
+            foreach($truck as $truck_id => $truck_pos){
+                $truckScore = 0;
+                if($truck_pos["not_confirmed_state"] == STATE_MOVE_DELIVERED_TO_CONFIRM) {
+                    //To be able to compute the score we need to read all cargos in this truck, not only the cargos modified during this turn
+                    $truckAllCargos = $this->getTruckCargos($player_id,$truck_id) [$truck_id];
+                    $truckScore = $this->computeScore($player_id,$truck_id,$truckAllCargos,$truck_pos);
+                }
+                $trucks_positions[$player_id ][$truck_id]["truckScore"] = $truckScore;
+            }
+        }
         
         $datas = array( 
             "trucks_cargos" => $trucks_cargos,
@@ -1252,6 +1259,7 @@ class FlipFreighters extends Table
             'amount' => $amount,
             'card_id' => $cardId,
             'state' => $newState,
+            'usedOvertime' => $usedOvertime,
             'availableOvertime' => $availableOvertime,
         ) );
         
