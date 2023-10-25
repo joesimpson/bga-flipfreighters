@@ -937,15 +937,15 @@ class FlipFreighters extends Table
         self::trace( "confirmTurnActions()...");
 
         $oldState = STATE_LOAD_TO_CONFIRM;
-        $newState = STATE_LOAD_CONFIRMED;
+        $newState = $this->getConfirmedState($oldState);
         $this->DbQuery("UPDATE freighter_cargo SET cargo_state= $newState WHERE cargo_state = $oldState");
         
         $oldState = STATE_MOVE_TO_CONFIRM;
-        $newState = STATE_MOVE_CONFIRMED;
+        $newState = $this->getConfirmedState($oldState);
         $this->DbQuery("UPDATE freighter_move SET fmove_state= $newState WHERE fmove_state = $oldState");
         
         $oldState = STATE_MOVE_DELIVERED_TO_CONFIRM;
-        $newState = STATE_MOVE_DELIVERED_CONFIRMED;
+        $newState = $this->getConfirmedState($oldState);
         $this->DbQuery("UPDATE freighter_move SET fmove_state= $newState WHERE fmove_state = $oldState");
         
         if(isset($listUnconfirmedTurnActions)){
@@ -958,7 +958,7 @@ class FlipFreighters extends Table
                 //for($j=0;$j< count($listUnconfirmedTurnActions["trucks_positions"][$i]); $j++){
                 foreach($listUnconfirmedTurnActions["trucks_positions"][$i] as $j => $action){
                 //foreach($actions as $action){
-                    $listUnconfirmedTurnActions["trucks_positions"][$i][$j]["confirmed_state"] = $listUnconfirmedTurnActions["trucks_positions"][$i][$j]["not_confirmed_state"];
+                    $listUnconfirmedTurnActions["trucks_positions"][$i][$j]["confirmed_state"] = $this->getConfirmedState($listUnconfirmedTurnActions["trucks_positions"][$i][$j]["not_confirmed_state"] );
                     $listUnconfirmedTurnActions["trucks_positions"][$i][$j]["confirmed_position"] = $listUnconfirmedTurnActions["trucks_positions"][$i][$j]["not_confirmed_position"];
                     $listUnconfirmedTurnActions["trucks_positions"][$i][$j]["not_confirmed_position"] = null;
                     $listUnconfirmedTurnActions["trucks_positions"][$i][$j]["not_confirmed_state"] = null;
@@ -974,6 +974,18 @@ class FlipFreighters extends Table
             $this->setPlayerAvailableOvertimeHours($player_id,$privateInfo);
         }
     }
+    /**
+    Return the expectate state of an element which is in state $olState, when it will be confirmed
+    */
+    function getConfirmedState($oldState){
+        switch($oldState){
+            case STATE_LOAD_TO_CONFIRM: return STATE_LOAD_CONFIRMED;
+            case STATE_MOVE_TO_CONFIRM: return STATE_MOVE_CONFIRMED;
+            case STATE_MOVE_DELIVERED_TO_CONFIRM: return STATE_MOVE_DELIVERED_CONFIRMED;
+            default: return null;
+        }
+    }
+    
     
     /** This function MUST cancel actions BEFORE the previous method confirmTurnActions() can SAVE them
     */
