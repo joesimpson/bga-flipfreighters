@@ -138,7 +138,12 @@ class FlipFreighters extends Table
         
         // Init game statistics
         // (note: statistics used in this file must be defined in your stats.inc.php file)
-        //self::initStat( 'table', 'table_teststat1', 0 );    // Init a table statistics
+        self::initStat( 'table', 'stat_spades_drawn', 0 );    // Init a table statistics
+        self::initStat( 'table', 'stat_hearts_drawn', 0 );
+        self::initStat( 'table', 'stat_clubs_drawn', 0 );
+        self::initStat( 'table', 'stat_diamonds_drawn', 0 );
+        self::initStat( 'table', 'stat_jokers_drawn', 0 );
+        
         self::initStat( 'player', 'score_week1', 0 );  // Init a player statistics (for all players)
         self::initStat( 'player', 'score_week2', 0 );
         self::initStat( 'player', 'score_week3', 0 );
@@ -1482,6 +1487,22 @@ class FlipFreighters extends Table
             $availableOvertime = $this->getPlayerAvailableOvertimeHours($player_id);
             $availableOvertimes[$player_id] = array('availableOvertime' => $availableOvertime );
             
+        }
+        
+        foreach($newCards as $card_id => $card){ 
+            $card_suit = $card['type'];
+            $statType = null;
+            switch($card_suit){
+                case CARGO_SUIT_SPADE: $statType = "stat_spades_drawn"; break;
+                case CARGO_SUIT_HEART: $statType = "stat_hearts_drawn"; break;
+                case CARGO_SUIT_CLUB: $statType = "stat_clubs_drawn"; break;
+                case CARGO_SUIT_DIAMOND: $statType = "stat_diamonds_drawn"; break;
+                case JOKER_TYPE: $statType = "stat_jokers_drawn"; break;
+                default: break;
+            }
+            
+            //Update table statistics about cards
+            if(isset($statType)) self::incStat( 1, $statType );
         }
         
         //NOTIF ALL about new cards

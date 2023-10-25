@@ -52,18 +52,22 @@ $stats_type = array(
     // Statistics global to table
     "table" => array(
 
-/*
-        Examples:
-
-
-        "table_teststat1" => array(   "id"=> 10,
-                                "name" => totranslate("table test stat 1"), 
+        "stat_spades_drawn" => array(   "id"=> 10,
+                                "name" => totranslate("Spade cards drawn"), 
                                 "type" => "int" ),
-                                
-        "table_teststat2" => array(   "id"=> 11,
-                                "name" => totranslate("table test stat 2"), 
-                                "type" => "float" )
-*/  
+        "stat_hearts_drawn" => array(   "id"=> 11,
+                                "name" => totranslate("Heart cards drawn"), 
+                                "type" => "int" ),
+        "stat_clubs_drawn" => array(   "id"=> 12,
+                                "name" => totranslate("Club cards drawn"), 
+                                "type" => "int" ),
+        "stat_diamonds_drawn" => array(   "id"=> 13,
+                                "name" => totranslate("Diamond cards drawn"), 
+                                "type" => "int" ),
+        "stat_jokers_drawn" => array(   "id"=> 14,
+                                "name" => totranslate("Joker cards drawn"), 
+                                "type" => "int" ),
+
     ),
     
     // Statistics existing for each player
