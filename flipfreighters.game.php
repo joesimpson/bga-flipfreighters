@@ -142,6 +142,7 @@ class FlipFreighters extends Table
         self::initStat( 'player', 'score_week1', 0 );  // Init a player statistics (for all players)
         self::initStat( 'player', 'score_week2', 0 );
         self::initStat( 'player', 'score_week3', 0 );
+        self::initStat( 'player', 'unused_overtime', NB_OVERTIME_TOKENS );
 
         // TODO: setup the initial game situation here
         $this->initDeck();
@@ -972,6 +973,7 @@ class FlipFreighters extends Table
             ///Set the public data about spent overtime by getting the private info 
             $privateInfo = $this-> getPlayerAvailableOvertimeHoursPrivateState($player_id);
             $this->setPlayerAvailableOvertimeHours($player_id,$privateInfo);
+            self::setStat( $privateInfo, "unused_overtime", $player_id );
         }
     }
     /**

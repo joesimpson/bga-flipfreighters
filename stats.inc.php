@@ -78,20 +78,10 @@ $stats_type = array(
         "score_week3" => array("id"=> 12,
                     "name" => totranslate("Week 3 score"),
                     "type" => "int" ),
-    
-/*
-        Examples:    
-        
-        
-        "player_teststat1" => array(   "id"=> 10,
-                                "name" => totranslate("player test stat 1"), 
-                                "type" => "int" ),
-                                
-        "player_teststat2" => array(   "id"=> 11,
-                                "name" => totranslate("player test stat 2"), 
-                                "type" => "float" )
 
-*/    
+        "unused_overtime" => array("id"=> 13,
+                    "name" => totranslate("Unused Overtime Hours"),
+                    "type" => "int" ),
     )
 
 );
