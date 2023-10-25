@@ -388,6 +388,67 @@ function (dojo, declare) {
             }
         },
         
+        updateLoad: function(datas)
+        {
+            console.log( "updateLoad ... ",datas);
+            
+            let player_id = datas.player_id;
+            let containerId = datas.id;
+            let containerDivId = "ffg_container_"+player_id+"_"+containerId;
+            let div = dojo.query("#"+containerDivId)[0];
+            if(div == undefined) {
+                console.log( "updateLoad ...ERROR not found truck container", containerDivId );
+                return;
+            }
+            //UPDATE div datas :
+            div.setAttribute("data_amount",datas.amount);
+            div.setAttribute("data_state",datas.state);
+            div.setAttribute("data_card",datas.card_id);
+            div.setAttribute("data_overtime",datas.overtime);
+            
+            //ffg_container_number
+            let numberDiv = dojo.query("#"+containerDivId+">.ffg_container_number")[0];
+            numberDiv.innerHTML=datas.amount;
+            
+        },
+        updateMove: function(datas)
+        {
+            console.log( "updateMove ... ",datas);
+            //TODO JSA factorize notif_moveTruck
+            
+            let truckDivId = "ffg_truck_"+datas.player_id+"_"+datas.truck_id;
+            let truckDiv = dojo.query("#"+truckDivId)[0];
+            if(truckDiv == undefined) {
+                console.log( "updateMove ...ERROR not found truck", truckDivId );
+                return;
+            }
+            
+            let posId = datas.truck_id+"_"+datas.confirmed_position;
+            let posDivId = "ffg_truck_pos_"+datas.player_id+"_"+posId;
+            let div = dojo.query("#"+posDivId)[0];
+            if(div == undefined) {
+                console.log( "updateMove ...ERROR not found truck position", posDivId );
+                return;
+            }
+            //UPDATE truck div datas :
+            truckDiv.setAttribute("data_confirmed_state",datas.confirmed_state);
+            truckDiv.setAttribute("data_confirmed_position",datas.confirmed_position);
+            truckDiv.setAttribute("data_not_confirmed_state",datas.not_confirmed_state);
+            truckDiv.setAttribute("data_not_confirmed_position",datas.not_confirmed_position);
+            //TODO JSA send truckScore
+            //truckDiv.setAttribute("data_score",data.truckScore);
+            //this.displayTruckScore(data.player_id, data.truckScore,truckDivId);   
+            
+            //Update possible moves by removing the one we did  (and the corresponding previous places too !)
+            for (let k=1 ; k<= datas.confirmed_position; k++ ){
+                let posId = datas.truck_id+"_"+k;
+                //UPDATE div classes :
+                let posDivId = "ffg_truck_pos_"+datas.player_id+"_"+posId;
+                dojo.removeClass(posDivId,"ffg_not_drawn_pos ffg_not_confirmed_pos ffg_selectable") ;
+                dojo.addClass(posDivId,"ffg_confirmed_pos") ;
+            }
+        },
+        
         unselectCard : function()
         {
             console.log( "unselectCard ... ");
@@ -991,6 +1052,7 @@ function (dojo, declare) {
             dojo.subscribe( 'possibleCards', this, "notif_possibleCards" );
             dojo.subscribe( 'cancelTurnDatas', this, "notif_cancelTurnDatas" );
             
+            dojo.subscribe( 'endTurnActions', this, "notif_endTurnActions" );
             dojo.subscribe( 'endTurnScore', this, "notif_endTurnScore" );
             dojo.subscribe( 'newWeekScore', this, "notif_newWeekScore" );
             
@@ -1178,6 +1240,24 @@ function (dojo, declare) {
             
         },  
         
+        notif_endTurnActions: function( notif )
+        {
+            console.log( 'notif_endTurnActions',notif );
+            //TODO JSA notif_endTurnActions
+            let listActions = notif.args.listActions;
+            for (let i in listActions.trucks_cargos){
+                let load = listActions.trucks_cargos[i];
+                this.updateLoad(load);
+            }
+            for (let i in listActions.trucks_positions){
+                let player = listActions.trucks_positions[i];
+                for (let j in player){
+                    let move = player[j];
+                    this.updateMove(move);
+                }
+            }
+            
+        },
         notif_endTurnScore: function( notif )
         {
             console.log( 'notif_endTurnScore',notif );

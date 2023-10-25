@@ -192,6 +192,7 @@ class FlipFreighters extends Table
             'NB_ROUNDS' => NB_ROUNDS,
             'CARD_VALUE_MAX' => CARD_VALUE_MAX,
             'STATE_LOAD_TO_CONFIRM' => STATE_LOAD_TO_CONFIRM,
+            'STATE_LOAD_CONFIRMED' => STATE_LOAD_CONFIRMED,
             'STATE_MOVE_DELIVERED_TO_CONFIRM' => STATE_MOVE_DELIVERED_TO_CONFIRM,
             'STATE_MOVE_DELIVERED_CONFIRMED' => STATE_MOVE_DELIVERED_CONFIRMED,
         ); 
@@ -666,19 +667,23 @@ class FlipFreighters extends Table
         );
     }
     
-    function getSQLSelectTruckCargos($player_id,$truck_id,$cargo_id){
-        $sql = "SELECT SUBSTRING(cargo_key FROM 1 FOR 6) truck_id, cargo_key id,cargo_amount  amount, cargo_state state,cargo_card_id card_id, cargo_overtime_used overtime, SUBSTRING(cargo_key FROM 8 FOR 2) cargo_index
-            FROM freighter_cargo
-            WHERE cargo_player_id ='$player_id' ";
+    function getSQLSelectTruckCargos($player_id,$truck_id,$cargo_id,$state){
+        $sql = "SELECT SUBSTRING(cargo_key FROM 1 FOR 6) truck_id, cargo_key id,cargo_amount  amount, cargo_state state,cargo_card_id card_id, cargo_overtime_used overtime, SUBSTRING(cargo_key FROM 8 FOR 2) cargo_index, cargo_player_id player_id
+            FROM freighter_cargo ";
+            if(isset($player_id) ){
+                $sql .= "WHERE cargo_player_id ='$player_id' ";
+            }
         if(isset($truck_id) ){
             $sql = "SELECT * FROM ( ".$sql.") c WHERE truck_id ='$truck_id' ";
         } else if(isset($cargo_id) ){
             $sql = "SELECT * FROM ( ".$sql.") c WHERE id ='$cargo_id' ";
+        } else if(isset($state) ){
+            $sql = "SELECT * FROM ( ".$sql.") c WHERE state =$state ";
         } 
         return $sql;
     }
     function getTruckCargos($player_id,$truck_id = null){
-        $sql = $this->getSQLSelectTruckCargos($player_id,$truck_id,null);
+        $sql = $this->getSQLSelectTruckCargos($player_id,$truck_id,null,null);
         $trucks_cargos = $this->getDoubleKeyCollectionFromDB( $sql);
         
         //LOOP ON EACH TRUCK to add trucks which are not selected by this player yet
@@ -701,7 +706,7 @@ class FlipFreighters extends Table
         return $trucks_cargos;    
     }
     function getTruckContainer($player_id,$cargo_id){
-        $sql = $this->getSQLSelectTruckCargos($player_id,null,$cargo_id);
+        $sql = $this->getSQLSelectTruckCargos($player_id,null,$cargo_id,null);
         $datas = $this->getObjectFromDB($sql);
         self::dump("getTruckContainer($player_id,$cargo_id)", $datas);   
         
@@ -721,6 +726,11 @@ class FlipFreighters extends Table
         }   
         return $datas;    
     }
+    function getExistingTruckCargosByState($state){
+        $sql = $this->getSQLSelectTruckCargos(null,null,null,$state);
+        $trucks_cargos = $this->getObjectListFromDB( $sql);
+        return $trucks_cargos;    
+    }
     
     function getEmptyTruckCargo($player_id,$truck_id, $cargo_index){
         $cargo_key = $truck_id."_".$cargo_index;
@@ -735,17 +745,22 @@ class FlipFreighters extends Table
         ); 
     }
     
-    function getSQLSelectTruckPositions($player_id = null){
+    function getSQLSelectTruckPositions($player_id, $not_confirmed_states = null){
         // This request seems complicated but it is not, it is long because we want a "FULL JOIN" equivalent in mySql + because we want to aggregate datas directly
+        $stateToConfirm1 = STATE_MOVE_TO_CONFIRM;
+        $stateToConfirm2 = STATE_MOVE_DELIVERED_TO_CONFIRM;
+        $stateConfirmed1 = STATE_MOVE_CONFIRMED;
+        $stateConfirmed2 = STATE_MOVE_DELIVERED_CONFIRMED;
+        
         $sql = " SELECT a.fmove_player_id player_id, a.fmove_truck_id truck_id, a.confirmed_state,a.confirmed_position, b.not_confirmed_state,b.not_confirmed_position
             FROM (
                 SELECT fmove_player_id, fmove_truck_id, MAX(fmove_state) 'confirmed_state', MAX(fmove_position_to) 'confirmed_position' FROM `freighter_move`  
-                WHERE fmove_state = 2 or fmove_state = 4
+                WHERE fmove_state in ($stateConfirmed1, $stateConfirmed2)
                 GROUP by 1,2
                 ) a
              left JOIN  (
                 SELECT fmove_player_id, fmove_truck_id, MAX(fmove_state) 'not_confirmed_state', MAX(fmove_position_to) 'not_confirmed_position' FROM `freighter_move`  
-                WHERE fmove_state = 1 or fmove_state = 3
+                WHERE fmove_state in ($stateToConfirm1, $stateToConfirm2)
                 GROUP by 1,2
               ) b 
               on a.fmove_player_id = b.fmove_player_id AND  a.fmove_truck_id = b.fmove_truck_id 
@@ -753,22 +768,24 @@ class FlipFreighters extends Table
             SELECT b.fmove_player_id player_id, b.fmove_truck_id truck_id, a.confirmed_state,a.confirmed_position, b.not_confirmed_state,b.not_confirmed_position
             FROM (
                 SELECT fmove_player_id, fmove_truck_id, MAX(fmove_state) 'confirmed_state', MAX(fmove_position_to) 'confirmed_position' FROM `freighter_move`  
-                WHERE fmove_state = 2 or fmove_state = 4
+                WHERE fmove_state in ($stateConfirmed1, $stateConfirmed2)
                 GROUP by 1,2
                 ) a
              right JOIN  (
                 SELECT fmove_player_id, fmove_truck_id, MAX(fmove_state) 'not_confirmed_state', MAX(fmove_position_to) 'not_confirmed_position' FROM `freighter_move`  
-                WHERE fmove_state = 1 or fmove_state = 3
+                WHERE fmove_state in ($stateToConfirm1, $stateToConfirm2)
                 GROUP by 1,2
               ) b 
               on a.fmove_player_id = b.fmove_player_id AND  a.fmove_truck_id = b.fmove_truck_id 
             ORDER BY 1,2
              ";
              //TODO JSA WHERE fmove_player_id ='$player_id'
-             //TODO JSA use STATE constants
         if(isset($player_id) ){
             $sql = "SELECT * FROM ( ".$sql.") c WHERE player_id ='$player_id' ";
-        }     
+        } else if(isset($not_confirmed_states) ){
+            $not_confirmed_statesSql = implode( ',', $not_confirmed_states );
+            $sql = "SELECT * FROM ( ".$sql.") c WHERE not_confirmed_state in ($not_confirmed_statesSql ) ";
+        }    
         return $sql;    
     }
     
@@ -886,10 +903,30 @@ class FlipFreighters extends Table
         $this->DbQuery("INSERT INTO `freighter_move`(`fmove_player_id`, `fmove_truck_id`, `fmove_position_from`, `fmove_position_to`, `fmove_state`, `fmove_card_id`, `fmove_overtime_used`) VALUES ('$player_id', '$truckId', $fromPosition, $toPosition, $newState, $cardId, $overtimeUsed); ");
     }
     
+    function listUnconfirmedTurnActions(){
+        self::trace( "listUnconfirmedTurnActions()...");
+
+        $trucks_cargos = $this->getExistingTruckCargosByState(STATE_LOAD_TO_CONFIRM);
+        
+        $states = array(STATE_MOVE_TO_CONFIRM, STATE_MOVE_DELIVERED_TO_CONFIRM);
+        $trucks_positions = $this->getDoubleKeyCollectionFromDB( $this->getSQLSelectTruckPositions(null, $states  ) );
+        /* TODO JSA loop trucks_positions
+        if($isDelivery) {
+            $truckScore = $this->computeScore($player_id,$truckId,$truckCargos,$truckPositions);
+        }*/
+        
+        $datas = array( 
+            "trucks_cargos" => $trucks_cargos,
+            "trucks_positions" => $trucks_positions,
+        );
+        
+        self::dump( "listUnconfirmedTurnActions()...> datas", $datas);
+        return $datas;
+    }
     /**
     CONFIRM all players actions by updating to the corresponding state
     */
-    function confirmTurnActions($players){
+    function confirmTurnActions($players, &$listUnconfirmedTurnActions){
         self::trace( "confirmTurnActions()...");
 
         $oldState = STATE_LOAD_TO_CONFIRM;
@@ -904,12 +941,31 @@ class FlipFreighters extends Table
         $newState = STATE_MOVE_DELIVERED_CONFIRMED;
         $this->DbQuery("UPDATE freighter_move SET fmove_state= $newState WHERE fmove_state = $oldState");
         
+        if(isset($listUnconfirmedTurnActions)){
+            //UPDATE memory objects to reflect DB change without reloading DB datas :
+            for($k=0;$k< count($listUnconfirmedTurnActions["trucks_cargos"]); $k++){
+                $listUnconfirmedTurnActions["trucks_cargos"][$k]["state"] = STATE_LOAD_CONFIRMED;
+            }
+            //for($i=0;$i< count($listUnconfirmedTurnActions["trucks_positions"]); $i++){
+            foreach($listUnconfirmedTurnActions["trucks_positions"] as $i => $actions){
+                //for($j=0;$j< count($listUnconfirmedTurnActions["trucks_positions"][$i]); $j++){
+                foreach($listUnconfirmedTurnActions["trucks_positions"][$i] as $j => $action){
+                //foreach($actions as $action){
+                    $listUnconfirmedTurnActions["trucks_positions"][$i][$j]["confirmed_state"] = $listUnconfirmedTurnActions["trucks_positions"][$i][$j]["not_confirmed_state"];
+                    $listUnconfirmedTurnActions["trucks_positions"][$i][$j]["confirmed_position"] = $listUnconfirmedTurnActions["trucks_positions"][$i][$j]["not_confirmed_position"];
+                    $listUnconfirmedTurnActions["trucks_positions"][$i][$j]["not_confirmed_position"] = null;
+                    $listUnconfirmedTurnActions["trucks_positions"][$i][$j]["not_confirmed_state"] = null;
+                }
+            }
+            
+            self::dump( "confirmTurnActions()... listUnconfirmedTurnActions..",$listUnconfirmedTurnActions);
+        }
+        
         foreach($players as $player_id => $player){
             ///Set the public data about spent overtime by getting the private info 
             $privateInfo = $this-> getPlayerAvailableOvertimeHoursPrivateState($player_id);
             $this->setPlayerAvailableOvertimeHours($player_id,$privateInfo);
         }
-        
     }
     
     /** This function MUST cancel actions BEFORE the previous method confirmTurnActions() can SAVE them
@@ -1437,9 +1493,14 @@ class FlipFreighters extends Table
     
         $week = $this->getCurrentWeekLocation();
         
-        $this->confirmTurnActions($players);
+        $listUnconfirmedTurnActions = $this->listUnconfirmedTurnActions();
         
-        //TODO JSA notify all players actions
+        //Confirm actions and update list accordingly
+        $this->confirmTurnActions($players,$listUnconfirmedTurnActions);
+        
+        self::notifyAllPlayers( "endTurnActions", '', array( 
+            'listActions' => $listUnconfirmedTurnActions,
+        ) );
         
         //update players score
         foreach($players as $player_id => $player){
