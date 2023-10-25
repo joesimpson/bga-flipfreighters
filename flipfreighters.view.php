@@ -90,16 +90,25 @@ class view_flipfreighters_flipfreighters extends game_view
                     $card_id = $truck_cargo['card_id'];
                     $card_overtime = $truck_cargo['overtime'];
                     
+                    $state = $truck_cargo['state'];
+                    $amount = $truck_cargo['amount'];
                     if(array_key_exists($card_id,$cardsWithOvertime) && $this->game->isCurrentPlayerId($player_id) ){
                         $cardsWithOvertime[$card_id] = $truck_cargo['amount'] ;
+                    }
+                    if( ! $this->game->isCurrentPlayerId($player_id) &&  $state != STATE_LOAD_CONFIRMED ){
+                        //HIDE cargo content if not confirmed
+                        $amount =null;
+                        $state = STATE_LOAD_INITIAL;
+                        $card_id = null;
+                        $card_overtime = null;
                     }
                     
                     $this->page->insert_block( "ffg_player_trucks_cargo", array( 
                                                         "PLAYER_ID" => $player_id,
                                                         "CONTAINER_ID" => $truck_cargo['id'],
                                                         "TRUCK_ID" => $truck_cargo['truck_id'],
-                                                        "AMOUNT" => $truck_cargo['amount'],
-                                                        "STATE" => $truck_cargo['state'],
+                                                        "AMOUNT" => $amount,
+                                                        "STATE" => $state,
                                                         "CARD_ID" => $card_id,
                                                         "SPENT_OVERTIME" => $card_overtime,
                                                          ) );
@@ -109,7 +118,6 @@ class view_flipfreighters_flipfreighters extends game_view
             $trucks_positions = $player_board['trucks_positions'];
             $trucks_scores = $player_board['trucks_scores'];
             //$this->game->dump("VIEW trucks_positions", $trucks_positions);
-            //TODO JSA FILTER PRIVATE DATAS : current player cannot see "NOT_CONFIRMED" datas from other players
             foreach( $trucks_positions as $trucks_position )
             {
                 
@@ -136,7 +144,14 @@ class view_flipfreighters_flipfreighters extends game_view
                         $classes = " ffg_confirmed_pos";
                     } 
                     else if(isset($not_confirmed_pos) && $k<= $not_confirmed_pos){
-                        $classes = " ffg_not_confirmed_pos";
+                            
+                        if( $this->game->isCurrentPlayerId($player_id)){
+                            $classes = " ffg_not_confirmed_pos";
+                        }
+                        else {
+                            
+                            //HIDE truck content if not confirmed
+                        }
                     }
                     $this->page->insert_block( "ffg_player_truck_position", array( 
                                                             "PLAYER_ID" => $player_id,
@@ -144,6 +159,13 @@ class view_flipfreighters_flipfreighters extends game_view
                                                             "INDEX" => $k,
                                                             "CLASSES" => $classes,
                                                              ) );
+                }
+            
+                if( ! $this->game->isCurrentPlayerId($player_id) &&  $not_confirmed_state != null ){
+                    //HIDE cargo content if not confirmed
+                    $not_confirmed_state = null;
+                    $not_confirmed_pos = null;
+                    $truckScore = 0;
                 }
                 
                 $this->page->insert_block( "ffg_player_truck_positions", array( 
