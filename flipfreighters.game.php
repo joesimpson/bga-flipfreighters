@@ -1565,7 +1565,11 @@ class FlipFreighters extends Table
         }
         
         
-        //TODO JSA CHECK round_number and end if >=MAX
+        //CHECK round_number and end if >=MAX
+        if($round >= NB_ROUNDS ){
+            $this->gamestate->nextState( 'endGame' );
+            return;
+        }
         
         $this->gamestate->nextState( 'newRound' );
     }
