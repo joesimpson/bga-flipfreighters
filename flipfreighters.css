@@ -976,6 +976,7 @@
     visibility: hidden;
 }
 .ffg_week_score>.ffg_score_number,
+.ffg_total_score>.ffg_score_number,
 .ffg_truck_score>.ffg_score_number,
 .ffg_truck_score_right>.ffg_score_number{
     align-items: center;
@@ -1047,6 +1048,21 @@
     top: 872px; 
 }
 
+.ffg_total_score{
+    width: 183px;
+    height: 45px;
+    position: absolute;
+    z-index: 1;
+    left: 114px;
+    top: 993px;
+}
+.ffg_total_score>.ffg_score_number{
+    line-height: 45px;
+    font-size: 56px;
+    justify-content: right;
+    font-style: italic;
+    color: #6b2912;
+}
 /* ---------------------------- ----------------------------   ---------------------------- */
 /* List of symbols near trucks... */
 /* ---------------------------- ----------------------------   ---------------------------- */

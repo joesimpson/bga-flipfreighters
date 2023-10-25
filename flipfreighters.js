@@ -689,8 +689,10 @@ function (dojo, declare) {
                 this.updatePlayerWeekScore(playerDatas.id,k,weekscore);
                 k++;
             }
-            //TODO JSA when do we display last week ?
-            //+ TODO JSA display sum of all weeks at end of game
+            //TODO JSA when do we display last week ? If we reload when game already ended, the last week is not displayed because currentRound is still 3
+            
+            //display sum of all weeks at end of game ? or whatever because we already display the player score on player panel
+            this.updatePlayerTotalScore(playerDatas.id, playerDatas.score);
         },
         
         updatePlayerWeekScore: function(player_id, round,weekscore) {
@@ -700,12 +702,28 @@ function (dojo, declare) {
             numberDiv.innerHTML = weekscore;
         },
         
+        updatePlayerTotalScore: function(player_id, score) {
+            console.log("updatePlayerTotalScore",player_id, score);
+            
+            let numberDiv = dojo.query("#ffg_total_score_"+player_id+" .ffg_score_number")[0];
+            numberDiv.innerHTML = score;
+        },
+        
+        increasePlayerTotalScore: function(player_id, delta_score) {
+            console.log("increasePlayerTotalScore",player_id, delta_score);
+            
+            let numberDiv = dojo.query("#ffg_total_score_"+player_id+" .ffg_score_number")[0];
+            numberDiv.innerHTML = parseInt(numberDiv.innerHTML) + parseInt(delta_score);
+        },
+        
         /**
         Update BGA player panel score
         */
         updatePlayerScore: function(player_id,score) {
             console.log("updatePlayerScore",player_id, score);
             this.scoreCtrl[ player_id ].toValue( score );
+            
+            this.updatePlayerTotalScore(player_id, score);
         },
         
         /**
@@ -715,6 +733,8 @@ function (dojo, declare) {
         increasePlayerScore: function(player_id,delta_score) {
             console.log("increasePlayerScore",player_id, delta_score);
             this.scoreCtrl[ player_id ].incValue( delta_score );
+            
+            this.increasePlayerTotalScore(player_id, delta_score);
         },
         
         ///////////////////////////////////////////////////

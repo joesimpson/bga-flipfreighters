@@ -89,6 +89,10 @@
                 <!-- END ffg_week_score -->
             </div>
             
+            <div id="ffg_total_score_{PLAYER_ID}" class="ffg_total_score" data_player="{PLAYER_ID}">
+                <span class="ffg_score_number"></span>
+            </div>
+            
             <div id="ffg_board_overtime_wrapper">
                 <!-- BEGIN ffg_overtime_hour -->
                 <div id="ffg_overtime_{PLAYER_ID}_{INDEX}" class="ffg_overtime ffg_empty_value" data_player="{PLAYER_ID}" data_index="{INDEX}">
