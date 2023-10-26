@@ -200,10 +200,12 @@ class FlipFreighters extends Table
             'JOKER_TYPE' => JOKER_TYPE,
             'NB_ROUNDS' => NB_ROUNDS,
             'CARD_VALUE_MAX' => CARD_VALUE_MAX,
+            'MAX_LOAD' => MAX_LOAD,
             'STATE_LOAD_TO_CONFIRM' => STATE_LOAD_TO_CONFIRM,
             'STATE_LOAD_CONFIRMED' => STATE_LOAD_CONFIRMED,
             'STATE_MOVE_DELIVERED_TO_CONFIRM' => STATE_MOVE_DELIVERED_TO_CONFIRM,
             'STATE_MOVE_DELIVERED_CONFIRMED' => STATE_MOVE_DELIVERED_CONFIRMED,
+            'CARGO_TYPE_ALL_VALUES' => CARGO_TYPE_ALL_VALUES,
         ); 
         
         //SOME STATS are directly displayed during the game, let's add them in the players array, as if it was in the player table:

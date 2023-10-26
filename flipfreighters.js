@@ -545,9 +545,18 @@ function (dojo, declare) {
                 dojo.query("#ffg_cargo_amount_list_"+k).removeClass("ffg_no_display");
             }
         
-            //TODO JSA don't call server for 1/2 trucks that we know allow all numbers
-            //CALL SERVER to get updated possible numbers :
-            this.ajaxcallwrapper("getPossibleLoads", {'containerId': container_id});
+            let truck_id = $(div_id).getAttribute("data_truck");
+            let truck_material = this.material.trucks_types[truck_id];
+            if(truck_material.cargo_value_filter != this.constants.CARGO_TYPE_ALL_VALUES ){
+                //CALL SERVER to get updated possible numbers :
+                this.ajaxcallwrapper("getPossibleLoads", {'containerId': container_id});
+            }
+            else {
+                //For PERFORMANCE, don't call server for 1/2 trucks that we know allow all numbers
+                let allPossibleLoads = Array.from({length: this.constants.MAX_LOAD}, (_, i) => i + 1) ;
+                let fakeNotif = {'name' : 'MOCK', 'args':{'possibles': allPossibleLoads  }};
+                this.notif_possibleLoads(fakeNotif);
+            }
         },
         closeCargoAmountList: function(){
             console.log( "closeCargoAmountList()");
