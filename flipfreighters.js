@@ -475,23 +475,6 @@ function (dojo, declare) {
             dojo.query("#ffg_cargo_amount_list").addClass("ffg_hidden");
             dojo.query(".ffg_cargo_to_fill").removeClass("ffg_cargo_to_fill");
         },
-        
-        /**
-        remove possible actions (of this type) for all cards on the parametered position
-        */
-        cleanPossibleCardForPos: function(type, posId)
-        {
-            console.log( "cleanPossibleCardForPos ... ",type,posId);
-            for(let i in this.possibleCards){
-                let pcard = this.possibleCards[i][type];
-                let index = pcard.indexOf(posId);
-                if(index >=0){
-                    console.log( "cleanPossibleCardForPos ... delete index "+index+" for card "+i);
-                    pcard.splice(index, 1);
-                }
-            }
-            
-        },
 
         /**
         Return true if at least 1 card is still playable
@@ -1200,11 +1183,6 @@ function (dojo, declare) {
             //unselect card
             this.unselectCard();
             
-            //TODO JSA DISABLE THIS CARD FOR FURTHER ACTIONS
-            
-            //Update possible loads by removing the one we did
-            this.cleanPossibleCardForPos("LOAD",notif.args.containerId);
-            
         },
         
         notif_moveTruck: function( notif )
@@ -1217,14 +1195,6 @@ function (dojo, declare) {
             
             //unselect card
             this.unselectCard();
-            
-            //Update possible moves by removing the one we did  (and the corresponding previous places too !)
-            for (let k=parseInt(notif.args.fromPosition) +1 ; k<= notif.args.position; k++ ){
-                let posId = notif.args.truckId+"_"+k;
-                console.log( 'notif_moveTruck() ... Removing possible position',posId );
-                //TODO JSA CLEAN, this should be obsolete with each turn sending new possibleCards 
-                this.cleanPossibleCardForPos("MOVE",posId);
-            }
             
         },
         
