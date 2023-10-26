@@ -181,7 +181,7 @@ class FlipFreighters extends Table
     
         // Get information about players
         // Note: you can retrieve some extra field you added for "player" table in "dbmodel.sql" if you need it.
-        $sql = "SELECT player_id id, player_score score FROM player ";
+        $sql = "SELECT player_id id, player_score score, player_score_aux score_aux FROM player ";
         $result['players'] = self::getCollectionFromDb( $sql );
         
         //TODO JSA retrieve current player unconfirmed deliveries, in order to send him only his temporary "player_score" (as we do in UI : updating score when we deliver )
@@ -1142,7 +1142,7 @@ class FlipFreighters extends Table
     }
     
     function dbGetScore($player_id) {
-       return $this->getUniqueValueFromDB("SELECT player_score FROM player WHERE player_id='$player_id'");
+       return $this->getObjectFromDB("SELECT player_score, player_score_aux FROM player WHERE player_id='$player_id'");
     }
     
     function dbIncreasePlayerScoreAux($player_id,$deltaScoreAux){
@@ -1432,10 +1432,13 @@ class FlipFreighters extends Table
             'player_name' => $player_name,
         ) );
         
+        $score = $this->dbGetScore($player_id);
+        
         self::notifyPlayer($player_id,"cancelTurnDatas", '', array(
             'availableOvertime' => $this->getPlayerAvailableOvertimeHoursPrivateState($player_id),
             'possibleCards' => $this->getPlayerPossibleCards($player_id ),
-            'newScore' => $this->dbGetScore($player_id),
+            'newScore' => $score ['player_score'],
+            'newScoreAux' => $score ['player_score_aux'],
         ) );
         
         $this->gamestate->setPlayersMultiactive(array ($player_id), 'next', false);
@@ -1614,7 +1617,7 @@ class FlipFreighters extends Table
             //Score computation is done in stEndTurn
             $score = self::getStat( "score_week".$round, $player_id );
             //get UPDATED player score
-            $newPlayerScore = $this->dbGetScore($player_id);
+            $newPlayerScore = $this->dbGetScore($player_id)['player_score'];
             
             $player_name = $player['player_name'];
             self::notifyAllPlayers( "newWeekScore", clienttranslate( '${player_name} scores ${nb} points for week ${k}' ), array( 

@@ -41,6 +41,8 @@ function (dojo, declare) {
             
             this.counterOvertime={};
             this.selectedOvertimeToken = null;
+            
+            this.counterDelivered={};
         },
         
         /*
@@ -96,6 +98,10 @@ function (dojo, declare) {
             
             this.addTooltipToClass( "ffg_overtime_wrapper", _("Available overtime hours tokens"), '' );
             this.updatePlayersOvertimeHours(gamedatas.players);
+            
+            //Keep the same string as tie_breaker_description
+            this.addTooltipToClass( "ffg_delivered_trucks_wrapper", _("Number of delivered trucks"), '' );
+            this.updatePlayersScoreAux(gamedatas.players);
             
             dojo.query("#playerBoardSliderSize").connect( 'oninput', this, 'onBoardSliderChange' );
             
@@ -341,6 +347,9 @@ function (dojo, declare) {
             );
             this.counterOvertime[player_id] = new ebg.counter();
             this.counterOvertime[player_id].create("ffg_overtime_"+player_id); 
+            
+            this.counterDelivered[player_id] = new ebg.counter();
+            this.counterDelivered[player_id].create("ffg_stat_delivered_trucks_"+player_id); 
         },
         displayPossibleLoads: function( card_id )
         {            
@@ -435,6 +444,10 @@ function (dojo, declare) {
             truckDiv.setAttribute("data_score",truckScore);
             this.displayTruckScore(player_id, truckScore,truckDivId);   
             this.increasePlayerScore(player_id,truckScore);
+            if(not_confirmed_state == 3 || confirmed_state == 4 && this.player_id != player_id){
+                //Add 1 truck delivered only once for the player moving the truck, or receiving infos from others moving
+                this.increasePlayerScoreAux(player_id,1);
+            }
             
             //Update possible moves by removing the one we did  (and the corresponding previous places too !)
             for (let k=fromPosition ; k<= position; k++ ){
@@ -735,6 +748,30 @@ function (dojo, declare) {
             this.scoreCtrl[ player_id ].incValue( delta_score );
             
             this.increasePlayerTotalScore(player_id, delta_score);
+        },
+        
+        /**
+        LOOP on players
+        */
+        updatePlayersScoreAux: function(players)
+        {
+            console.log( "updatePlayersScoreAux" ,players); 
+            //RESET to 0 in case some player is not in the array
+            for ( let i in this.counterDelivered) {
+                this.counterDelivered[i].toValue(0);
+            }
+            for ( let player_id in players) {
+                let nb = players[player_id].score_aux; 
+                this.updatePlayerScoreAux(player_id,nb);
+            }
+        },
+        updatePlayerScoreAux: function(player_id,score) {
+            console.log("updatePlayerScoreAux",player_id, score);
+            this.counterDelivered[player_id].toValue( score );
+        },
+        increasePlayerScoreAux: function(player_id,delta_score) {
+            console.log("increasePlayerScoreAux",player_id, delta_score);
+            this.counterDelivered[player_id].incValue( delta_score );
         },
         
         ///////////////////////////////////////////////////
@@ -1213,6 +1250,7 @@ function (dojo, declare) {
             );
             
             this.updatePlayerScore(this.player_id,notif.args.newScore );
+            this.updatePlayerScoreAux(this.player_id,notif.args.newScoreAux );
             
         },  
         
