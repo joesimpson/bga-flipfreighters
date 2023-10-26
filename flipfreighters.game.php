@@ -1368,7 +1368,8 @@ class FlipFreighters extends Table
         }
         $amount = $position - $fromPosition;
         $originalAvailableOvertime = $this->getPlayerAvailableOvertimeHoursPrivateState($player_id);
-        $usedOvertime = max(0,$amount - $card['type_arg']);
+        $cardUsedPower = $this->getCardUsedPowerForMoves($player_id, $cardId);
+        $usedOvertime = max(0,$amount - ($card['type_arg'] -$cardUsedPower) );
         if($usedOvertime > $originalAvailableOvertime)
             throw new BgaVisibleSystemException( ("You don't have enough overtime hours to do that"));
         
@@ -1376,8 +1377,8 @@ class FlipFreighters extends Table
         $truckState = $this->getCurrentTruckState($truckId,$player_id);
         $truckCargos = $trucks_cargos [$truckId];
         $cardMovePower = $card['type_arg'] + $usedOvertime;
+        self::trace("moveTruck($cardId, $truckId, $position,$isDelivery,$player_id,$player_name ) ... cardMovePower=$cardMovePower");
         $card['type_arg'] = $amount; //Don't save this in card, but allow to run rules on this value
-        $cardUsedPower = $this->getCardUsedPowerForMoves($player_id, $cardId);
         if($this->isPossibleMoveWithCard($card,$fromPosition,$truckState,$truckCargos,$truckId,$position,$cardMovePower,$cardUsedPower) == false ) {
             throw new BgaVisibleSystemException( ("You cannot move to this place"));
         }
