@@ -1481,6 +1481,7 @@ class FlipFreighters extends Table
         }
         
         return array(
+            'round_number' => self::getGameStateValue( 'round_number'),
             '_private' => $privateDatas,
         );
     }

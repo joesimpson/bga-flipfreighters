@@ -63,7 +63,7 @@ function (dojo, declare) {
             console.log( "Starting game setup",gamedatas );
             
             this.constants  = gamedatas.constants;
-            this.currentRound = gamedatas.round_number;//TODO JSA update on new round
+            this.currentRound = gamedatas.round_number;
             
             // Setting up player boards
             for( let player_id in gamedatas.players )
@@ -142,6 +142,7 @@ function (dojo, declare) {
                 break;
                
             case 'playerTurn':
+                this.currentRound = args.args.round_number;
                 this.possibleCards = [];
                 if(args.args._private !=undefined){
                     if(args.args._private.possibleCards!=undefined){
