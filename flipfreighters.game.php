@@ -148,8 +148,13 @@ class FlipFreighters extends Table
         self::initStat( 'player', 'score_week2', 0 );
         self::initStat( 'player', 'score_week3', 0 );
         self::initStat( 'player', 'unused_overtime', NB_OVERTIME_TOKENS );
+        self::initStat( 'player', 'stat_player_loading', 0 );
+        self::initStat( 'player', 'stat_player_moving', 0 );
+        self::initStat( 'player', 'stat_total_goods', 0 );
+        self::initStat( 'player', 'stat_total_distance', 0 );
+        self::initStat( 'player', 'stat_delivered_trucks', 0 );
 
-        // TODO: setup the initial game situation here
+        // setup the initial game situation here
         $this->initDeck();
         $this->initPlayerBoard();
 
@@ -958,20 +963,38 @@ class FlipFreighters extends Table
             //UPDATE memory objects to reflect DB change without reloading DB datas :
             for($k=0;$k< count($listUnconfirmedTurnActions["trucks_cargos"]); $k++){
                 $listUnconfirmedTurnActions["trucks_cargos"][$k]["state"] = STATE_LOAD_CONFIRMED;
+                
+                $cargo = $listUnconfirmedTurnActions["trucks_cargos"][$k];
+                $player_id = $cargo["player_id"];
+                self::incStat( 1, "stat_player_loading", $player_id );
+                self::incStat( $cargo["amount"], "stat_total_goods", $player_id );
             }
             //for($i=0;$i< count($listUnconfirmedTurnActions["trucks_positions"]); $i++){
             foreach($listUnconfirmedTurnActions["trucks_positions"] as $i => $actions){
                 //for($j=0;$j< count($listUnconfirmedTurnActions["trucks_positions"][$i]); $j++){
                 foreach($listUnconfirmedTurnActions["trucks_positions"][$i] as $j => $action){
                 //foreach($actions as $action){
-                    $listUnconfirmedTurnActions["trucks_positions"][$i][$j]["confirmed_state"] = $this->getConfirmedState($listUnconfirmedTurnActions["trucks_positions"][$i][$j]["not_confirmed_state"] );
-                    $listUnconfirmedTurnActions["trucks_positions"][$i][$j]["confirmed_position"] = $listUnconfirmedTurnActions["trucks_positions"][$i][$j]["not_confirmed_position"];
+                    $action = $listUnconfirmedTurnActions["trucks_positions"][$i][$j];
+                    $distance = $action['not_confirmed_position'];
+                    if($action['confirmed_position'] != null) $distance = $distance - $action['confirmed_position'];
+                    
+                    $listUnconfirmedTurnActions["trucks_positions"][$i][$j]["confirmed_state"] = $this->getConfirmedState($action["not_confirmed_state"] );
+                    $listUnconfirmedTurnActions["trucks_positions"][$i][$j]["confirmed_position"] = $action["not_confirmed_position"];
                     $listUnconfirmedTurnActions["trucks_positions"][$i][$j]["not_confirmed_position"] = null;
                     $listUnconfirmedTurnActions["trucks_positions"][$i][$j]["not_confirmed_state"] = null;
+                    
+                    $player_id = $i;
+                    //Beware : The same card used on multiples moves will be counted multiples times here :
+                    self::incStat( 1, "stat_player_moving", $player_id );
+                    self::incStat( $distance, "stat_total_distance", $player_id );
+                    if($action["truckScore"] > 0){
+                        $this->dbIncreasePlayerScoreAux($player_id,1);
+                        self::incStat( 1, "stat_delivered_trucks", $player_id );
+                    }
                 }
             }
             
-            self::dump( "confirmTurnActions()... listUnconfirmedTurnActions..",$listUnconfirmedTurnActions);
+            //self::dump( "confirmTurnActions()... listUnconfirmedTurnActions..",$listUnconfirmedTurnActions);
         }
         
         foreach($players as $player_id => $player){
@@ -1035,12 +1058,12 @@ class FlipFreighters extends Table
     
     /**
     Return current score for one player's truck
+        (this info should not be sent to others when state is not confirmed yet)
     */
     function computeScore($player_id,$truckId,$cargos, $truck_position_state){
         self::trace("computeScore($player_id,$truckId)...");
         //self::dump( 'cargo', $cargos );
         //self::dump( 'truck_position_state', $truck_position_state );
-        //TODO JSA computeScore should not be sent to others when state is not confirmed yet
         $truck_material = $this->trucks_types[$truckId];
         $path_sizes = $truck_material['path_size'];
         $delivery_type = null;
@@ -1120,6 +1143,10 @@ class FlipFreighters extends Table
     
     function dbGetScore($player_id) {
        return $this->getUniqueValueFromDB("SELECT player_score FROM player WHERE player_id='$player_id'");
+    }
+    
+    function dbIncreasePlayerScoreAux($player_id,$deltaScoreAux){
+        self::DbQuery( "UPDATE player SET player_score_aux= player_score_aux +$deltaScoreAux WHERE player_id='$player_id'" );
     }
     
     function getPlayerAvailableOvertimeHours($player_id){

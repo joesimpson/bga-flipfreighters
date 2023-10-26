@@ -86,6 +86,23 @@ $stats_type = array(
         "unused_overtime" => array("id"=> 13,
                     "name" => totranslate("Unused Overtime Hours"),
                     "type" => "int" ),
+                    
+        "stat_player_loading" => array("id"=> 20,
+                    "name" => totranslate("Loading actions"),
+                    "type" => "int" ),
+        "stat_player_moving" => array("id"=> 21,
+                    "name" => totranslate("Moving actions"),
+                    "type" => "int" ),
+        "stat_total_goods" => array("id"=> 22,
+                    "name" => totranslate("Total value of loaded goods"),
+                    "type" => "int" ),
+        "stat_total_distance" => array("id"=> 23,
+                    "name" => totranslate("Total distance traveled by trucks"),
+                    "type" => "int" ),
+        "stat_delivered_trucks" => array("id"=> 24,
+                    //Keep the same string as tie_breaker_description
+                    "name" => totranslate("Number of delivered trucks"),
+                    "type" => "int" ),
     )
 
 );
