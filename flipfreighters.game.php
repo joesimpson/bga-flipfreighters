@@ -184,8 +184,6 @@ class FlipFreighters extends Table
         $sql = "SELECT player_id id, player_score score, player_score_aux score_aux FROM player ";
         $result['players'] = self::getCollectionFromDb( $sql );
         
-        //TODO JSA retrieve current player unconfirmed deliveries, in order to send him only his temporary "player_score" (as we do in UI : updating score when we deliver )
-  
         // TODO: Gather all information about current game situation (visible by player $current_player_id).
         
         $result['round_number'] = self::getGameStateValue( 'round_number');
@@ -219,8 +217,24 @@ class FlipFreighters extends Table
             if($player_id  == $current_player_id) $availableOvertime = $this->getPlayerAvailableOvertimeHoursPrivateState($player_id);
             $result['players'][$player_id]['availableOvertime'] = $availableOvertime;
             
+            if($player_id  == $current_player_id) {
+                //retrieve current player unconfirmed deliveries, in order to send them only their temporary "player_score" (as we do in UI : updating score when we deliver )
+                $listUnconfirmedTurnActions = $this->listUnconfirmedTurnActions()["trucks_positions"];
+                if(array_key_exists($current_player_id, $listUnconfirmedTurnActions )){
+                    $actions = $listUnconfirmedTurnActions[$current_player_id];
+                    foreach($actions as $action){
+                        $tmpScore = $action["truckScore"];
+                        if($tmpScore > 0){
+                            $result['players'][$player_id]['score'] += $tmpScore ;
+                            $result['players'][$player_id]['score_aux'] += 1;
+                        }
+                    }
+                }
+            }
         }
-  
+        
+        
+            
         return $result;
     }
 
