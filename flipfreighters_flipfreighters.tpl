@@ -19,8 +19,16 @@
     <div id="ffg_cards" class="whiteblock">
         <!-- BEGIN ffg_cards -->
         <div id="ffg_card_wrapper_{INDEX}" class="ffg_card_wrapper">
-            <a href="#" id="ffg_button_card_plus_{INDEX}" class="ffg_button_card_plus bgabutton bgabutton_green ffg_selectable" onclick="return false;"><span>+1</span></a>
-            <a href="#" id="ffg_button_card_minus_{INDEX}" class="ffg_button_card_minus bgabutton bgabutton_red ffg_selectable" onclick="return false;"><span>-1</span></a>
+            <div class="ffg_card_buttons_wrapper">
+                <a href="#" id="ffg_button_card_plus_{INDEX}" class="ffg_button_card_plus bgabutton bgabutton_green ffg_selectable" onclick="return false;"><span>+1</span></a>
+                <a href="#" id="ffg_button_card_minus_{INDEX}" class="ffg_button_card_minus bgabutton bgabutton_red ffg_selectable" onclick="return false;"><span>-1</span></a>
+            </div>
+            <div class="ffg_card_buttons_wrapper">
+                <!-- BEGIN ffg_cards_suit_modifier -->
+                <a href="#" id="ffg_button_card_suit_modifier{INDEX}_{SUIT}" class="ffg_button_card_suit_modifier ffg_button_card_suit_modifier_{SUIT} bgabutton ffg_selectable ffg_no_display" onclick="return false;" title="{SUIT_LABEL}" data_suit="{SUIT}"></a>
+                <!-- END ffg_cards_suit_modifier -->
+            </div>
+            
             <div id="ffg_card_{INDEX}" class="ffg_card ffg_selectable" data_id="{CARD_ID}" data_suit="{CARD_SUIT}" data_value="{CARD_VALUE}" data_amount='{AMOUNT}'>
                 <span id="ffg_cardModifier_{INDEX}" class="ffg_cardModifier" data_value="{MODIFIER}"></span>
             </div>

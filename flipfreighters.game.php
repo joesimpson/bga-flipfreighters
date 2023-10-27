@@ -85,7 +85,7 @@ class FlipFreighters extends Table
                 "round_number" => 10,
                 "turn_number" => 11,
             //      ...
-            //    "my_first_game_variant" => 100,
+                "ffg_variant_overtime_hours" => 100,
             //    "my_second_game_variant" => 101,
             //      ...
         ) );        
@@ -189,6 +189,8 @@ class FlipFreighters extends Table
         $result['round_number'] = self::getGameStateValue( 'round_number');
         $result['turn_number'] = self::getGameStateValue( 'turn_number');
         $result['dayCards'] = $this->getCurrentDayCards();
+        
+        $result['overtimeSuitVariant'] = $this->isActivatedOvertimeSuitVariant();
         
         $result['material'] = array( 
             'card_types' =>  $this->card_types,
@@ -311,7 +313,17 @@ class FlipFreighters extends Table
         $this->cards->moveAllCardsInLocation( 'deck', 'discard' );
         
     }
-
+    function isActivatedOvertimeSuitVariant()
+    { 
+        $variant_overtime_hours = self::getGameStateValue( 'ffg_variant_overtime_hours' );
+         
+        switch($variant_overtime_hours){
+            case 1: return FALSE;
+            case 2: return TRUE;
+            default: return FALSE;
+        }
+    }
+    
     function getCurrentWeekLocation()
     { 
         $round = self::getGameStateValue( 'round_number');
@@ -1235,14 +1247,15 @@ class FlipFreighters extends Table
 
     /**
     ACTION to refresh UI list of possibles places for LOAD or MOVE action (with overtime hours). 
-    $amount is the card value +/- overtime
+    $amount is the card value +/- overtime.
+    $suit is an optional suit modifier (costs 1 overtime).
     */
-    function getPossibleActionsForCard($cardId, $amount ){
+    function getPossibleActionsForCard($cardId, $amount, $suit = null ){
         self::checkAction( 'getPossibleActionsForCard' ); 
         
         $player_id = self::getCurrentPlayerId();
         $player_name = self::getCurrentPlayerName();
-        self::trace("getPossibleActionsForCard($cardId, $amount,$player_id,$player_name )");
+        self::trace("getPossibleActionsForCard($cardId, $amount, $suit,$player_id,$player_name )");
         
         $card = $this->cards->getCard($cardId);
         if($card == null )
@@ -1252,6 +1265,10 @@ class FlipFreighters extends Table
         
         $card_suit = $card['type'];
         $card['type_arg'] = $amount; //Don't save this in card, but allow to run rules on this value
+        if($card_suit != JOKER_TYPE && $this->isActivatedOvertimeSuitVariant() && isset($this->card_types [$suit])){
+            self::trace("getPossibleActionsForCard($cardId,.., $suit,..)... SPECIAL OVERTIME VARIANT : get possibles values if we change the suit color");
+            $card['type'] = $suit;
+        }
         $playerBoard = $this->getPlayerBoard($player_id);
         
         $possibles = $this->getPlayerPossibleCardArray($card,$playerBoard);
@@ -1262,14 +1279,14 @@ class FlipFreighters extends Table
             'possibleCards' => $possibles,
         ) );
     }
-    function loadTruck($cardId, $containerId, $amount )
+    function loadTruck($cardId, $containerId, $amount, $suit = null )
     {
         // Check that this is the player's turn and that it is a "possible action" at this game state (see states.inc.php)
         self::checkAction( 'loadTruck' ); 
         
         $player_id = self::getCurrentPlayerId();
         $player_name = self::getCurrentPlayerName();
-        self::trace("loadTruck($cardId, $containerId, $amount,$player_id,$player_name )");
+        self::trace("loadTruck($cardId, $containerId, $amount, $suit,$player_id,$player_name )");
         
         //ANTICHEAT CHECKS :
         if($amount == null || $amount<=0 || $amount> MAX_LOAD)
@@ -1281,8 +1298,15 @@ class FlipFreighters extends Table
             throw new BgaVisibleSystemException( ("You cannot play that card know"));
         $card_suit = $card['type'];
         
+        $usedOvertime = 0;
+        if($card_suit != JOKER_TYPE && $this->isActivatedOvertimeSuitVariant() && isset($this->card_types [$suit])){
+            self::trace("loadTruck($cardId,.., $suit,..)... SPECIAL OVERTIME VARIANT :  change the suit color");
+            $card['type'] = $suit;
+            $usedOvertime ++;
+        }
+        
         $originalAvailableOvertime = $this->getPlayerAvailableOvertimeHoursPrivateState($player_id);
-        $usedOvertime = abs($amount - $card['type_arg']);
+        $usedOvertime += abs($amount - $card['type_arg']);
         if( $card_suit == JOKER_TYPE) $usedOvertime = max(0,$amount - CARD_VALUE_MAX); //IF joker is used for a low value, don't consider overtime
         if($usedOvertime > $originalAvailableOvertime)
             throw new BgaVisibleSystemException( ("You don't have enough overtime hours to do that"));

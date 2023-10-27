@@ -212,10 +212,42 @@
     background-position-y: -300%;
 }
 
-
-
+.ffg_card_wrapper{
+    display: flex;
+    flex-flow: column;
+}
 .ffg_card_wrapper:not(.ffg_selected) .bgabutton{
     display: none;
+}
+.ffg_card_buttons_wrapper{
+    display: flex;
+    flex-flow: row;
+    justify-content: space-evenly;
+}
+
+.ffg_button_card_suit_modifier {
+    background-image: url('img/FULLREZ_CARDS.jpg');
+    background-size: 1000px;
+    background-position-x: -56px;
+    width: 6px;
+    height: 25px;
+}
+.ffg_button_card_suit_modifier_1 {
+    background-position-y: -17px;
+}
+.ffg_button_card_suit_modifier_2 {
+    background-position-y: -212px;
+}
+.ffg_button_card_suit_modifier_3 {
+    background-position-y: -410px;
+}
+.ffg_button_card_suit_modifier_4 {
+    background-position-y: -605px;
+}
+.ffg_button_card_suit_modifier.ffg_selectable:hover {
+    scale: 1.15;
+    cursor: pointer;
+    outline: 2px solid black;
 }
 
 /* 

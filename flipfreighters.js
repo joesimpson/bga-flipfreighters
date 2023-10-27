@@ -34,6 +34,7 @@ function (dojo, declare) {
             this.selectedCard = null;
             this.selectedAmount = null;//Not always the card value, with overtime hours
             this.selectedCargoContainer = null;
+            this.selectedSuit = null;
             this.material = [];
             
             this.constants = [];
@@ -43,6 +44,7 @@ function (dojo, declare) {
             this.selectedOvertimeToken = null;
             
             this.counterDelivered={};
+            this.overtimeSuitVariant = false;
         },
         
         /*
@@ -91,6 +93,7 @@ function (dojo, declare) {
             
             this.material = gamedatas.material;
             this.dayCards = gamedatas.dayCards;
+            this.overtimeSuitVariant = gamedatas.overtimeSuitVariant;
             
             dojo.query(".ffg_card").forEach(this.updateOvertimeHourOnCard);
             
@@ -115,6 +118,9 @@ function (dojo, declare) {
             
             dojo.query(".ffg_button_card_plus").connect( 'onclick', this, 'onClickCardPlus' );
             dojo.query(".ffg_button_card_minus").connect( 'onclick', this, 'onClickCardMinus' );
+            if(this.overtimeSuitVariant){
+                dojo.query(".ffg_button_card_suit_modifier").removeClass("ffg_no_display").connect( 'onclick', this, 'onClickChangeSuit' );
+            } 
             
             // Setup game notifications to handle (see "setupNotifications" method below)
             this.setupNotifications();
@@ -327,6 +333,8 @@ function (dojo, declare) {
             dojo.addClass(divId,"ffg_selectable") ;
             
             //TODO JSA ADD some animation ?
+            
+            //TODO JSA hide suit modifiers IF JOKER (+ the same through init view)
         },
         
         displayPlayerPanel: function( player_id,player)
@@ -466,6 +474,7 @@ function (dojo, declare) {
             
             this.selectedCard = null;
             this.selectedAmount = null;
+            this.selectedSuit = null;
             this.selectedCargoContainer = null;
             dojo.query(".ffg_card").removeClass("ffg_selected") ;
             dojo.query(".ffg_card_wrapper").removeClass("ffg_selected") ;
@@ -669,10 +678,11 @@ function (dojo, declare) {
             //disable buttons and enable them again after receiving notif
             dojo.query(".ffg_button_card_plus").removeClass("ffg_selectable");
             dojo.query(".ffg_button_card_minus").removeClass("ffg_selectable");
+            dojo.query(".ffg_button_card_suit_modifier").removeClass("ffg_selectable");
             dojo.query(".ffg_overtime.ffg_selectable").addClass("ffg_selectable_wait");
             
             //CALL SERVER to refresh possible actions for this card ;
-            this.ajaxcallwrapper("getPossibleActionsForCard", {'cardId': card_id,'amount': this.selectedAmount});
+            this.ajaxcallwrapper("getPossibleActionsForCard", {'cardId': card_id,'amount': this.selectedAmount, 'suit':this.selectedSuit, });
         },
         
         displayTruckScore: function(player_id, truckScore, truckDivId){
@@ -814,6 +824,7 @@ function (dojo, declare) {
             
             let card_id= evt.currentTarget.getAttribute("data_id") ;
             let data_value= evt.currentTarget.getAttribute("data_value") ;
+            let data_suit= evt.currentTarget.getAttribute("data_suit") ;
             let data_amount= evt.currentTarget.getAttribute("data_amount") ;
             
             if(this.selectedCard == card_id ){
@@ -830,6 +841,7 @@ function (dojo, declare) {
                 
             this.selectedCard = card_id;
             this.selectedAmount = data_amount;
+            this.selectedSuit = data_suit;
             this.displayOvertimeHoursOnCard();
             
             this.displayPossibleLoads( card_id);
@@ -880,6 +892,36 @@ function (dojo, declare) {
             
         },
         
+        onClickChangeSuit: function( evt )
+        {
+            console.log( 'onClickChangeSuit',evt );
+            
+            // Preventing default browser reaction
+            dojo.stopEvent( evt );
+            
+            let div_id = evt.currentTarget.id;
+            let target_suit = evt.currentTarget.getAttribute("data_suit");
+            if( ! dojo.hasClass( div_id, 'ffg_selectable' ) || this.selectedSuit!=null && this.selectedSuit == target_suit) {
+                return ;
+            }
+            //ACTION : USE 1 token , as we do when click +1 BUT update the suit of the card instead of amount
+            let selectedCardDiv = dojo.query(".ffg_card.ffg_selected")[0] ;
+            let card_id = parseInt(selectedCardDiv.getAttribute("data_id") ) ;
+            this.selectedSuit = target_suit;
+            selectedCardDiv.setAttribute("data_suit",this.selectedSuit);//UPDATE UI of the card
+                 
+            //TODO JSA ? add a 'global class' variable to keep track of overtime used on each button : only 1 overtime is needed when we change the suit of the card, but it adds to the ones played on the same card to modify amount
+            
+            //disable buttons and enable them again after receiving notif
+            dojo.query(".ffg_button_card_plus").removeClass("ffg_selectable");
+            dojo.query(".ffg_button_card_minus").removeClass("ffg_selectable");
+            dojo.query(".ffg_button_card_suit_modifier").removeClass("ffg_selectable");
+            dojo.query(".ffg_overtime.ffg_selectable").addClass("ffg_selectable_wait");
+            
+            //CALL SERVER to refresh possible actions for this card ;
+            this.ajaxcallwrapper("getPossibleActionsForCard", {'cardId': card_id,'amount': this.selectedAmount, 'suit': this.selectedSuit,});
+        },
+        
         /**
         Click Handler for the trucks cargo containers : 
         */
@@ -918,7 +960,7 @@ function (dojo, declare) {
                 return ;
             }
             
-            this.ajaxcallwrapper("loadTruck", {'cardId': cardId, 'containerId': container_id, 'amount': amount});
+            this.ajaxcallwrapper("loadTruck", {'cardId': cardId, 'containerId': container_id, 'amount': amount, 'suit': this.selectedSuit,});
         },
         
         onSelectCargoAmount: function( evt )
@@ -938,7 +980,7 @@ function (dojo, declare) {
                 return ;
             }
             
-            this.ajaxcallwrapper("loadTruck", {'cardId': this.selectedCard, 'containerId': this.selectedCargoContainer, 'amount': this.selectedAmount });
+            this.ajaxcallwrapper("loadTruck", {'cardId': this.selectedCard, 'containerId': this.selectedCargoContainer, 'amount': this.selectedAmount, 'suit': this.selectedSuit, });
         },
         
         onCloseCargoAmountSelection: function( evt )
@@ -1162,6 +1204,7 @@ function (dojo, declare) {
             
             dojo.query(".ffg_button_card_plus").addClass("ffg_selectable");
             dojo.query(".ffg_button_card_minus").addClass("ffg_selectable");
+            dojo.query(".ffg_button_card_suit_modifier").addClass("ffg_selectable");
             dojo.query(".ffg_overtime.ffg_selectable_wait").removeClass("ffg_selectable_wait");
             
         },  
@@ -1204,6 +1247,13 @@ function (dojo, declare) {
             
             this.updatePlayerOvertimeHours(this.player_id,notif.args.availableOvertime);
             dojo.query(".ffg_card").forEach( dojo.hitch(this, "resetOvertimeHourOnCard"));
+            
+            //CANCEL SUIT optional Changes
+            for(let row in this.dayCards){
+                let divId = "ffg_card_"+row;
+                let div = dojo.query("#"+divId)[0];
+                div.setAttribute("data_suit", this.dayCards[row].type);
+            }
             
             this.possibleCards = [];
             if(notif.args.possibleCards !=undefined){

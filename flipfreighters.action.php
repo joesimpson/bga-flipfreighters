@@ -71,9 +71,10 @@
         $containerId = self::getArg( "containerId", AT_alphanum, true );
         $amount = self::getArg( "amount", AT_posint, true );
         $cardId = self::getArg( "cardId", AT_posint, true );
+        $suit = self::getArg( "suit", AT_posint, false );
 
         // Then, call the appropriate method in your game logic 
-        $this->game->loadTruck($cardId, $containerId, $amount );
+        $this->game->loadTruck($cardId, $containerId, $amount,$suit );
 
         self::ajaxResponse( );
     }
@@ -100,9 +101,10 @@
         // Note: these arguments correspond to what has been sent through the javascript "ajaxcall" method
         $cardId = self::getArg( "cardId", AT_posint, true );
         $amount = self::getArg( "amount", AT_posint, true );
+        $suit = self::getArg( "suit", AT_posint, false );
 
         // Then, call the appropriate method in your game logic 
-        $this->game->getPossibleActionsForCard($cardId, $amount  );
+        $this->game->getPossibleActionsForCard($cardId, $amount, $suit );
 
         self::ajaxResponse( );
     }

@@ -211,12 +211,24 @@ class view_flipfreighters_flipfreighters extends game_view
                                                      ) );
         }
         
+        $this->page->begin_block( "flipfreighters_flipfreighters", "ffg_cards_suit_modifier" );
         $this->page->begin_block( "flipfreighters_flipfreighters", "ffg_cards" );
         $index =0;
+        $card_suits = $this->game->card_types;
         
         //$this->game->dump("VIEW cardsWithOvertime :", $cardsWithOvertime);
         foreach( $cards as $card )
         {
+            $this->page->reset_subblocks( 'ffg_cards_suit_modifier' ); 
+            foreach( $card_suits as $card_suit_id => $card_suit )
+            {
+                $this->page->insert_block( "ffg_cards_suit_modifier", array( 
+                                                        "INDEX" => $index,
+                                                        "SUIT" => $card_suit_id,
+                                                        "SUIT_LABEL" => $card_suit['name'],
+                                                         ) );
+            }
+            
             $card_id = $card['id'];
             $card_value = $card['type_arg'];
             
