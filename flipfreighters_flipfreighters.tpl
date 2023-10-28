@@ -137,6 +137,25 @@ var jstpl_player_board_details = '\<div class="ffg_player_panel_details" id="ffg
         <div id="ffg_delivered_trucks_wrapper_${player_id}" class="ffg_delivered_trucks_wrapper"><i class="fa fa-truck fa-flip-horizontal ffg_icon_delivered_trucks" id="ffg_icon_delivered_trucks_${player_id}" aria-hidden="true"></i><span id="ffg_stat_delivered_trucks_${player_id}" class="ffg_stat_delivered_trucks ffg_player_panel_counter">0</span></div>\
     </div>';
 
+
+// TODO JSA IMPROVE DISPLAY of this dialog
+var jstpl_showScore = `<div id="showScoreDialogContent">\
+        <table id='ffg_players_overview'>
+          <thead>
+            <tr>
+              <th id="ffg_overview_user"><i class="fa fa-user"></i></th>
+              <th id="ffg_overview_week1"><div>W1</div></th>
+              <th id="ffg_overview_week2"><div>W2</div></th>
+              <th id="ffg_overview_week3"><div>W3</div></th>
+              <th id="ffg_overview_total"><i class="fa fa-star"></i></th>
+            </tr>
+          </thead>
+          <tbody id="ffg_overview_body"></tbody>
+        </table>
+    </div>`;
+    
+var jstpl_showScoreRow = '<tr id="ffg_scorerow_${player_id}"><td><span class="playername" style="color:#${player_color};">${player_name}</span></td><td>${score_week1}</td><td>${score_week2}</td><td>${score_week3}</td><td>${score}</td></tr>';
+
 </script>  
 
 {OVERALL_GAME_FOOTER}

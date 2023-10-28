@@ -283,6 +283,41 @@ function (dojo, declare) {
             
         },
         
+        initShowScoreDialog: function()
+        {
+            // Create the new dialog over the play zone.
+            this.showScoreDialog = new ebg.popindialog();
+            this.showScoreDialog.create( 'showScoreDialogId' );
+            this.showScoreDialog.setTitle( _("Players's score situation") );
+            this.showScoreDialog.setMaxWidth( 1000 ); 
+
+            // Create the HTML of my dialog. 
+            let html = this.format_block( 'jstpl_showScore', { } );  
+            this.showScoreDialog.setContent( html ); // Must be set before calling show() so that the size of the content is defined before positioning the dialog
+            
+            for(let playerId in this.gamedatas.players){
+                let player = this.gamedatas.players[playerId];
+                let data = {
+                    'player_id' : playerId,
+                    'player_name' : player.name,
+                    'player_color' : player.color,
+                    'score_week1' : player.score_week1,
+                    'score_week2' : player.score_week2,
+                    'score_week3' : player.score_week3,
+                    'score' : player.score
+                };
+                dojo.place(this.format_block('jstpl_showScoreRow', data), 'ffg_overview_body');
+            }
+            
+            //PREPARE MODAL SIZE
+            let box = $("ebd-body").getBoundingClientRect();
+            let modalWidth = 1000;
+            let newModalWidth = box['width']*0.8;
+            let modalScale = newModalWidth / modalWidth;
+            if(modalScale > 1) modalScale = 1;
+            dojo.style("popin_showScoreDialogId", "transform", `scale(${modalScale})`); 
+        },
+        
         updatePlayersOvertimeHours: function(players)
         {
             console.log( "updatePlayersOvertimeHours" ,players); 
@@ -1124,7 +1159,10 @@ function (dojo, declare) {
             dojo.stopEvent( evt );
             
             //TODO JSA Don't call server, use client datas instead to display modal with details about score
-            this.ajaxcallwrapperNoCheck("showScoringDialog", { });
+            //this.ajaxcallwrapperNoCheck("showScoringDialog", { });
+            
+            this.initShowScoreDialog();
+            this.showScoreDialog.show();
         },
         
         ///////////////////////////////////////////////////
