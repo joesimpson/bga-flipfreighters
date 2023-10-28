@@ -1177,8 +1177,11 @@ class FlipFreighters extends Table
         self::DbQuery( "UPDATE player SET player_score_aux= player_score_aux +$deltaScoreAux WHERE player_id='$player_id'" );
     }
     
+    function getPlayerUsedOvertimeHours($player_id){
+        return $this->getUniqueValueFromDB("SELECT player_ffg_overtime_used FROM player WHERE player_id='$player_id'");
+    }
     function getPlayerAvailableOvertimeHours($player_id){
-        return NB_OVERTIME_TOKENS - $this->getUniqueValueFromDB("SELECT player_ffg_overtime_used FROM player WHERE player_id='$player_id'");
+        return NB_OVERTIME_TOKENS - $this->getPlayerUsedOvertimeHours($player_id);
     }
     /**
     Return the total number of available tokens, also counting the one used during this turn : don't send this info to other players
@@ -1197,6 +1200,69 @@ class FlipFreighters extends Table
     function setPlayerAvailableOvertimeHours($player_id, $nb){
         $used = NB_OVERTIME_TOKENS - $nb;
         self::DbQuery( "UPDATE player SET player_ffg_overtime_used=$used WHERE player_id='$player_id'" );
+    }
+    
+    function notifyScoringDialog(){
+        //////////// Display table window with results /////////////////
+        $table = array();
+
+        $players = self::loadPlayersBasicInfos();
+        $round = self::getGameStateValue( 'round_number');
+        
+        // Header line
+        $firstRow = array( '' );
+        foreach( $players as $player_id => $player )
+        {
+            $firstRow[] = array( 'str' => '${player_name}',
+                                 'args' => array( 'player_name' => $player['player_name'] ),
+                                 'type' => 'header'
+                               );
+        }
+        $table[] = $firstRow;
+
+        // Week score
+        $newRow = array( array( 'str' => clienttranslate('Number of delivered trucks'), 'args' => array() ) );
+        foreach( $players as $player_id => $player )
+        {
+            $newRow[] = $this->dbGetScore( $player_id)['player_score_aux'];
+        }
+        $table[] = $newRow;
+        
+        // Week score
+        $newRow = array( array( 'str' => clienttranslate('Deliveries score'), 'args' => array() ) );
+        foreach( $players as $player_id => $player )
+        {
+            $newRow[] = self::getStat( "score_week".$round, $player_id );
+        }
+        $table[] = $newRow;
+
+        // used overtime tokens
+        $newRow = array( array( 'str' => clienttranslate('Overtime Hours'), 'args' => array() ) );
+        foreach( $players as $player_id => $player )
+        {
+                $newRow[] = $this->getPlayerUsedOvertimeHours($player_id);
+        }
+        $table[] = $newRow;
+
+        // Points
+        $newRow = array( array( 'str' => clienttranslate('Overall score by now'), 'args' => array() ) );
+        foreach( $players as $player_id => $player )
+        {
+            $newRow[] = $this->dbGetScore( $player_id)['player_score'];
+        }
+        $table[] = $newRow;
+
+        
+        $this->notifyAllPlayers( "tableWindow", '', array(
+            "id" => 'weekScoringDialog',
+            "title" => clienttranslate("Result of this week"),
+            "header" => ['str' => clienttranslate('Week ${number}'),
+                         'args' => [ 'number' => $round ],
+                       ],
+            "table" => $table,
+            "closing" => clienttranslate( "Close" ),
+        ) ); 
+        
     }
 //////////////////////////////////////////////////////////////////////////////
 //////////// Player actions
@@ -1669,6 +1735,8 @@ class FlipFreighters extends Table
                 'k' => $round,
                 'newScore' => $newPlayerScore,
             ) );
+            
+            $this->notifyScoringDialog();
         }
         
         
