@@ -121,19 +121,26 @@
 
 
 .ffg_overtime_wrapper,
-.ffg_delivered_trucks_wrapper {
+.ffg_delivered_trucks_wrapper,
+.ffg_show_score {
    padding: 5px;
    display: inline-block;
 }
 .ffg_player_panel_counter, 
 .ffg_icon_overtime,
-.ffg_icon_delivered_trucks{
+.ffg_icon_delivered_trucks, 
+.ffg_icon_show_score{
     font-size: 1.5em;
     padding-left: 5px;
     vertical-align: middle;
     text-align: center;
 }
-
+.ffg_icon_show_score {
+    cursor: pointer;
+}
+.ffg_icon_show_score .fa-star {
+    top: 5px;
+}
 /* 
 ---------------------------- ----------------------------   ---------------------------- 
 ----------------------------  LEFT ZONE  : CARDS            ---------------------------- 

@@ -79,6 +79,7 @@ function (dojo, declare) {
                 if(this.player_id == player_id){ //CURRENT player
                     playerContainers.connect( 'onclick', this, 'onSelectLoadTarget' );
                 }
+                
                 this.displayPlayerScores(player);
                 this.displayPlayerPanel(player_id,player);
                 this.initPayerAvatar(player_id);
@@ -278,6 +279,8 @@ function (dojo, declare) {
             
             this.addTooltipToClass( "ffg_symbol_path_size", ffg_tooltips.path_size,'' );
             
+            this.addTooltipToClass( "ffg_icon_show_score", _("Show current score situation"), '' );
+            
         },
         
         updatePlayersOvertimeHours: function(players)
@@ -359,6 +362,13 @@ function (dojo, declare) {
             
             this.counterDelivered[player_id] = new ebg.counter();
             this.counterDelivered[player_id].create("ffg_stat_delivered_trucks_"+player_id); 
+            
+            if(this.player_id != player_id){ //CURRENT player
+                dojo.query("#ffg_show_score_"+player_id).forEach( (i) => { dojo.destroy(i) } ); 
+            }
+            else {
+                dojo.query(".ffg_show_score").connect( 'onclick', this, 'onClickShowScore' );
+            }
         },
         displayPossibleLoads: function( card_id )
         {            
@@ -1104,6 +1114,17 @@ function (dojo, declare) {
                 this.ajaxcallwrapperNoCheck("cancelTurn", { });
             });
             return;
+        },
+        
+        onClickShowScore: function( evt )
+        {
+            console.log( 'onClickShowScore',evt );
+            
+            // Preventing default browser reaction
+            dojo.stopEvent( evt );
+            
+            //TODO JSA Don't call server, use client datas instead to display modal with details about score
+            this.ajaxcallwrapperNoCheck("showScoringDialog", { });
         },
         
         ///////////////////////////////////////////////////

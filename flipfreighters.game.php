@@ -1202,7 +1202,7 @@ class FlipFreighters extends Table
         self::DbQuery( "UPDATE player SET player_ffg_overtime_used=$used WHERE player_id='$player_id'" );
     }
     
-    function notifyScoringDialog(){
+    function notifyScoringDialog($notifyPlayerId = null){
         //////////// Display table window with results /////////////////
         $table = array();
 
@@ -1252,16 +1252,22 @@ class FlipFreighters extends Table
         }
         $table[] = $newRow;
 
-        
-        $this->notifyAllPlayers( "tableWindow", '', array(
-            "id" => 'weekScoringDialog',
-            "title" => clienttranslate("Result of this week"),
-            "header" => ['str' => clienttranslate('Week ${number}'),
-                         'args' => [ 'number' => $round ],
-                       ],
-            "table" => $table,
-            "closing" => clienttranslate( "Close" ),
-        ) ); 
+        $notifDatas = array(
+                "id" => 'weekScoringDialog',
+                "title" => clienttranslate("Result of this week"),
+                "header" => ['str' => clienttranslate('Week ${number}'),
+                             'args' => [ 'number' => $round ],
+                           ],
+                "table" => $table,
+                "closing" => clienttranslate( "Close" ),
+            );
+
+        if( isset ($notifyPlayerId)) {
+            $this->notifyPlayer($notifyPlayerId, "tableWindow", '', $notifDatas ); 
+        }
+        else {
+            $this->notifyAllPlayers( "tableWindow", '', $notifDatas );
+        }
         
     }
 //////////////////////////////////////////////////////////////////////////////
@@ -1550,6 +1556,12 @@ class FlipFreighters extends Table
         
         $this->gamestate->setPlayersMultiactive(array ($player_id), 'next', false);
    }
+   
+    function showScoringDialog(){
+        $this->gamestate->checkPossibleAction('showScoringDialog');
+       
+        $this->notifyScoringDialog(self::getCurrentPlayerId());
+    }
 //////////////////////////////////////////////////////////////////////////////
 //////////// Game state arguments
 ////////////

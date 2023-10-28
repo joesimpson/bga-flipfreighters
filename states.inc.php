@@ -105,7 +105,7 @@ $machinestates = array(
             "type" => "multipleactiveplayer",
             "action" => "stPlayerturn",
             "args" => "argPlayerTurn",
-            "possibleactions" => array("getPossibleLoads","getPossibleActionsForCard", "loadTruck", "moveTruck", "cancelTurn", "endTurn" ),
+            "possibleactions" => array("getPossibleLoads","getPossibleActionsForCard", "loadTruck", "moveTruck", "showScoringDialog","cancelTurn", "endTurn" ),
             "updateGameProgression" => true,
             "transitions" => array( "next" => 15)
         ),

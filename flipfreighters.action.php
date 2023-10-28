@@ -140,7 +140,13 @@
        self::setAjaxMode();
        $this->game->cancelTurn();
        self::ajaxResponse();
-   }
+    }
+   
+    public function showScoringDialog() {
+       self::setAjaxMode();
+       $this->game->showScoringDialog();
+       self::ajaxResponse();
+    }
   }
   
 
