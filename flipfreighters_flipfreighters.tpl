@@ -128,7 +128,7 @@ var jstpl_some_game_item='<div class="my_game_item" id="my_game_item_${MY_ITEM_I
 */
 var jstpl_player_board_details = '\<div class="ffg_player_panel_details" id="ffg_player_panel_details_${player_id}">\
         <div id="ffg_show_score_${player_id}" class="ffg_show_score">\
-            <span class="fa-stack ffg_icon_show_score">\
+            <span id="ffg_icon_show_score_${player_id}" class="fa-stack ffg_icon_show_score">\
                 <i class="fa fa-calendar-o fa-stack-2x"></i>\
                 <i class="fa fa-star fa-stack-1x "></i>\
             </span>\
@@ -138,15 +138,16 @@ var jstpl_player_board_details = '\<div class="ffg_player_panel_details" id="ffg
     </div>';
 
 
-// TODO JSA IMPROVE DISPLAY of this dialog
-var jstpl_showScore = `<div id="showScoreDialogContent">\
+var jstpl_showScore = `<div id="ffg_showScoreDialogContent">\
         <table id='ffg_players_overview'>
           <thead>
             <tr>
               <th id="ffg_overview_user"><i class="fa fa-user"></i></th>
-              <th id="ffg_overview_week1"><div>W1</div></th>
-              <th id="ffg_overview_week2"><div>W2</div></th>
-              <th id="ffg_overview_week3"><div>W3</div></th>
+              <th id="ffg_overview_week1"><div></div></th>
+              <th id="ffg_overview_week2"><div></div></th>
+              <th id="ffg_overview_week3"><div></div></th>
+              <th id="ffg_overview_overtime"><i class="fa fa-clock-o"></i></th>
+              <th id="ffg_overview_deliveredtrucks"><i class="fa fa-truck fa-flip-horizontal"></i></th>
               <th id="ffg_overview_total"><i class="fa fa-star"></i></th>
             </tr>
           </thead>
@@ -154,7 +155,7 @@ var jstpl_showScore = `<div id="showScoreDialogContent">\
         </table>
     </div>`;
     
-var jstpl_showScoreRow = '<tr id="ffg_scorerow_${player_id}"><td><span class="playername" style="color:#${player_color};">${player_name}</span></td><td>${score_week1}</td><td>${score_week2}</td><td>${score_week3}</td><td>${score}</td></tr>';
+var jstpl_showScoreRow = '<tr id="ffg_scorerow_${player_id}" class="${trclasses}"><td><span class="playername" style="color:#${player_color};">${player_name}</span></td><td>${score_week1}</td><td>${score_week2}</td><td>${score_week3}</td><td>${overtime}</td><td>${delivered}</td><td>${score}</td></tr>';
 
 </script>  
 

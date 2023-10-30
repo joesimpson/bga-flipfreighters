@@ -148,7 +148,7 @@
 ---------------------------- ----------------------------   ---------------------------- 
 */
 
-#showScoreDialogContent table th {
+#ffg_showScoreDialogContent table th {
     border-right: 1px solid rgba(0,0,0,.2);
     height: 70px;
     min-width: 70px;
@@ -156,7 +156,28 @@
     vertical-align: middle;
     font-size: 30px;
 }
-#showScoreDialogContent table tbody tr td{
+#ffg_showScoreDialogContent table th>div{
+    display: inline-block;
+}
+#ffg_overview_week1 div,
+#ffg_overview_week2 div,
+#ffg_overview_week3 div{
+    background-image: url('img/board.jpg');
+    background-position-y: -653px;
+    background-position-x: -25px;
+    width: 66px;
+    height: 67px;
+    background-size: 2000%;
+}
+
+#ffg_overview_week2 div{
+    background-position-y: -731px;
+}
+
+#ffg_overview_week3 div{
+    background-position-y: -809px;
+}
+#ffg_showScoreDialogContent table tbody tr td{
     word-wrap: anywhere;
     border-right: 1px solid rgba(0,0,0,.2);
     font-family: Caveat;
@@ -164,6 +185,14 @@
     padding: 5px 8px;
     text-align: center;
     vertical-align: middle;
+}
+#ffg_showScoreDialogContent table tbody tr:nth-of-type(odd) {
+    background-color: lightgray;
+}
+#ffg_showScoreDialogContent table tbody tr.ffg_highlight{
+    outline: 3px solid yellow;
+    /** Really bright because I test it to be visible for achromatopsia color blindness */
+    background-color: #ff8a00;
 }
 /* 
 ---------------------------- ----------------------------   ---------------------------- 

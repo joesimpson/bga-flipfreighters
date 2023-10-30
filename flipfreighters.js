@@ -45,6 +45,7 @@ function (dojo, declare) {
             
             this.counterDelivered={};
             this.overtimeSuitVariant = false;
+            
         },
         
         /*
@@ -122,6 +123,8 @@ function (dojo, declare) {
             if(this.overtimeSuitVariant){
                 dojo.query(".ffg_button_card_suit_modifier").removeClass("ffg_no_display").connect( 'onclick', this, 'onClickChangeSuit' );
             } 
+            
+            this.selectedPlayerId = this.player_id;
             
             // Setup game notifications to handle (see "setupNotifications" method below)
             this.setupNotifications();
@@ -295,16 +298,21 @@ function (dojo, declare) {
             let html = this.format_block( 'jstpl_showScore', { } );  
             this.showScoreDialog.setContent( html ); // Must be set before calling show() so that the size of the content is defined before positioning the dialog
             
+            //TODO JSA update gamedatas.players with values during game
             for(let playerId in this.gamedatas.players){
                 let player = this.gamedatas.players[playerId];
+                let classes = (this.selectedPlayerId == playerId ) ? "ffg_highlight" : "";
                 let data = {
                     'player_id' : playerId,
                     'player_name' : player.name,
                     'player_color' : player.color,
                     'score_week1' : player.score_week1,
-                    'score_week2' : player.score_week2,
-                    'score_week3' : player.score_week3,
-                    'score' : player.score
+                    'score_week2' : this.currentRound >=2 ? player.score_week2 : "-",
+                    'score_week3' : this.currentRound >=3 ? player.score_week3 : "-",
+                    'overtime' : player.availableOvertime,
+                    'delivered' : player.score_aux,
+                    'score' : player.score,
+                    'trclasses' : classes,
                 };
                 dojo.place(this.format_block('jstpl_showScoreRow', data), 'ffg_overview_body');
             }
@@ -398,12 +406,13 @@ function (dojo, declare) {
             this.counterDelivered[player_id] = new ebg.counter();
             this.counterDelivered[player_id].create("ffg_stat_delivered_trucks_"+player_id); 
             
+            /*At least Spectator needs it, and it could be useful to highlight the player N line when we click on player N's panel
             if(this.player_id != player_id){ //CURRENT player
                 dojo.query("#ffg_show_score_"+player_id).forEach( (i) => { dojo.destroy(i) } ); 
             }
-            else {
-                dojo.query(".ffg_show_score").connect( 'onclick', this, 'onClickShowScore' );
-            }
+            */
+            dojo.query(".ffg_show_score").connect( 'onclick', this, 'onClickShowScore' );
+            
         },
         displayPossibleLoads: function( card_id )
         {            
@@ -1158,9 +1167,10 @@ function (dojo, declare) {
             // Preventing default browser reaction
             dojo.stopEvent( evt );
             
-            //TODO JSA Don't call server, use client datas instead to display modal with details about score
-            //this.ajaxcallwrapperNoCheck("showScoringDialog", { });
+            this.selectedPlayerId = evt.currentTarget.id.split("_").lastItem;
             
+            //Don't call server, use client datas instead to display modal with details about score
+            //this.ajaxcallwrapperNoCheck("showScoringDialog", { });
             this.initShowScoreDialog();
             this.showScoreDialog.show();
         },
