@@ -1714,6 +1714,22 @@ class FlipFreighters extends Table
             ) );
         }
         
+        //TODO JSA FACTORIZE ? this sql is almost the same as the one in getAllDatas
+        $sql = "SELECT player_id id, player_score score, player_score_aux score_aux FROM player ";
+        $playersData = self::getCollectionFromDb( $sql );
+        foreach($playersData as $player){ 
+            $player_id = $player["id"];
+            for($k=1; $k <= NB_ROUNDS;$k++){
+                $playersData[$player_id]["score_week".$k] = self::getStat( "score_week".$k, $player_id );
+            }
+            $availableOvertime = $this->getPlayerAvailableOvertimeHours($player_id);
+            $playersData[$player_id]['availableOvertime'] = $availableOvertime;
+            
+        }
+        self::notifyAllPlayers( "endTurnPlayerDatas", '', array( 
+            'players' => $playersData,
+        ) );
+        
         $weekSize = $this->cards->countCardInLocation( $week );
         if($weekSize == 0){
             //END WEEK = END round

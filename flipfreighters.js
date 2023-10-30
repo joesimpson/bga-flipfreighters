@@ -265,6 +265,20 @@ function (dojo, declare) {
 
             return avatarURL;
         },        
+        /**
+        Update a set of properties in gamedatas.players from the parameter playerDatas
+        */
+        updatePlayerDatas: function( player_id, playerDatas )
+        {
+            console.log( 'updatePlayerDatas',player_id, playerDatas );
+            this.gamedatas.players[player_id].score = playerDatas.score;
+            this.gamedatas.players[player_id].score_aux = playerDatas.score_aux;
+            this.gamedatas.players[player_id].score_week1 = playerDatas.score_week1;
+            this.gamedatas.players[player_id].score_week2 = playerDatas.score_week2;
+            this.gamedatas.players[player_id].score_week3 = playerDatas.score_week3;
+            this.gamedatas.players[player_id].availableOvertime = playerDatas.availableOvertime;
+            
+        },
         
         initTooltips: function (ffg_tooltips){
             console.log( "initTooltips ... " ,ffg_tooltips);
@@ -506,8 +520,8 @@ function (dojo, declare) {
             truckDiv.setAttribute("data_not_confirmed_position",not_confirmed_position);
             truckDiv.setAttribute("data_score",truckScore);
             this.displayTruckScore(player_id, truckScore,truckDivId);   
-            this.increasePlayerScore(player_id,truckScore);
             if(not_confirmed_state == 3 || confirmed_state == 4 && this.player_id != player_id){
+                this.increasePlayerScore(player_id,truckScore);
                 //Add 1 truck delivered only once for the player moving the truck, or receiving infos from others moving
                 this.increasePlayerScoreAux(player_id,1);
             }
@@ -1212,6 +1226,7 @@ function (dojo, declare) {
             
             dojo.subscribe( 'endTurnActions', this, "notif_endTurnActions" );
             dojo.subscribe( 'endTurnScore', this, "notif_endTurnScore" );
+            dojo.subscribe( 'endTurnPlayerDatas', this, "notif_endTurnPlayerDatas" );
             dojo.subscribe( 'newWeekScore', this, "notif_newWeekScore" );
             
         },  
@@ -1377,6 +1392,18 @@ function (dojo, declare) {
             //Week score will be displayed when week really ends, not before
             //this.updatePlayerWeekScore(notif.args.player_id,notif.args.k,notif.args.nb );
             this.updatePlayerScore(notif.args.player_id,notif.args.newScore );
+        },
+        
+        notif_endTurnPlayerDatas: function( notif )
+        {
+            console.log( 'notif_endTurnPlayerDatas',notif );
+            
+            //Update  gamedatas.players
+            for( let player_id in notif.args.players )
+            {
+                this.updatePlayerDatas(player_id, notif.args.players[player_id]);
+            }
+            
         },
         
         notif_newWeekScore: function( notif )
