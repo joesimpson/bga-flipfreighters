@@ -137,7 +137,7 @@ $this->ffg_tooltips  = array(
         CARGO_TYPE_ALL_VALUES => clienttranslate('The amount you can load in this truck is :  any number'),
     ),
     "delivery_score" => array( 
-        SCORE_TYPE_NUMBER_OF_GOODS_X5 => clienttranslate('Scores 5 points per good in the truck (when arrived at this destination') ,
+        SCORE_TYPE_NUMBER_OF_GOODS_X5 => clienttranslate('Scores 5 points per good in the truck (when arrived at this destination)') ,
         SCORE_TYPE_NUMBER_OF_GOODS_3_TO_30 => clienttranslate('Scores 3/7/10/15/20/30 points with 1/2/3/4/5/6 goods in the truck (when arrived at this destination)'),
         
         SCORE_TYPE_SUM_GOODS_X1 => clienttranslate('Scores points corresponding to the sum of all goods in the truck (when arrived at this destination)'),
