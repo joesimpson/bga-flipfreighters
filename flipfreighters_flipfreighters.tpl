@@ -164,19 +164,17 @@ var jstpl_showScoreRow = '<tr id="ffg_scorerow_${player_id}" class="${trclasses}
 ////////////////////////////////////////////////////////////////////////////////////
 //// Inspired from WTO' SCORE SHEET : display players Board in modal            ////
 ////////////////////////////////////////////////////////////////////////////////////
-var jstpl_playerBoardContainer = `<div id="ffg_modal_player_board_container_\${player_id}" class="ffg_player_board_container" data-slideshow="true">
-  <div class='slideshow-left'>
-    <div class="arrow"></div>
-  </div>
-  <div id="ffg_modal_player_board_holder"></div>
-  <div class='slideshow-right'>
-    <div class="arrow"></div>
-  </div>
+var jstpl_playerBoardContainer = `<div id="ffg_modal_player_board_container_\${player_id}" class="ffg_player_board_container">
+    <div class='ffg_slideshow_line'>
+        <i class="fa fa-arrow-left ffg_slideshow_left"></i>
+        <i class="fa fa-arrow-right ffg_slideshow_right"></i>
+    </div>
+    <div id="ffg_modal_player_board_holder"></div>
 </div>`;
 var jstpl_playerBoard = `
-  <div id="ffg_modal_player_board_\${player_id}" class="ffg_modal_player_board">
-    <div class="ffg_modal_player_board_overlay"></div>
-  </div>
+    <div id="ffg_modal_player_board_\${player_id}" class="ffg_modal_player_board">
+        <div class="ffg_modal_player_board_overlay"></div>
+    </div>
 `;
 
 </script>  

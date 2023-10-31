@@ -155,6 +155,19 @@
     text-align: center;
 }
 
+#modal_ffg_all_players_board_wrap .ffg_board_container:not(.ffg_selectedPlayerId) {
+    display: none;
+}
+
+.ffg_slideshow_line{
+    display: flex;
+}
+.ffg_slideshow_left, .ffg_slideshow_right{
+    font-size: 1.5em;
+    text-align: center;
+    flex-basis: 50%;
+    cursor: pointer;
+}
 /* 
 ---------------------------- ----------------------------   ---------------------------- 
 ----------------------------  SHOW SCORE DIALOG             ---------------------------- 

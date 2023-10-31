@@ -272,6 +272,11 @@ function (dojo, declare) {
             }
 
             return avatarURL;
+        },       
+
+        getNextPlayerId(pId, direction){
+            let table = direction == 'right'? this.gamedatas.nextPlayerTable : this.gamedatas.prevPlayerTable;
+            return table[pId];
         },        
         /**
         Update a set of properties in gamedatas.players from the parameter playerDatas
@@ -350,7 +355,7 @@ function (dojo, declare) {
         initShowBoardDialog: function( selectedPlayerId)
         {
             //let title = dojo.string.substitute( _("${player_name}'s board"), { player_name: this.gamedatas.players[selectedPlayerId].name});
-            let title = dojo.string.substitute( _("Players board"), );
+            let title = dojo.string.substitute( _("Players' boards"), );
             
             // Create the new dialog over the play zone.
             this.showBoardDialog = new ebg.popindialog();
@@ -362,14 +367,14 @@ function (dojo, declare) {
             let html = this.format_block( 'jstpl_playerBoard', { 'player_id' : selectedPlayerId} );  
             this.showBoardDialog.setContent( html );
             
-            //TODO JSA LOOP on players to add left and right arrow to show others
             let data = {
                 'player_id' : selectedPlayerId,
             };
             dojo.place(this.format_block('jstpl_playerBoardContainer', data), 'popin_showBoardDialogId_contents');
             
-            let playerBoard = dojo.clone(dojo.byId("ffg_board_player_container_"+selectedPlayerId));
-           
+            //Clone all players board directly and CSS will hide/show the good one
+            let playerBoard = dojo.clone(dojo.byId("ffg_all_players_board_wrap"));
+            dojo.attr(playerBoard, "id", "modal_"+playerBoard.id);
             dojo.query(playerBoard).query("*").forEach( (i) => {
                 if(i.id != ""){
                     //Modify each existing element id in the board to make it distinct :
@@ -379,10 +384,17 @@ function (dojo, declare) {
                         dojo.removeClass(i,"ffg_selectable"); 
                         dojo.addClass(i,"ffg_selectable_for_others");
                     }
+                    if(i.id == "modal_ffg_board_player_container_"+selectedPlayerId){
+                        //THE ONE TO DISPLAY
+                        dojo.addClass(i,"ffg_selectedPlayerId");
+                    }
                 }
             });
             
             dojo.place( playerBoard, 'ffg_modal_player_board_holder');
+            
+            dojo.query(".ffg_slideshow_left").connect( 'onclick', this, 'onClickSlideShowLeft' );
+            dojo.query(".ffg_slideshow_right").connect( 'onclick', this, 'onClickSlideShowRight' );
             
             //PREPARE MODAL SIZE
             let box = $("ebd-body").getBoundingClientRect();
@@ -927,6 +939,7 @@ function (dojo, declare) {
             console.log( 'onBoardSliderChange',evt.currentTarget.value );
             document.querySelector(":root").style.setProperty("--ffg_board_display_scale",evt.currentTarget.value /100);
         },        
+        
         /**
         Click Handler for choosing a card on the left : 
         */
@@ -1263,6 +1276,35 @@ function (dojo, declare) {
             this.initTooltips(this.material.tooltips);
         },
         
+        onClickSlideShowLeft: function( evt )
+        {
+            console.log( 'onClickSlideShowLeft',evt );
+            
+            // Preventing default browser reaction
+            dojo.stopEvent( evt );
+            
+            if(Object.keys(this.gamedatas.players).length == 1 ) return;
+            
+            this.selectedPlayerId = this.getNextPlayerId(this.selectedPlayerId, "left");
+            
+            dojo.query("#modal_ffg_all_players_board_wrap *").removeClass("ffg_selectedPlayerId"); 
+            dojo.addClass("modal_ffg_board_player_container_"+this.selectedPlayerId,"ffg_selectedPlayerId");
+        },
+        
+        onClickSlideShowRight: function( evt )
+        {
+            console.log( 'onClickSlideShowRight',evt );
+            
+            // Preventing default browser reaction
+            dojo.stopEvent( evt );
+            
+            if(Object.keys(this.gamedatas.players).length == 1 ) return;
+            
+            this.selectedPlayerId = this.getNextPlayerId(this.selectedPlayerId, "right");
+            
+            dojo.query("#modal_ffg_all_players_board_wrap *").removeClass("ffg_selectedPlayerId"); 
+            dojo.addClass("modal_ffg_board_player_container_"+this.selectedPlayerId,"ffg_selectedPlayerId");
+        },
         ///////////////////////////////////////////////////
         //// Reaction to cometD notifications
 

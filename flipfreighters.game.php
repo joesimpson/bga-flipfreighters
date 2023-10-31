@@ -202,6 +202,9 @@ class FlipFreighters extends Table
             'tooltips' =>  $this->ffg_tooltips,
         ); 
         
+        $result['nextPlayerTable'] = self::getNextPlayerTable();
+        $result['prevPlayerTable'] = self::getPrevPlayerTable();
+        
         $result['constants'] = array( 
             'JOKER_TYPE' => JOKER_TYPE,
             'NB_ROUNDS' => NB_ROUNDS,
