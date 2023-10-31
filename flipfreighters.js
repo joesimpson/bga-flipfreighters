@@ -121,7 +121,12 @@ function (dojo, declare) {
             dojo.query(".ffg_button_card_plus").connect( 'onclick', this, 'onClickCardPlus' );
             dojo.query(".ffg_button_card_minus").connect( 'onclick', this, 'onClickCardMinus' );
             if(this.overtimeSuitVariant){
-                dojo.query(".ffg_button_card_suit_modifier").removeClass("ffg_no_display").connect( 'onclick', this, 'onClickChangeSuit' );
+                for(let row in this.dayCards){
+                    if(this.dayCards[row].type == this.constants.JOKER_TYPE) continue;
+                        
+                    dojo.query("#ffg_card_wrapper_"+row+" .ffg_button_card_suit_modifier").removeClass("ffg_no_display");
+                }
+                dojo.query(".ffg_button_card_suit_modifier").connect( 'onclick', this, 'onClickChangeSuit' );
             } 
             
             this.selectedPlayerId = this.player_id;
@@ -394,7 +399,13 @@ function (dojo, declare) {
             
             //TODO JSA ADD some animation ?
             
-            //TODO JSA hide suit modifiers IF JOKER (+ the same through init view)
+            //hide suit modifiers IF JOKER (+ the same through init view)
+            if(color ==  this.constants.JOKER_TYPE) {
+                dojo.query("#ffg_card_wrapper_"+row+" .ffg_button_card_suit_modifier").forEach( (i) => { dojo.addClass(i,"ffg_no_display"); } ); 
+            }
+            else {
+                dojo.query("#ffg_card_wrapper_"+row+" .ffg_button_card_suit_modifier").forEach( (i) => { dojo.removeClass(i,"ffg_no_display"); } ); 
+            }
         },
         
         displayPlayerPanel: function( player_id,player)
