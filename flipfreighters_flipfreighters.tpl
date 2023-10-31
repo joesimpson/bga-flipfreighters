@@ -127,6 +127,9 @@ var jstpl_some_game_item='<div class="my_game_item" id="my_game_item_${MY_ITEM_I
 
 */
 var jstpl_player_board_details = '\<div class="ffg_player_panel_details" id="ffg_player_panel_details_${player_id}">\
+        <div id="ffg_show_board_${player_id}" class="ffg_show_board">\
+            <i class="fa fa-eye ffg_icon_show_board"></i>\
+        </div>\
         <div id="ffg_show_score_${player_id}" class="ffg_show_score">\
             <span id="ffg_icon_show_score_${player_id}" class="fa-stack ffg_icon_show_score">\
                 <i class="fa fa-calendar-o fa-stack-2x"></i>\
@@ -156,6 +159,25 @@ var jstpl_showScore = `<div id="ffg_showScoreDialogContent">\
     </div>`;
     
 var jstpl_showScoreRow = '<tr id="ffg_scorerow_${player_id}" class="${trclasses}"><td><span class="playername" style="color:#${player_color};">${player_name}</span></td><td>${score_week1}</td><td>${score_week2}</td><td>${score_week3}</td><td>${overtime}</td><td>${delivered}</td><td>${score}</td></tr>';
+
+
+////////////////////////////////////////////////////////////////////////////////////
+//// Inspired from WTO' SCORE SHEET : display players Board in modal            ////
+////////////////////////////////////////////////////////////////////////////////////
+var jstpl_playerBoardContainer = `<div id="ffg_modal_player_board_container_\${player_id}" class="ffg_player_board_container" data-slideshow="true">
+  <div class='slideshow-left'>
+    <div class="arrow"></div>
+  </div>
+  <div id="ffg_modal_player_board_holder"></div>
+  <div class='slideshow-right'>
+    <div class="arrow"></div>
+  </div>
+</div>`;
+var jstpl_playerBoard = `
+  <div id="ffg_modal_player_board_\${player_id}" class="ffg_modal_player_board">
+    <div class="ffg_modal_player_board_overlay"></div>
+  </div>
+`;
 
 </script>  
 

@@ -97,6 +97,8 @@ function (dojo, declare) {
             this.dayCards = gamedatas.dayCards;
             this.overtimeSuitVariant = gamedatas.overtimeSuitVariant;
             
+            this.selectedPlayerId = this.player_id;
+            
             dojo.query(".ffg_card").forEach(this.updateOvertimeHourOnCard);
             
             this.initTooltips(this.material.tooltips);
@@ -128,8 +130,6 @@ function (dojo, declare) {
                 }
                 dojo.query(".ffg_button_card_suit_modifier").connect( 'onclick', this, 'onClickChangeSuit' );
             } 
-            
-            this.selectedPlayerId = this.player_id;
             
             // Setup game notifications to handle (see "setupNotifications" method below)
             this.setupNotifications();
@@ -317,7 +317,6 @@ function (dojo, declare) {
             let html = this.format_block( 'jstpl_showScore', { } );  
             this.showScoreDialog.setContent( html ); // Must be set before calling show() so that the size of the content is defined before positioning the dialog
             
-            //TODO JSA update gamedatas.players with values during game
             for(let playerId in this.gamedatas.players){
                 let player = this.gamedatas.players[playerId];
                 let classes = (this.selectedPlayerId == playerId ) ? "ffg_highlight" : "";
@@ -343,6 +342,42 @@ function (dojo, declare) {
             let modalScale = newModalWidth / modalWidth;
             if(modalScale > 1) modalScale = 1;
             dojo.style("popin_showScoreDialogId", "transform", `scale(${modalScale})`); 
+        },
+        
+        initShowBoardDialog: function( selectedPlayerId)
+        {
+            //let title = dojo.string.substitute( _("${player_name}'s board"), { player_name: this.gamedatas.players[selectedPlayerId].name});
+            let title = dojo.string.substitute( _("Players board"), );
+            
+            // Create the new dialog over the play zone.
+            this.showBoardDialog = new ebg.popindialog();
+            this.showBoardDialog.create( 'showBoardDialogId' );
+            this.showBoardDialog.setTitle(title);
+            this.showBoardDialog.setMaxWidth( 1000 ); 
+
+            // Create the HTML of my dialog. 
+            let html = this.format_block( 'jstpl_playerBoard', { 'player_id' : selectedPlayerId} );  
+            this.showBoardDialog.setContent( html );
+            
+            //TODO JSA LOOP on players to add left and right arrow to show others
+            let data = {
+                'player_id' : selectedPlayerId,
+            };
+            dojo.place(this.format_block('jstpl_playerBoardContainer', data), 'popin_showBoardDialogId_contents');
+            
+            //TODO JSA disable current player actions in modal
+            let playerBoard = dojo.clone(dojo.byId("ffg_board_player_container_"+selectedPlayerId));
+            //Modify each existing element id in the board to make it distinct :
+            dojo.query(playerBoard).query("*").forEach( (i) => { if(i.id != "") i.id = "modal_"+i.id; } );
+            dojo.place( playerBoard, 'ffg_modal_player_board_holder');
+            
+            //PREPARE MODAL SIZE
+            let box = $("ebd-body").getBoundingClientRect();
+            let modalWidth = 1000;
+            let newModalWidth = box['width']*0.8;
+            let modalScale = newModalWidth / modalWidth;
+            if(modalScale > 1) modalScale = 1;
+            dojo.style("popin_showBoardDialogId", "transform", `scale(${modalScale})`); 
         },
         
         updatePlayersOvertimeHours: function(players)
@@ -437,6 +472,7 @@ function (dojo, declare) {
             }
             */
             dojo.query(".ffg_show_score").connect( 'onclick', this, 'onClickShowScore' );
+            dojo.query(".ffg_show_board").connect( 'onclick', this, 'onClickShowBoard' );
             
         },
         displayPossibleLoads: function( card_id )
@@ -1198,6 +1234,20 @@ function (dojo, declare) {
             //this.ajaxcallwrapperNoCheck("showScoringDialog", { });
             this.initShowScoreDialog();
             this.showScoreDialog.show();
+        },
+        onClickShowBoard: function( evt )
+        {
+            console.log( 'onClickShowBoard',evt );
+            
+            // Preventing default browser reaction
+            dojo.stopEvent( evt );
+            
+            this.selectedPlayerId = evt.currentTarget.id.split("_").lastItem;
+            
+            this.initShowBoardDialog(this.selectedPlayerId);
+            this.showBoardDialog.show();
+            
+            this.initTooltips(this.material.tooltips);
         },
         
         ///////////////////////////////////////////////////
