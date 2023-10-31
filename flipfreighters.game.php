@@ -1491,13 +1491,15 @@ class FlipFreighters extends Table
         if($isDelivery) $newState = STATE_MOVE_DELIVERED_TO_CONFIRM;
         $this->insertMoveTruck($player_id,$truckId, $fromPosition, $position, $newState,$cardId,$usedOvertime);
         $truckPositions = $this->getTruckPositions($truckId,$player_id);
+        $notifText = clienttranslate( 'You move a truck' );
         if($isDelivery) {
             $truckScore = $this->computeScore($player_id,$truckId,$truckCargos,$truckPositions);
+            $notifText = clienttranslate( 'You deliver a truck' );
         }
         $availableOvertime = $originalAvailableOvertime - $usedOvertime;
         
         //NOTIFY ACTION :
-        self::notifyPlayer($player_id, "moveTruck", clienttranslate( 'You move a truck' ), array(
+        self::notifyPlayer($player_id, "moveTruck", $notifText, array(
             'fromPosition' => $fromPosition,
             'position' => $position,
             'truckId' => $truckId,
