@@ -147,16 +147,24 @@
 
 /* 
 ---------------------------- ----------------------------   ---------------------------- 
-----------------------------  SHOW SCORE DIALOG             ---------------------------- 
+----------------------------  SHOW BOARD DIALOG             ---------------------------- 
 ---------------------------- ----------------------------   ---------------------------- 
 */
-#popin_showScoreDialogId {
-    border: 5px solid #6c2c12;
-    background-image: linear-gradient(#fde391, rgb(231, 233, 232));
-}
 #popin_showBoardDialogId_title {
     padding: 3px 90px;
     text-align: center;
+}
+
+/* 
+---------------------------- ----------------------------   ---------------------------- 
+----------------------------  SHOW SCORE DIALOG             ---------------------------- 
+---------------------------- ----------------------------   ---------------------------- 
+*/
+.standard_popin{
+    background-image: linear-gradient(#fde391, rgb(231, 233, 232));
+}
+#popin_showScoreDialogId {
+    border: 5px solid #6c2c12;
 }
 #ffg_showScoreDialogContent table th {
     border-right: 1px solid rgba(0,0,0,.2);
