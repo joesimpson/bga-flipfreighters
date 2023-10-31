@@ -1371,7 +1371,7 @@ class FlipFreighters extends Table
         $card_suit = $card['type'];
         
         $usedOvertime = 0;
-        if($card_suit != JOKER_TYPE && $this->isActivatedOvertimeSuitVariant() && isset($this->card_types [$suit])){
+        if($card_suit != JOKER_TYPE && $card['type'] != $suit && $this->isActivatedOvertimeSuitVariant() && isset($this->card_types [$suit])){
             self::trace("loadTruck($cardId,.., $suit,..)... SPECIAL OVERTIME VARIANT :  change the suit color");
             $card['type'] = $suit;
             $usedOvertime ++;
