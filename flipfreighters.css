@@ -212,6 +212,7 @@
 
 #ffg_cards{
     position: relative;
+    align-self: flex-start;
 }
 
 .ffg_card{
