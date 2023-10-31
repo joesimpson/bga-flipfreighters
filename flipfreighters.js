@@ -368,10 +368,20 @@ function (dojo, declare) {
             };
             dojo.place(this.format_block('jstpl_playerBoardContainer', data), 'popin_showBoardDialogId_contents');
             
-            //TODO JSA disable current player actions in modal
             let playerBoard = dojo.clone(dojo.byId("ffg_board_player_container_"+selectedPlayerId));
-            //Modify each existing element id in the board to make it distinct :
-            dojo.query(playerBoard).query("*").forEach( (i) => { if(i.id != "") i.id = "modal_"+i.id; } );
+           
+            dojo.query(playerBoard).query("*").forEach( (i) => {
+                if(i.id != ""){
+                    //Modify each existing element id in the board to make it distinct :
+                    i.id = "modal_"+i.id;   
+                    //disable current player actions in modal (overtime tokens):
+                    if( dojo.hasClass(i, "ffg_selectable") ){
+                        dojo.removeClass(i,"ffg_selectable"); 
+                        dojo.addClass(i,"ffg_selectable_for_others");
+                    }
+                }
+            });
+            
             dojo.place( playerBoard, 'ffg_modal_player_board_holder');
             
             //PREPARE MODAL SIZE
