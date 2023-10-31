@@ -147,7 +147,10 @@
 ----------------------------  SHOW SCORE DIALOG             ---------------------------- 
 ---------------------------- ----------------------------   ---------------------------- 
 */
-
+#popin_showScoreDialogId {
+    border: 5px solid #6c2c12;
+    background-image: linear-gradient(#fde391, rgb(231, 233, 232));
+}
 #ffg_showScoreDialogContent table th {
     border-right: 1px solid rgba(0,0,0,.2);
     height: 70px;
@@ -190,9 +193,9 @@
     background-color: lightgray;
 }
 #ffg_showScoreDialogContent table tbody tr.ffg_highlight{
-    outline: 3px solid yellow;
-    /** Really bright because I test it to be visible for achromatopsia color blindness */
-    background-color: #ff8a00;
+    outline: 3px solid #6c2c12;
+    /** tested to be visible for "achromatopsia color blindness" */
+    background-color: #ffc200;
 }
 /* 
 ---------------------------- ----------------------------   ---------------------------- 
