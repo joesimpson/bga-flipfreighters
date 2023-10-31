@@ -347,6 +347,11 @@
     margin-top: 20px;
 }
 
+/** USER PREF */
+.ffg_display_all_no #ffg_all_players_board_wrap .ffg_other_player{
+    display: none;
+}
+
 
 /** Board Player NAMES*/
 .ffg_board_title { display:block; }

@@ -80,6 +80,9 @@ function (dojo, declare) {
                 if(this.player_id == player_id){ //CURRENT player
                     playerContainers.connect( 'onclick', this, 'onSelectLoadTarget' );
                 }
+                /*else if (this.prefs[this.constants.GAME_PREF_DISPLAY_ALL].value == this.constants.GAME_PREF_DISPLAY_ALL_YES){
+                    console.log("TODO  ...");
+                }*/
                 
                 this.displayPlayerScores(player);
                 this.displayPlayerPanel(player_id,player);

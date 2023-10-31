@@ -69,6 +69,10 @@ const NB_OVERTIME_TOKENS = 5;
 
 const MAX_LOAD = 11;//CARD_VALUE_MAX + NB_OVERTIME_TOKENS
 
+const GAME_PREF_DISPLAY_ALL = 101;
+const GAME_PREF_DISPLAY_ALL_NO = 1;
+const GAME_PREF_DISPLAY_ALL_YES = 2;
+
 class FlipFreighters extends Table
 {
 	function __construct( )
@@ -208,6 +212,8 @@ class FlipFreighters extends Table
             'STATE_MOVE_DELIVERED_TO_CONFIRM' => STATE_MOVE_DELIVERED_TO_CONFIRM,
             'STATE_MOVE_DELIVERED_CONFIRMED' => STATE_MOVE_DELIVERED_CONFIRMED,
             'CARGO_TYPE_ALL_VALUES' => CARGO_TYPE_ALL_VALUES,
+            'GAME_PREF_DISPLAY_ALL' => GAME_PREF_DISPLAY_ALL,
+            'GAME_PREF_DISPLAY_ALL_YES' => GAME_PREF_DISPLAY_ALL_YES,
         ); 
         
         //SOME STATS are directly displayed during the game, let's add them in the players array, as if it was in the player table:

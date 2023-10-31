@@ -47,5 +47,15 @@ $game_preferences = array(
             ),
             'default' => 1
     ),
+    
+    101 => array(
+            'name' => totranslate('Display all players board'),
+            'needReload' => true, // after user changes this preference game interface would auto-reload
+            'values' => array(
+                    1 => array( 'name' => totranslate( 'Disabled' ), 'cssPref' => 'ffg_display_all_no' ),
+                    2 => array( 'name' => totranslate( 'Enabled' ), 'cssPref' => 'ffg_display_all_yes' )
+            ),
+            'default' => 1
+    ),
 );
 
