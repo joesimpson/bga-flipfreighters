@@ -362,7 +362,11 @@
 .ffg_button_card_suit_modifier.ffg_selectable:hover {
     scale: 1.15;
     cursor: pointer;
-    outline: 2px solid black;
+    outline: 2px solid blue;
+}
+
+.ffg_button_card_suit_reset{
+    outline: 4px solid black;
 }
 
 

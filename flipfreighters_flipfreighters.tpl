@@ -30,7 +30,7 @@
             </div>
             <div class="ffg_card_buttons_wrapper">
                 <!-- BEGIN ffg_cards_suit_modifier -->
-                <a href="#" id="ffg_button_card_suit_modifier{INDEX}_{SUIT}" class="ffg_button_card_suit_modifier ffg_button_card_suit_modifier_{SUIT} bgabutton ffg_selectable ffg_no_display" onclick="return false;" title="{SUIT_LABEL}" data_suit="{SUIT}"></a>
+                <a href="#" id="ffg_button_card_suit_modifier{INDEX}_{SUIT}" class="ffg_button_card_suit_modifier ffg_button_card_suit_modifier_{SUIT} bgabutton ffg_selectable ffg_no_display {OPT_CLASSES}" onclick="return false;" title="{SUIT_LABEL}" data_suit="{SUIT}"></a>
                 <!-- END ffg_cards_suit_modifier -->
             </div>
             

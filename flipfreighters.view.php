@@ -238,10 +238,14 @@ class view_flipfreighters_flipfreighters extends game_view
             $this->page->reset_subblocks( 'ffg_cards_suit_modifier' ); 
             foreach( $card_suits as $card_suit_id => $card_suit )
             {
+                $classes ="";
+                if($card_suit_id == $card['type'] ) $classes ="ffg_button_card_suit_reset";
+                
                 $this->page->insert_block( "ffg_cards_suit_modifier", array( 
                                                         "INDEX" => $index,
                                                         "SUIT" => $card_suit_id,
                                                         "SUIT_LABEL" => $card_suit['name'],
+                                                        "OPT_CLASSES" => $classes,
                                                          ) );
             }
             
