@@ -26,6 +26,8 @@
                 <a href="#" id="ffg_button_card_plus_{INDEX}" class="ffg_button_card_plus bgabutton bgabutton_green ffg_selectable" onclick="return false;"><span>+1</span></a>
                 <a href="#" id="ffg_button_card_minus_{INDEX}" class="ffg_button_card_minus bgabutton bgabutton_red ffg_selectable" onclick="return false;"><span>-1</span></a>
             </div>
+            <div class="ffg_card_usage_wrapper ffg_no_display">{CARD_USAGE_LABEL}<span id="ffg_card_usage_{INDEX}" class="ffg_card_usage">0</span>
+            </div>
             <div class="ffg_card_buttons_wrapper">
                 <!-- BEGIN ffg_cards_suit_modifier -->
                 <a href="#" id="ffg_button_card_suit_modifier{INDEX}_{SUIT}" class="ffg_button_card_suit_modifier ffg_button_card_suit_modifier_{SUIT} bgabutton ffg_selectable ffg_no_display" onclick="return false;" title="{SUIT_LABEL}" data_suit="{SUIT}"></a>

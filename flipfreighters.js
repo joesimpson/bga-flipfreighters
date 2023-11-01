@@ -105,6 +105,8 @@ function (dojo, declare) {
             this.dayCards = gamedatas.dayCards;
             this.overtimeSuitVariant = gamedatas.overtimeSuitVariant;
             
+            this.updateCardsUsage();
+            
             dojo.query(".ffg_card").forEach(this.updateOvertimeHourOnCard);
             
             this.initTooltips(this.material.tooltips);
@@ -462,6 +464,13 @@ function (dojo, declare) {
             div.setAttribute("data_amount",value);
             dojo.addClass(divId,"ffg_selectable") ;
             
+            this.dayCards[row].id = card_id;
+            this.dayCards[row].type = color;
+            this.dayCards[row].type_arg = value;
+            //Updating location_arg does not seem useful
+            this.dayCards[row].usedPower = 0;
+            this.updateCardUsage(row);
+            
             //TODO JSA ADD some animation ?
             
             //hide suit modifiers IF JOKER (+ the same through init view)
@@ -470,6 +479,30 @@ function (dojo, declare) {
             }
             else {
                 dojo.query("#ffg_card_wrapper_"+row+" .ffg_button_card_suit_modifier").forEach( (i) => { dojo.removeClass(i,"ffg_no_display"); } ); 
+            }
+        },
+        
+        getCardRowFromId: function(card_id){
+            for(let row in this.dayCards){
+                let id = this.dayCards[row].id;
+                if(card_id == this.dayCards[row].id) return row;
+            }
+            return undefined;
+        },
+        updateCardsUsage: function( ){
+            console.log( "updateCardsUsage"); 
+            for(let row in this.dayCards){
+                this.updateCardUsage(row);
+            }
+        },
+        updateCardUsage: function( row ){
+            console.log( "updateCardUsage",row); 
+            let card = this.dayCards[row];
+            let divUsage = dojo.query("#ffg_card_usage_"+row)[0];
+            divUsage.innerHTML = card.usedPower;
+            dojo.addClass(divUsage.parentElement, "ffg_no_display");
+            if(card.usedPower > 0) {
+                dojo.removeClass(divUsage.parentElement, "ffg_no_display");
             }
         },
         
@@ -1453,6 +1486,10 @@ function (dojo, declare) {
             
             this.updatePlayerOvertimeHours(this.player_id,notif.args.availableOvertime);
             
+            let cardRow = this.getCardRowFromId(notif.args.card_id);
+            this.dayCards[cardRow].usedPower = notif.args.cardUsage;
+            this.updateCardUsage(cardRow);
+            
             //unselect card
             this.unselectCard();
             
@@ -1470,6 +1507,9 @@ function (dojo, declare) {
                 let divId = "ffg_card_"+row;
                 let div = dojo.query("#"+divId)[0];
                 div.setAttribute("data_suit", this.dayCards[row].type);
+                //Clean cards usage :
+                this.dayCards[row].usedPower = 0;
+                this.updateCardUsage(row);
             }
             
             this.possibleCards = [];

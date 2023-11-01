@@ -49,6 +49,8 @@ class view_flipfreighters_flipfreighters extends game_view
         $this->tpl['ROUND_LABEL'] = sprintf( self::_("W %s/%s"), $round, NB_ROUNDS );
         $this->tpl['TURN_LABEL'] = sprintf( self::_("D %s/%s"), $turn, NB_CARDS_BY_WEEK/NB_CARDS_BY_TURN );*/
         
+        $this->tpl['CARD_USAGE_LABEL'] = self::_("Used moves :");
+        
         $cards = $this->game->getCurrentDayCards();
         $cardsWithOvertime = array();
         foreach( $cards as $card )

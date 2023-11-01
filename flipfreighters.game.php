@@ -247,7 +247,12 @@ class FlipFreighters extends Table
             }
         }
         
-        
+        //Get private info : player's use of cards 
+        for($k=0; $k<count($result['dayCards']); $k++){ 
+            $dayCard = $result['dayCards'][$k];
+            $cardUsedPower = $this->getCardUsedPowerForMoves($current_player_id, $dayCard["id"]);
+            $result['dayCards'][$k]['usedPower'] = $cardUsedPower;
+        }
             
         return $result;
     }
@@ -1498,10 +1503,10 @@ class FlipFreighters extends Table
         if($isDelivery) $newState = STATE_MOVE_DELIVERED_TO_CONFIRM;
         $this->insertMoveTruck($player_id,$truckId, $fromPosition, $position, $newState,$cardId,$usedOvertime);
         $truckPositions = $this->getTruckPositions($truckId,$player_id);
-        $notifText = clienttranslate( 'You move a truck' );
+        $notifText = clienttranslate( 'You move a truck ${amount} step(s) forward' );
         if($isDelivery) {
             $truckScore = $this->computeScore($player_id,$truckId,$truckCargos,$truckPositions);
-            $notifText = clienttranslate( 'You deliver a truck' );
+            $notifText = clienttranslate( 'You move a truck ${amount} step(s) forward, and deliver the goods' );
         }
         $availableOvertime = $originalAvailableOvertime - $usedOvertime;
         
@@ -1514,6 +1519,8 @@ class FlipFreighters extends Table
             'truckState' => $truckPositions,
             'truckScore' => $truckScore,
             'availableOvertime' => $availableOvertime,
+            'amount' => $amount,
+            'cardUsage' => ($amount + $cardUsedPower),
         ) );
         
         //resend possiblePositions (MOVE become possible)

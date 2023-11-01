@@ -365,6 +365,18 @@
     outline: 2px solid black;
 }
 
+
+.ffg_card_wrapper:not(.ffg_selected) .ffg_card_usage_wrapper{
+    display: none;
+}
+.ffg_card_usage_wrapper{
+    font-size: 15px;
+}
+.ffg_card_usage{
+    margin: 0 5px;
+    font-size: 20px;
+    font-weight: bold;
+}
 /* 
 ---------------------------- ----------------------------   ---------------------------- 
 ----------------------------  CENTRAL ZONE  : BOARD         ---------------------------- 
