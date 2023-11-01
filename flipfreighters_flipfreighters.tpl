@@ -10,9 +10,12 @@
 -------
 -->
 
-<center>
-    <input type="range" min="30" max="150" value="50" class="slider" id="playerBoardSliderSize">
-</center>
+<div id="ffg_game_container">
+
+<div id="ffg_game_upper">
+    <span id="ffg_round_label"></span>
+    <input type="range" min="30" max="150" value="50" class="slider" id="ffg_playerBoardSliderSize">
+</div>
     
 <div id="ffg_game_zone">
 
@@ -115,6 +118,7 @@
     <!-- END ffg_playerBoard -->
 </div>
     
+</div>
 </div>
 
 <script type="text/javascript">

@@ -41,6 +41,13 @@ class view_flipfreighters_flipfreighters extends game_view
         $players_nbr = count( $players );
 
         /*********** Place your code below:  ************/
+        /*
+        $round = $this->game->getGameStateValue( 'round_number');
+        $turn = $this->game->getGameStateValue( 'turn_number');
+        
+        // Display a string to be translated in all languages: 
+        $this->tpl['ROUND_LABEL'] = sprintf( self::_("W %s/%s"), $round, NB_ROUNDS );
+        $this->tpl['TURN_LABEL'] = sprintf( self::_("D %s/%s"), $turn, NB_CARDS_BY_WEEK/NB_CARDS_BY_TURN );*/
         
         $cards = $this->game->getCurrentDayCards();
         $cardsWithOvertime = array();

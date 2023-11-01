@@ -88,6 +88,22 @@
 .ffg_theme_dark .standard_popin_underlay {
     background: black;
 }
+
+/* 
+---------------------------- ----------------------------   ---------------------------- 
+----------------------------  UPPER ZONE ...                ---------------------------- 
+---------------------------- ----------------------------   ---------------------------- 
+*/
+#ffg_game_upper{
+    text-align:center;
+    font-size: 25px;
+}
+.ffg_theme_dark #ffg_game_upper{
+    color: white;
+}
+#ffg_round_label, #ffg_playerBoardSliderSize{
+    margin: 0 10px;
+}
 /*
 ---------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------- 
@@ -181,6 +197,10 @@
 }
 #popin_showScoreDialogId {
     border: 5px solid #6c2c12;
+}
+#popin_showBoardDialogId_title {
+    padding: 3px 90px;
+    text-align: center;
 }
 #ffg_showScoreDialogContent table th {
     border-right: 1px solid rgba(0,0,0,.2);

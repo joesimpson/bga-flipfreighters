@@ -39,6 +39,7 @@ function (dojo, declare) {
             
             this.constants = [];
             this.currentRound = 1;
+            this.currentTurn = 1;
             
             this.counterOvertime={};
             this.selectedOvertimeToken = null;
@@ -67,6 +68,7 @@ function (dojo, declare) {
             
             this.constants  = gamedatas.constants;
             this.currentRound = gamedatas.round_number;
+            this.currentTurn = gamedatas.turn_number;
             
             this.selectedPlayerId = this.player_id;
             
@@ -114,7 +116,7 @@ function (dojo, declare) {
             this.addTooltipToClass( "ffg_delivered_trucks_wrapper", _("Number of delivered trucks"), '' );
             this.updatePlayersScoreAux(gamedatas.players);
             
-            dojo.query("#playerBoardSliderSize").connect( 'oninput', this, 'onBoardSliderChange' );
+            dojo.query("#ffg_playerBoardSliderSize").connect( 'oninput', this, 'onBoardSliderChange' );
             
             dojo.query(".ffg_card").connect( 'onclick', this, 'onSelectCard' );
             dojo.query(".ffg_current_player .ffg_truck_pos").connect( 'onclick', this, 'onSelectTruckPos' );
@@ -162,6 +164,8 @@ function (dojo, declare) {
                
             case 'playerTurn':
                 this.currentRound = args.args.round_number;
+                this.currentTurn = args.args.turn_number;
+                this.updateRoundLabel();
                 this.possibleCards = [];
                 if(args.args._private !=undefined){
                     if(args.args._private.possibleCards!=undefined){
@@ -916,6 +920,18 @@ function (dojo, declare) {
         increasePlayerScoreAux: function(player_id,delta_score) {
             console.log("increasePlayerScoreAux",player_id, delta_score);
             this.counterDelivered[player_id].incValue( delta_score );
+        },
+        
+        updateRoundLabel: function() {
+            console.log("updateRoundLabel");
+            
+            let translated = dojo.string.substitute( _("Week ${x}/${totalX} - Day ${y}/${totalY}"), {
+                x: this.currentRound,
+                y: this.currentTurn,
+                totalX: this.constants.NB_ROUNDS,
+                totalY: this.constants.NB_TURNS,
+            } );
+            dojo.query("#ffg_round_label")[0].innerHTML = translated;
         },
         
         ///////////////////////////////////////////////////

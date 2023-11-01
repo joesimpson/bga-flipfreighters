@@ -208,6 +208,7 @@ class FlipFreighters extends Table
         $result['constants'] = array( 
             'JOKER_TYPE' => JOKER_TYPE,
             'NB_ROUNDS' => NB_ROUNDS,
+            'NB_TURNS' => (NB_CARDS_BY_WEEK/NB_CARDS_BY_TURN),
             'CARD_VALUE_MAX' => CARD_VALUE_MAX,
             'MAX_LOAD' => MAX_LOAD,
             'STATE_LOAD_TO_CONFIRM' => STATE_LOAD_TO_CONFIRM,
@@ -1599,6 +1600,7 @@ class FlipFreighters extends Table
         
         return array(
             'round_number' => self::getGameStateValue( 'round_number'),
+            'turn_number' => self::getGameStateValue( 'turn_number'),
             '_private' => $privateDatas,
         );
     }
