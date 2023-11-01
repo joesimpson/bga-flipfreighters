@@ -381,6 +381,26 @@ class FlipFreighters extends Table
            return $containers_suit_filter == $card_suit;
         }
     }
+    
+    /**
+    Return the suit to load in this truck container place IF it is FIXED to 1 SUIT
+        null if it is free of choice
+    */
+    function getTruckCargoSuit($truck_cargo){
+        $truck_id = $truck_cargo['truck_id'];
+        $truck_material = $this->trucks_types[$truck_id];
+        $cargo_index = $truck_cargo['cargo_index'];
+        $containers_suit_filter = $truck_material['containers_suit_filter'];
+        if(CARGO_SUIT_ALL != $containers_suit_filter){
+            foreach( $this->card_types as  $suit_id => $suit ){
+                if($this->isInSuitFilter($suit_id,$containers_suit_filter ,$cargo_index)){
+                    return $suit_id;
+                }
+            }
+        }
+        
+        return null;
+    }
     /**
     return true if at least one of the cargos is loaded with a number < $card_value
     */
@@ -1101,7 +1121,6 @@ class FlipFreighters extends Table
         //self::trace( "countCargoValues()... => $sum");
         return $sum;
     }
-    
     /**
     Return current score for one player's truck
         (this info should not be sent to others when state is not confirmed yet)

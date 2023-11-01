@@ -53,9 +53,11 @@ class view_flipfreighters_flipfreighters extends game_view
         
         $cards = $this->game->getCurrentDayCards();
         $cardsWithOvertime = array();
+        $cardsSuitWithOvertime = array();
         foreach( $cards as $card )
         {
             $cardsWithOvertime[$card["id"]] = $card["type_arg"];
+            $cardsSuitWithOvertime[$card["id"]] = $card["type"];
         }
         
         $this->page->begin_block( "flipfreighters_flipfreighters", "ffg_cargo_amount_list" );
@@ -92,6 +94,8 @@ class view_flipfreighters_flipfreighters extends game_view
                                                      
             $player_board = $this->game->getPlayerBoard($player_id);
             $trucks_cargos = $player_board['trucks_cargos'];
+            
+            $is_current_player = $this->game->isCurrentPlayerId($player_id);
         
             //$this->game->dump("VIEW trucks_cargos", $trucks_cargos);
             
@@ -104,10 +108,14 @@ class view_flipfreighters_flipfreighters extends game_view
                     
                     $state = $truck_cargo['state'];
                     $amount = $truck_cargo['amount'];
-                    if(array_key_exists($card_id,$cardsWithOvertime) && $this->game->isCurrentPlayerId($player_id) ){
+                    if($is_current_player && array_key_exists($card_id,$cardsWithOvertime) ){
                         $cardsWithOvertime[$card_id] = $truck_cargo['amount'] ;
                     }
-                    if( ! $this->game->isCurrentPlayerId($player_id) &&  $state != STATE_LOAD_CONFIRMED ){
+                    if($is_current_player && array_key_exists($card_id,$cardsSuitWithOvertime) ){
+                        $cargoSuit = $this->game->getTruckCargoSuit($truck_cargo) ;
+                        if(isset($cargoSuit)) $cardsSuitWithOvertime[$card_id] = $cargoSuit;
+                    }
+                    if( ! $is_current_player && $state != STATE_LOAD_CONFIRMED ){
                         //HIDE cargo content if not confirmed
                         $amount =null;
                         $state = STATE_LOAD_INITIAL;
@@ -260,11 +268,11 @@ class view_flipfreighters_flipfreighters extends game_view
                 $modifier = max(0,$modifier); 
                 $amount = $modifier + $card_value;
             }
-                
+            
             $this->page->insert_block( "ffg_cards", array( 
                                                     "INDEX" => $index,
                                                     "CARD_ID" => $card_id,
-                                                    "CARD_SUIT" => $card['type'],
+                                                    "CARD_SUIT" => $cardsSuitWithOvertime[$card_id],
                                                     "CARD_VALUE" => $card_value,
                                                     "AMOUNT" => $amount,
                                                     "MODIFIER" => $modifier,
