@@ -68,6 +68,8 @@ function (dojo, declare) {
             this.constants  = gamedatas.constants;
             this.currentRound = gamedatas.round_number;
             
+            this.selectedPlayerId = this.player_id;
+            
             // Setting up player boards
             for( let player_id in gamedatas.players )
             {
@@ -80,9 +82,10 @@ function (dojo, declare) {
                 if(this.player_id == player_id){ //CURRENT player
                     playerContainers.connect( 'onclick', this, 'onSelectLoadTarget' );
                 }
-                /*else if (this.prefs[this.constants.GAME_PREF_DISPLAY_ALL].value == this.constants.GAME_PREF_DISPLAY_ALL_YES){
-                    console.log("TODO  ...");
-                }*/
+                
+                if ( this.isSpectator && this.prefs[this.constants.GAME_PREF_DISPLAY_ALL].value == this.constants.GAME_PREF_DISPLAY_ALL_NO ){
+                    this.selectedPlayerId = player_id;
+                }
                 
                 this.displayPlayerScores(player);
                 this.displayPlayerPanel(player_id,player);
@@ -99,8 +102,6 @@ function (dojo, declare) {
             this.material = gamedatas.material;
             this.dayCards = gamedatas.dayCards;
             this.overtimeSuitVariant = gamedatas.overtimeSuitVariant;
-            
-            this.selectedPlayerId = this.player_id;
             
             dojo.query(".ffg_card").forEach(this.updateOvertimeHourOnCard);
             

@@ -70,8 +70,11 @@ class view_flipfreighters_flipfreighters extends game_view
         $this->page->begin_block( "flipfreighters_flipfreighters", "ffg_overtime_hour" );
         $this->page->begin_block( "flipfreighters_flipfreighters", "ffg_playerBoard" );
         
+        $player_index = 0;
         foreach( $players as $player_id => $player )
         { 
+            $player_index++;
+            
             $this->page->reset_subblocks( 'ffg_player_trucks_cargo' ); 
             $this->page->reset_subblocks( 'ffg_player_truck_position' ); 
             $this->page->reset_subblocks( 'ffg_player_truck_positions' ); 
@@ -199,6 +202,10 @@ class view_flipfreighters_flipfreighters extends game_view
             $playerClass = "";
             if($this->game->isCurrentPlayerId($player_id) ){
                 $playerClass = "ffg_current_player";
+            }
+            else if($player_index == 1 && $this->game->isCurrentSpectator() ){
+                //Spectator needs at least 1 player board view
+                $playerClass = "ffg_spectator";
             }
             else {
                 $playerClass = "ffg_other_player";

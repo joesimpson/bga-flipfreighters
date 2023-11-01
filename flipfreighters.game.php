@@ -216,7 +216,7 @@ class FlipFreighters extends Table
             'STATE_MOVE_DELIVERED_CONFIRMED' => STATE_MOVE_DELIVERED_CONFIRMED,
             'CARGO_TYPE_ALL_VALUES' => CARGO_TYPE_ALL_VALUES,
             'GAME_PREF_DISPLAY_ALL' => GAME_PREF_DISPLAY_ALL,
-            'GAME_PREF_DISPLAY_ALL_YES' => GAME_PREF_DISPLAY_ALL_YES,
+            'GAME_PREF_DISPLAY_ALL_NO' => GAME_PREF_DISPLAY_ALL_NO,
         ); 
         
         //SOME STATS are directly displayed during the game, let's add them in the players array, as if it was in the player table:
@@ -285,6 +285,9 @@ class FlipFreighters extends Table
     function isCurrentPlayerId($player_id)
     {
         return self::getCurrentPlayerId() == $player_id;
+    }
+    function isCurrentSpectator() {
+        return self::isSpectator();
     }
     
     /**
