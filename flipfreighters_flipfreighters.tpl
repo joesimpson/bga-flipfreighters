@@ -172,8 +172,9 @@ var jstpl_showScoreRow = '<tr id="ffg_scorerow_${player_id}" class="${trclasses}
 ////////////////////////////////////////////////////////////////////////////////////
 var jstpl_playerBoardContainer = `<div id="ffg_modal_player_board_container_\${player_id}" class="ffg_player_board_container">
     <div class='ffg_slideshow_line'>
-        <i class="fa fa-arrow-left ffg_slideshow_left"></i>
-        <i class="fa fa-arrow-right ffg_slideshow_right"></i>
+        <div class="ffg_slideshow_left"><i class="fa fa-arrow-left"></i></div>
+        <div style="flex-basis: 50%;cursor: default;"></div>
+        <div class="ffg_slideshow_right"><i class="fa fa-arrow-right"></i></div>
     </div>
     <div id="ffg_modal_player_board_holder"></div>
 </div>`;

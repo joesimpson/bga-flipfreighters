@@ -178,6 +178,11 @@
     display: none;
 }
 
+#popin_showBoardDialogId .ffg_player_board_container{
+    /** gain space between title and arrows line, by moving all up like if the arrows were on the title line */
+    margin-top: -39px;
+}
+
 .ffg_slideshow_line{
     display: flex;
 }
@@ -185,8 +190,11 @@
     font-size: 1.5em;
     text-align: center;
     flex-basis: 50%;
+}
+.ffg_slideshow_line .fa-arrow-left, .ffg_slideshow_line .fa-arrow-right{
     cursor: pointer;
 }
+
 /* 
 ---------------------------- ----------------------------   ---------------------------- 
 ----------------------------  SHOW SCORE DIALOG             ---------------------------- 
