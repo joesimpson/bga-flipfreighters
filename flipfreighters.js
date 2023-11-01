@@ -851,7 +851,15 @@ function (dojo, declare) {
                 }
             }
             
-            dojo.query(".ffg_overtime").forEach( ' dojo.removeClass(item,"ffg_empty_value ffg_positive_value ffg_negative_value"); if( parseInt(item.getAttribute("data_index"))<='+Math.abs(delta)+' ){   dojo.addClass(item,"'+addClass+'"); } else { dojo.addClass(item,"ffg_empty_value ");}' );
+            dojo.query(".ffg_current_player .ffg_overtime").forEach( (item) =>{
+                dojo.removeClass(item,"ffg_empty_value ffg_positive_value ffg_negative_value"); 
+                if( parseInt(item.getAttribute("data_index"))<= Math.abs(delta) ){
+                    dojo.addClass(item,addClass); 
+                } 
+                else { 
+                    dojo.addClass(item,"ffg_empty_value ");
+                }
+            });
             
             //disable buttons and enable them again after receiving notif
             dojo.query(".ffg_button_card_plus").removeClass("ffg_selectable");
@@ -1255,7 +1263,15 @@ function (dojo, declare) {
                 eltClass = "ffg_empty_value";
             } 
             //ALL Tokens on left receive the same state
-            dojo.query(".ffg_overtime").forEach( ' dojo.removeClass(item,"ffg_empty_value ffg_positive_value ffg_negative_value"); if( parseInt(item.getAttribute("data_index"))<='+data_amount+' ){   dojo.addClass(item,"'+eltClass+'"); } else { dojo.addClass(item,"ffg_empty_value ");}' );
+            dojo.query(".ffg_current_player .ffg_overtime").forEach( (item) =>{
+                dojo.removeClass(item,"ffg_empty_value ffg_positive_value ffg_negative_value"); 
+                if( parseInt(item.getAttribute("data_index"))<= data_amount ){
+                    dojo.addClass(item,eltClass); 
+                } 
+                else { 
+                    dojo.addClass(item,"ffg_empty_value ");
+                }
+            });
             
             this.selectedAmount = null;
             this.selectedOvertimeToken = div_id;
