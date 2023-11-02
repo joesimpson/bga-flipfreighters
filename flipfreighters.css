@@ -420,6 +420,9 @@
     display: none;
 }
 
+#ffg_all_players_board_wrap{
+    align-self: flex-start;
+}
 
 /** Board Player NAMES*/
 .ffg_board_title { display:block; }
@@ -473,6 +476,7 @@
 .ffg_container[data_state="1"]{
     /**  STATE_LOAD_TO_CONFIRM */
     outline: 4px dashed red;
+    background-color: #ff000073;
 }
 
 .ffg_container.ffg_cargo_to_fill{

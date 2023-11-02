@@ -473,12 +473,14 @@ function (dojo, declare) {
             
             //TODO JSA ADD some animation ?
             
-            //hide suit modifiers IF JOKER (+ the same through init view)
-            if(color ==  this.constants.JOKER_TYPE) {
-                dojo.query("#ffg_card_wrapper_"+row+" .ffg_button_card_suit_modifier").forEach( (i) => { dojo.addClass(i,"ffg_no_display"); } ); 
-            }
-            else {
-                dojo.query("#ffg_card_wrapper_"+row+" .ffg_button_card_suit_modifier").forEach( (i) => { dojo.removeClass(i,"ffg_no_display"); } ); 
+            if(this.overtimeSuitVariant){
+                //hide suit modifiers IF JOKER (+ the same through init view)
+                if(color ==  this.constants.JOKER_TYPE) {
+                    dojo.query("#ffg_card_wrapper_"+row+" .ffg_button_card_suit_modifier").forEach( (i) => { dojo.addClass(i,"ffg_no_display"); } ); 
+                }
+                else {
+                    dojo.query("#ffg_card_wrapper_"+row+" .ffg_button_card_suit_modifier").forEach( (i) => { dojo.removeClass(i,"ffg_no_display"); } ); 
+                }
             }
         },
         
