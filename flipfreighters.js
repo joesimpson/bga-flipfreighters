@@ -318,6 +318,8 @@ function (dojo, declare) {
             
             this.addTooltipToClass( "ffg_icon_show_score", _("Show current score situation"), '' );
             
+            this.addTooltipToClass( "ffg_total_score", _("Overall score of this player"), '' );
+            
         },
         
         initShowScoreDialog: function()
