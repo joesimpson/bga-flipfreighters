@@ -902,8 +902,25 @@ function (dojo, declare) {
             dojo.query(".ffg_button_card_suit_modifier").removeClass("ffg_selectable");
             dojo.query(".ffg_overtime.ffg_selectable").addClass("ffg_selectable_wait");
             
-            //CALL SERVER to refresh possible actions for this card ;
-            this.ajaxcallwrapper("getPossibleActionsForCard", {'cardId': card_id,'amount': this.selectedAmount, 'suit':this.selectedSuit, });
+            if(this.selectedAmount >0){
+                //CALL SERVER to refresh possible actions for this card ;
+                this.ajaxcallwrapper("getPossibleActionsForCard", {'cardId': card_id,'amount': this.selectedAmount, 'suit':this.selectedSuit, });
+            }
+            else {
+                this.possibleCards[card_id] = [];
+                this.possibleCards[card_id]["LOAD"] = [];
+                this.possibleCards[card_id]["MOVE"] = [];
+                this.displayPossibleLoads( card_id);
+                this.displayPossibleMoves( card_id);
+                this.resetButtonsSelection();
+            }
+        },
+        
+        resetButtonsSelection: function(){
+            dojo.query(".ffg_button_card_plus").addClass("ffg_selectable");
+            dojo.query(".ffg_button_card_minus").addClass("ffg_selectable");
+            dojo.query(".ffg_button_card_suit_modifier").addClass("ffg_selectable");
+            dojo.query(".ffg_overtime.ffg_selectable_wait").removeClass("ffg_selectable_wait");
         },
         
         displayTruckScore: function(player_id, truckScore, truckDivId){
@@ -1117,7 +1134,7 @@ function (dojo, declare) {
                 return;
             }
             let card_value = parseInt(dojo.query(".ffg_card.ffg_selected")[0].getAttribute("data_value") ) ;
-            if( card_value + delta_value <=0 ){
+            if( card_value + delta_value <=1 ){
                 // we cannot use values under 1
                 return;
             }
@@ -1502,11 +1519,7 @@ function (dojo, declare) {
             }
             
             this.updatePossibleCards();
-            
-            dojo.query(".ffg_button_card_plus").addClass("ffg_selectable");
-            dojo.query(".ffg_button_card_minus").addClass("ffg_selectable");
-            dojo.query(".ffg_button_card_suit_modifier").addClass("ffg_selectable");
-            dojo.query(".ffg_overtime.ffg_selectable_wait").removeClass("ffg_selectable_wait");
+            this.resetButtonsSelection();
             
         },  
         notif_loadTruck: function( notif )
