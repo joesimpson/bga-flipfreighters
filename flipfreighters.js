@@ -670,6 +670,7 @@ function (dojo, declare) {
                 this.increasePlayerScore(player_id,truckScore);
                 //Add 1 truck delivered only once for the player moving the truck, or receiving infos from others moving
                 this.increasePlayerScoreAux(player_id,1);
+                this.increasePlayerWeekScore(player_id,this.currentRound,truckScore);
             }
             
             //Update possible moves by removing the one we did  (and the corresponding previous places too !)
@@ -959,14 +960,13 @@ function (dojo, declare) {
             console.log("displayPlayerScores",playerDatas);
             
             let k=1;
-            while( k< this.currentRound ){
+            while( k<= this.currentRound ){
                 let weekscore = playerDatas['score_week'+k];
                 this.updatePlayerWeekScore(playerDatas.id,k,weekscore);
                 k++;
             }
-            //TODO JSA when do we display last week ? If we reload when game already ended, the last week is not displayed because currentRound is still 3
             
-            //display sum of all weeks at end of game ? or whatever because we already display the player score on player panel
+            //display sum of all weeks at end of game ? or whenever because we already display the player score on player panel
             this.updatePlayerTotalScore(playerDatas.id, playerDatas.score);
         },
         
@@ -975,6 +975,14 @@ function (dojo, declare) {
             
             let numberDiv = dojo.query("#ffg_week_score_"+player_id+"_"+round+" .ffg_score_number")[0];
             numberDiv.innerHTML = weekscore;
+        },
+        increasePlayerWeekScore: function(player_id, round,delta_score) {
+            console.log("increasePlayerWeekScore",player_id, round,delta_score);
+            
+            let numberDiv = dojo.query("#ffg_week_score_"+player_id+"_"+round+" .ffg_score_number")[0];
+            let current_value = parseInt(numberDiv.innerHTML);
+            if( isNaN(current_value) ) current_value =0;
+            numberDiv.innerHTML = current_value + parseInt(delta_score);
         },
         
         updatePlayerTotalScore: function(player_id, score) {
@@ -1621,6 +1629,10 @@ function (dojo, declare) {
             }
             );
             
+            //Clean week score
+            let weekscoreBefore = this.gamedatas.players[this.player_id]['score_week'+this.currentRound];
+            this.updatePlayerWeekScore(this.player_id,this.currentRound,weekscoreBefore);
+            
             this.updatePlayerScore(this.player_id,notif.args.newScore );
             this.updatePlayerScoreAux(this.player_id,notif.args.newScoreAux );
             
@@ -1647,8 +1659,7 @@ function (dojo, declare) {
         notif_endTurnScore: function( notif )
         {
             console.log( 'notif_endTurnScore',notif );
-            //Week score will be displayed when week really ends, not before
-            //this.updatePlayerWeekScore(notif.args.player_id,notif.args.k,notif.args.nb );
+            this.updatePlayerWeekScore(notif.args.player_id,notif.args.k,notif.args.nb );
             this.updatePlayerScore(notif.args.player_id,notif.args.newScore );
         },
         
