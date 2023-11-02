@@ -639,6 +639,7 @@ function (dojo, declare) {
             let numberDiv = dojo.query("#"+containerDivId+">.ffg_container_number")[0];
             numberDiv.innerHTML=amount;
             
+            this.animateCargoPosition(containerDivId);
         },
         updateMove: function(player_id,truck_id,position,fromPosition,confirmed_position,confirmed_state,not_confirmed_state,not_confirmed_position,truckScore,cssPos)
         {
@@ -678,7 +679,27 @@ function (dojo, declare) {
                 let posDivId = "ffg_truck_pos_"+player_id+"_"+posId;
                 dojo.removeClass(posDivId,"ffg_not_drawn_pos ffg_not_confirmed_pos ffg_selectable") ;
                 dojo.addClass(posDivId,cssPos ) ;
+                this.animateMovePosition(posDivId);
             }
+        },
+        
+        animateCargoPosition: function(divId){
+            console.log( "animateCargoPosition ... ",divId);
+            this.animationBlink2Times(divId);
+        },
+        animateMovePosition: function(divId){
+            console.log( "animateMovePosition ... ",divId);
+            this.animationBlink2Times(divId);
+        },
+        animationBlink2Times: function(divId){
+            // Make the token blink 2 times
+            let anim = dojo.fx.chain( [
+                dojo.fadeOut( { node: divId } ),
+                dojo.fadeIn( { node: divId } ),
+                dojo.fadeOut( { node: divId } ),
+                dojo.fadeIn( { node: divId  } )
+            ] );
+            anim.play();
         },
         
         unselectCard : function()
