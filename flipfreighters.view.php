@@ -54,6 +54,10 @@ class view_flipfreighters_flipfreighters extends game_view
         $cards = $this->game->getCurrentDayCards();
         $cardsWithOvertime = array();
         $cardsSuitWithOvertime = array();
+        if(count($cards) ==0){ //END GAME Refresh...
+            $card_back = array('id' => 0, 'type'=>0, 'type_arg'=>0 );
+            $cards = array(  $card_back , $card_back , $card_back  );
+        }
         foreach( $cards as $card )
         {
             $cardsWithOvertime[$card["id"]] = $card["type_arg"];
@@ -241,6 +245,7 @@ class view_flipfreighters_flipfreighters extends game_view
         $card_suits = $this->game->card_types;
         
         //$this->game->dump("VIEW cardsWithOvertime :", $cardsWithOvertime);
+        
         foreach( $cards as $card )
         {
             $this->page->reset_subblocks( 'ffg_cards_suit_modifier' ); 
@@ -268,6 +273,10 @@ class view_flipfreighters_flipfreighters extends game_view
                 $modifier = max(0,$modifier); 
                 $amount = $modifier + $card_value;
             }
+            $classes ="";
+            if($card_id == 0){
+                $classes = "ffg_card_back";
+            }
             
             $this->page->insert_block( "ffg_cards", array( 
                                                     "INDEX" => $index,
@@ -276,6 +285,7 @@ class view_flipfreighters_flipfreighters extends game_view
                                                     "CARD_VALUE" => $card_value,
                                                     "AMOUNT" => $amount,
                                                     "MODIFIER" => $modifier,
+                                                    "OPT_CLASSES" => $classes,
                                                      ) );
             $index++;
         }

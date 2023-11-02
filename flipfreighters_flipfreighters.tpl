@@ -34,7 +34,7 @@
                 <!-- END ffg_cards_suit_modifier -->
             </div>
             
-            <div id="ffg_card_{INDEX}" class="ffg_card ffg_selectable" data_id="{CARD_ID}" data_suit="{CARD_SUIT}" data_value="{CARD_VALUE}" data_amount='{AMOUNT}'>
+            <div id="ffg_card_{INDEX}" class="ffg_card ffg_selectable {OPT_CLASSES}" data_id="{CARD_ID}" data_suit="{CARD_SUIT}" data_value="{CARD_VALUE}" data_amount='{AMOUNT}'>
                 <span id="ffg_cardModifier_{INDEX}" class="ffg_cardModifier" data_value="{MODIFIER}"></span>
             </div>
         </div>
