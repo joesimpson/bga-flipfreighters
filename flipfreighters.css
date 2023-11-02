@@ -445,6 +445,10 @@
     background-color: white;
     cursor: default;
 }
+.ffg_board_title h1 span[style*='color:#ffffff']
+{
+    background-color: gray;
+}
 .ffg_player_avatar{
     width: 32px;
     height: 32px;
