@@ -430,6 +430,7 @@ function (dojo, declare) {
         {
             console.log( "updatePlayerOvertimeHours" ,player_id, nb); 
             this.counterOvertime[player_id].toValue(nb);
+            this.gamedatas.players[player_id].availableOvertime = nb;
             
             let selectableClass = "";
             if(player_id == this.player_id){//CURRENT PLAYER
@@ -975,6 +976,8 @@ function (dojo, declare) {
             
             let numberDiv = dojo.query("#ffg_week_score_"+player_id+"_"+round+" .ffg_score_number")[0];
             numberDiv.innerHTML = weekscore;
+            
+            this.gamedatas.players[player_id]['score_week'+round] = weekscore;
         },
         increasePlayerWeekScore: function(player_id, round,delta_score) {
             console.log("increasePlayerWeekScore",player_id, round,delta_score);
@@ -982,7 +985,10 @@ function (dojo, declare) {
             let numberDiv = dojo.query("#ffg_week_score_"+player_id+"_"+round+" .ffg_score_number")[0];
             let current_value = parseInt(numberDiv.innerHTML);
             if( isNaN(current_value) ) current_value =0;
-            numberDiv.innerHTML = current_value + parseInt(delta_score);
+            let value = current_value + parseInt(delta_score);
+            numberDiv.innerHTML = value;
+            
+            this.gamedatas.players[player_id]['score_week'+round] = value;
         },
         
         updatePlayerTotalScore: function(player_id, score) {
@@ -996,7 +1002,8 @@ function (dojo, declare) {
             console.log("increasePlayerTotalScore",player_id, delta_score);
             
             let numberDiv = dojo.query("#ffg_total_score_"+player_id+" .ffg_score_number")[0];
-            numberDiv.innerHTML = parseInt(numberDiv.innerHTML) + parseInt(delta_score);
+            let value = parseInt(numberDiv.innerHTML) + parseInt(delta_score);
+            numberDiv.innerHTML = value;
         },
         
         /**
@@ -1007,6 +1014,8 @@ function (dojo, declare) {
             this.scoreCtrl[ player_id ].toValue( score );
             
             this.updatePlayerTotalScore(player_id, score);
+            
+            this.gamedatas.players[player_id].score = score;
         },
         
         /**
@@ -1017,7 +1026,11 @@ function (dojo, declare) {
             console.log("increasePlayerScore",player_id, delta_score);
             this.scoreCtrl[ player_id ].incValue( delta_score );
             
+            let value = this.scoreCtrl[ player_id ].getValue();
+            //TODO JSA ? we could use get value and update : instead of another function increase
             this.increasePlayerTotalScore(player_id, delta_score);
+            
+            this.gamedatas.players[player_id].score = value;
         },
         
         /**
@@ -1038,10 +1051,14 @@ function (dojo, declare) {
         updatePlayerScoreAux: function(player_id,score) {
             console.log("updatePlayerScoreAux",player_id, score);
             this.counterDelivered[player_id].toValue( score );
+            
+            this.gamedatas.players[player_id].score_aux = score;
         },
         increasePlayerScoreAux: function(player_id,delta_score) {
             console.log("increasePlayerScoreAux",player_id, delta_score);
             this.counterDelivered[player_id].incValue( delta_score );
+            
+            this.gamedatas.players[player_id].score_aux = this.counterDelivered[player_id].getValue();
         },
         
         updateRoundLabel: function() {
@@ -1560,6 +1577,7 @@ function (dojo, declare) {
             this.updateLoad(this.player_id,notif.args.containerId,notif.args.amount,notif.args.state,notif.args.card_id,notif.args.usedOvertime);
             
             this.updatePlayerOvertimeHours(this.player_id,notif.args.availableOvertime);
+            this.increasePlayerScore(this.player_id, 0 - notif.args.usedOvertime * this.constants.SCORE_BY_REMAINING_OVERTIME ) ;
             
             //Remove possible selection of this place
             dojo.removeClass(containerDivId,"ffg_selectable") ;
@@ -1578,6 +1596,7 @@ function (dojo, declare) {
             this.updateMove(this.player_id, notif.args.truckId,notif.args.position, parseInt(notif.args.fromPosition) +1,notif.args.truckState.confirmed_position,notif.args.truckState.confirmed_state,notif.args.truckState.not_confirmed_state,notif.args.truckState.not_confirmed_position, notif.args.truckScore,"ffg_not_confirmed_pos");
             
             this.updatePlayerOvertimeHours(this.player_id,notif.args.availableOvertime);
+            this.increasePlayerScore(this.player_id, 0 - notif.args.usedOvertime * this.constants.SCORE_BY_REMAINING_OVERTIME ) ;
             
             let cardRow = this.getCardRowFromId(notif.args.card_id);
             this.dayCards[cardRow].usedPower = notif.args.cardUsage;
@@ -1630,8 +1649,7 @@ function (dojo, declare) {
             );
             
             //Clean week score
-            let weekscoreBefore = this.gamedatas.players[this.player_id]['score_week'+this.currentRound];
-            this.updatePlayerWeekScore(this.player_id,this.currentRound,weekscoreBefore);
+            this.updatePlayerWeekScore(this.player_id,this.currentRound,notif.args.score_week);
             
             this.updatePlayerScore(this.player_id,notif.args.newScore );
             this.updatePlayerScoreAux(this.player_id,notif.args.newScoreAux );

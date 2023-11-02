@@ -190,7 +190,8 @@ class FlipFreighters extends Table
         
         // TODO: Gather all information about current game situation (visible by player $current_player_id).
         
-        $result['round_number'] = self::getGameStateValue( 'round_number');
+        $round_number = self::getGameStateValue( 'round_number');
+        $result['round_number'] = $round_number;
         $result['turn_number'] = self::getGameStateValue( 'turn_number');
         $result['dayCards'] = $this->getCurrentDayCards();
         
@@ -211,6 +212,7 @@ class FlipFreighters extends Table
             'NB_TURNS' => (NB_CARDS_BY_WEEK/NB_CARDS_BY_TURN),
             'CARD_VALUE_MAX' => CARD_VALUE_MAX,
             'MAX_LOAD' => MAX_LOAD,
+            'SCORE_BY_REMAINING_OVERTIME' => SCORE_BY_REMAINING_OVERTIME,
             'STATE_LOAD_TO_CONFIRM' => STATE_LOAD_TO_CONFIRM,
             'STATE_LOAD_CONFIRMED' => STATE_LOAD_CONFIRMED,
             'STATE_MOVE_DELIVERED_TO_CONFIRM' => STATE_MOVE_DELIVERED_TO_CONFIRM,
@@ -224,11 +226,22 @@ class FlipFreighters extends Table
         foreach($result['players'] as $player){ 
             $player_id = $player["id"];
             for($k=1; $k <= NB_ROUNDS;$k++){
+                
+                /* if($k == $result['round_number'] && $player_id  == $current_player_id) {
+                    //Recompute private score with possible
+                    $result['players'][$player_id]["score_week".$k] = $this->computePlayerWeekScore( $player_id);
+                }
+                else {*/
                 $result['players'][$player_id]["score_week".$k] = self::getStat( "score_week".$k, $player_id );
+                //}
             }
             
             $availableOvertime = $this->getPlayerAvailableOvertimeHours($player_id);
-            if($player_id  == $current_player_id) $availableOvertime = $this->getPlayerAvailableOvertimeHoursPrivateState($player_id);
+            if($player_id  == $current_player_id){
+                $availableOvertimePrivate = $this->getPlayerAvailableOvertimeHoursPrivateState($player_id);
+                $result['players'][$player_id]['score'] += ($availableOvertimePrivate - $availableOvertime) * SCORE_BY_REMAINING_OVERTIME ;
+                $availableOvertime = $availableOvertimePrivate;
+            }
             $result['players'][$player_id]['availableOvertime'] = $availableOvertime;
             
             if($player_id  == $current_player_id) {
@@ -241,6 +254,7 @@ class FlipFreighters extends Table
                         if($tmpScore > 0){
                             $result['players'][$player_id]['score'] += $tmpScore ;
                             $result['players'][$player_id]['score_aux'] += 1;
+                            $result['players'][$player_id]['score_week'.$round_number] += $tmpScore ;
                         }
                     }
                 }
@@ -1282,7 +1296,7 @@ class FlipFreighters extends Table
         $table[] = $newRow;
 
         // Points
-        $newRow = array( array( 'str' => clienttranslate('Overall score by now'), 'args' => array() ) );
+        $newRow = array( array( 'str' => clienttranslate('Overall score at end of week'), 'args' => array() ) );
         foreach( $players as $player_id => $player )
         {
             $newRow[] = $this->dbGetScore( $player_id)['player_score'];
@@ -1538,6 +1552,7 @@ class FlipFreighters extends Table
             'truckState' => $truckPositions,
             'truckScore' => $truckScore,
             'availableOvertime' => $availableOvertime,
+            'usedOvertime' => $usedOvertime,
             'amount' => $amount,
             'cardUsage' => ($amount + $cardUsedPower),
         ) );
@@ -1587,12 +1602,14 @@ class FlipFreighters extends Table
         ) );
         
         $score = $this->dbGetScore($player_id);
+        $round_number = self::getGameStateValue( 'round_number');
         
         self::notifyPlayer($player_id,"cancelTurnDatas", '', array(
             'availableOvertime' => $this->getPlayerAvailableOvertimeHoursPrivateState($player_id),
             'possibleCards' => $this->getPlayerPossibleCards($player_id ),
             'newScore' => $score ['player_score'],
             'newScoreAux' => $score ['player_score_aux'],
+            'score_week' => self::getStat( "score_week".$round_number, $player_id ),
         ) );
         
         $this->gamestate->setPlayersMultiactive(array ($player_id), 'next', false);
@@ -1651,6 +1668,25 @@ class FlipFreighters extends Table
         
         //Reset days of week :
         self::setGameStateValue( 'turn_number', 0 );
+        
+        if($round >1){
+            //INIT score_week2 with score_week1
+            $players = self::loadPlayersBasicInfos();
+            foreach($players as $player_id => $player){
+                $score = self::getStat( "score_week".($round -1), $player_id );
+                self::setStat( $score, "score_week".$round, $player_id );
+                $newPlayerScore = $this->computePlayerTotalScore( $player_id);
+                $this->dbUpdatePlayerScore($player_id,$newPlayerScore);
+                
+                //Silent notif
+                self::notifyAllPlayers( "newWeekScore", '', array( 
+                    'player_id' => $player_id,
+                    'nb' => $score,
+                    'k' => $round,
+                    'newScore' => $newPlayerScore,
+                ) );
+            }
+        }
         
         //NOTIF ALL about new round
         self::notifyAllPlayers( "newRound", clienttranslate( 'The game starts week number ${nb} !' ), array( 
