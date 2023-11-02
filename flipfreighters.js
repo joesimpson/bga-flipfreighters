@@ -471,8 +471,6 @@ function (dojo, declare) {
             this.dayCards[row].usedPower = 0;
             this.updateCardUsage(row);
             
-            //TODO JSA ADD some animation ?
-            
             if(this.overtimeSuitVariant){
                 //hide suit modifiers IF JOKER (+ the same through init view)
                 if(color ==  this.constants.JOKER_TYPE) {
@@ -482,7 +480,40 @@ function (dojo, declare) {
                     dojo.query("#ffg_card_wrapper_"+row+" .ffg_button_card_suit_modifier").forEach( (i) => { dojo.removeClass(i,"ffg_no_display"); } ); 
                 }
             }
+            
+            //ADD some animation :
+            this.animateDrawCard(div);
         },
+        animateDrawCard: function(cardDiv){
+            console.log( "animateDrawCard ... " ,cardDiv);
+            let divId = cardDiv.id;
+            //PLACE CARD COPY to avoid destroying / moving the card div
+            let origin_copy = cardDiv.cloneNode();
+            origin_copy.id = divId+"_copy";
+            origin_copy.classList.add("ffg_animation_copy");
+            /*
+            dojo.place(
+                origin_copy,
+                "ffg_round_label"
+            );
+            //let target_placement = "ffg_cards";
+            dojo.addClass(origin_copy.id ,"ffg_animation_copy") ;
+            this.attachToNewParent(origin_copy.id, "ffg_round_label");
+            let x = 0;
+            let y = 0;
+            let anim = this.slideToObjectPos(origin_copy.id, divId,x,y,1000);
+            dojo.connect(anim, 'onEnd', (node) => {
+                dojo.destroy(node);
+            });
+            */
+            dojo.addClass(divId,"ffg_card_back") ;
+            
+            let anim = this.slideTemporaryObject(origin_copy, 'ffg_cards', 'ffg_game_upper', divId ); 
+            dojo.connect(anim, 'onEnd', (node) => {
+                dojo.removeClass(divId,"ffg_card_back") ;
+            });
+            anim.play(); 
+        }, 
         
         getCardRowFromId: function(card_id){
             for(let row in this.dayCards){
@@ -1429,7 +1460,7 @@ function (dojo, declare) {
             }
             
             this.updatePlayersOvertimeHours(notif.args.availableOvertimes);
-            dojo.query(".ffg_card").forEach( dojo.hitch(this, "resetOvertimeHourOnCard"));
+            dojo.query(".ffg_card:not(.ffg_animation_copy)").forEach( dojo.hitch(this, "resetOvertimeHourOnCard"));
             dojo.query(".ffg_card .ffg_cardModifier").removeClass("ffg_positive_value").removeClass("ffg_negative_value").addClass("ffg_empty_value");
             dojo.query(".ffg_card .ffg_cardModifier").forEach(" item.innerHTML = ''"); 
         },  

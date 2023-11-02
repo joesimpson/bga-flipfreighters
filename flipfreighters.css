@@ -316,7 +316,8 @@
     background-position-x: -600% !important;
     background-position-y: -100% !important;
 }
-.ffg_card_back{ 
+.ffg_card[data_id='0'],
+.ffg_card_back { 
     /** BACK of flipped card */
     background-position-x: -600% !important;
     background-position-y: 000% !important;
@@ -388,6 +389,10 @@
     margin: 0 5px;
     font-size: 20px;
     font-weight: bold;
+}
+
+.ffg_animation_copy{
+    z-index: 2;
 }
 /* 
 ---------------------------- ----------------------------   ---------------------------- 
