@@ -475,12 +475,19 @@ function (dojo, declare) {
             this.updateCardUsage(row);
             
             if(this.overtimeSuitVariant){
+                dojo.query("#ffg_card_wrapper_"+row+" .ffg_button_card_suit_reset").forEach( (i) => { dojo.removeClass(i,"ffg_button_card_suit_reset"); } ); 
+                
                 //hide suit modifiers IF JOKER (+ the same through init view)
                 if(color ==  this.constants.JOKER_TYPE) {
                     dojo.query("#ffg_card_wrapper_"+row+" .ffg_button_card_suit_modifier").forEach( (i) => { dojo.addClass(i,"ffg_no_display"); } ); 
                 }
                 else {
-                    dojo.query("#ffg_card_wrapper_"+row+" .ffg_button_card_suit_modifier").forEach( (i) => { dojo.removeClass(i,"ffg_no_display"); } ); 
+                    dojo.query("#ffg_card_wrapper_"+row+" .ffg_button_card_suit_modifier").forEach( (i) => { 
+                        dojo.removeClass(i,"ffg_no_display"); 
+                        if( color == i.getAttribute("data_suit")){
+                            dojo.addClass(i,"ffg_button_card_suit_reset");
+                        }
+                    } ); 
                 }
             }
             
