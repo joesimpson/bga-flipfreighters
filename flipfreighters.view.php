@@ -53,6 +53,7 @@ class view_flipfreighters_flipfreighters extends game_view
         
         $cards = $this->game->getCurrentDayCards();
         $cardsWithOvertime = array();
+        $usedOvertimeForMoves = array();
         $cardsSuitWithOvertime = array();
         if(count($cards) ==0){ //END GAME Refresh...
             $card_back = array('id' => 0, 'type'=>0, 'type_arg'=>0 );
@@ -60,9 +61,13 @@ class view_flipfreighters_flipfreighters extends game_view
         }
         foreach( $cards as $card )
         {
-            $cardsWithOvertime[$card["id"]] = $card["type_arg"];
-            $cardsSuitWithOvertime[$card["id"]] = $card["type"];
+            $card_id = $card["id"];
+            $cardsWithOvertime[$card_id] = $card["type_arg"];
+            $usedOvertimeForMoves[$card_id] = $this->game->getCardUsedOvertimeForMoves( $this->game->getCurrentPlayerIdPublic(), $card_id) ;
+            $cardsSuitWithOvertime[$card_id] = $card["type"];
+            
         }
+        $this->game->dump("VIEW : usedOvertimeForMoves ",$usedOvertimeForMoves);
         
         $this->page->begin_block( "flipfreighters_flipfreighters", "ffg_cargo_amount_list" );
         for($k=CARD_VALUE_MIN; $k<=MAX_LOAD; $k++ )
@@ -158,7 +163,6 @@ class view_flipfreighters_flipfreighters extends game_view
                 $cargo_value_filter = $truck_material ['cargo_value_filter'];
                 
                 $this->page->reset_subblocks( 'ffg_player_truck_position' ); 
-                 //TODO JSA look for cardsWithOvertime 
                  
                 for ($k =1; $k<= $truck_max_position; $k++ )
                 { //POSITIONS start at 1
@@ -169,7 +173,7 @@ class view_flipfreighters_flipfreighters extends game_view
                     } 
                     else if(isset($not_confirmed_pos) && $k<= $not_confirmed_pos){
                             
-                        if( $this->game->isCurrentPlayerId($player_id)){
+                        if( $is_current_player){
                             $classes = " ffg_not_confirmed_pos";
                         }
                         else {
@@ -185,7 +189,7 @@ class view_flipfreighters_flipfreighters extends game_view
                                                              ) );
                 }
             
-                if( ! $this->game->isCurrentPlayerId($player_id) &&  $not_confirmed_state != null ){
+                if( ! $is_current_player &&  $not_confirmed_state != null ){
                     //HIDE cargo content if not confirmed
                     $not_confirmed_state = null;
                     $not_confirmed_pos = null;
@@ -221,7 +225,7 @@ class view_flipfreighters_flipfreighters extends game_view
             }
             
             $playerClass = "";
-            if($this->game->isCurrentPlayerId($player_id) ){
+            if($is_current_player ){
                 $playerClass = "ffg_current_player";
             }
             else if($player_index == 1 && $this->game->isCurrentSpectator() ){
@@ -266,8 +270,9 @@ class view_flipfreighters_flipfreighters extends game_view
             $card_value = $card['type_arg'];
             
             // IF current player already used overtime on this card, let's set this info
-            $amount = $cardsWithOvertime[$card_id];
+            $amount = $cardsWithOvertime[$card_id]+ $usedOvertimeForMoves[$card_id]; 
             $modifier = $amount - $card_value;
+                $this->game->trace("VIEW compute modifier $card_id : $modifier = $amount - $card_value " );   
             if( $card['type'] == JOKER_TYPE){
                 //Never consider a negative modifier on Jokers
                 $modifier = max(0,$modifier); 

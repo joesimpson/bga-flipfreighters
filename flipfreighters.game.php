@@ -301,7 +301,10 @@ class FlipFreighters extends Table
     /*
         In this space, you can put any utility methods useful for your game logic
     */
-    
+    function getCurrentPlayerIdPublic()
+    {
+        return self::getCurrentPlayerId();
+    }
     function isCurrentPlayerId($player_id)
     {
         return self::getCurrentPlayerId() == $player_id;
@@ -959,6 +962,17 @@ class FlipFreighters extends Table
         
         if(isset($res)){
             return $res["card_used_power"];
+        }
+        return 0; 
+    }
+    
+    function getCardUsedOvertimeForMoves($player_id, $card_id){
+        $sql = " SELECT `fmove_card_id` as card_id, SUM(`fmove_overtime_used`) as  `overtime_used`, SUM( `fmove_position_to`- `fmove_position_from` - `fmove_overtime_used` ) as `card_used_power` FROM `freighter_move` where fmove_player_id = '$player_id' and `fmove_card_id` = $card_id group by `fmove_card_id` ";
+        
+        $res = $this->getObjectFromDB($sql);
+        
+        if(isset($res)){
+            return $res["overtime_used"];
         }
         return 0; 
     }
