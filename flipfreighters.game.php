@@ -33,6 +33,10 @@ const DECK_LOCATION_WEEK_2 = "WEEK_2";
 const DECK_LOCATION_WEEK_3 = "WEEK_3";
 //For cards we flip over the table :
 const DECK_LOCATION_DAY = "DAY";
+//For cards discard after playing :
+const DECK_LOCATION_DISCARD_AFTER_DAY = "discard_day";
+//For cards we put back in the box and don't play with at all : (we could use discard, but is less missleading)
+const DECK_LOCATION_BOX = "discard_game_box";
 
 const STATE_LOAD_INITIAL = 0;
 const STATE_LOAD_TO_CONFIRM = 1;
@@ -345,7 +349,7 @@ class FlipFreighters extends Table
         $this->cards->pickCardsForLocation( NB_CARDS_BY_WEEK, 'deck', DECK_LOCATION_WEEK_3,0, true );
 
         //The extra 7 cards may be removed from the table
-        $this->cards->moveAllCardsInLocation( 'deck', 'discard' );
+        $this->cards->moveAllCardsInLocation( 'deck', DECK_LOCATION_BOX );
         
     }
     function isActivatedOvertimeSuitVariant()
@@ -1773,8 +1777,8 @@ class FlipFreighters extends Table
         $players = self::loadPlayersBasicInfos();
         $round = self::getGameStateValue( 'round_number');
         
-        //Discard cards from board
-        $this->cards->moveAllCardsInLocation( DECK_LOCATION_DAY, 'discard' );
+        //Discard cards from board (and save the associated current week)
+        $this->cards->moveAllCardsInLocation( DECK_LOCATION_DAY, DECK_LOCATION_DISCARD_AFTER_DAY, null, $round );
     
         $week = $this->getCurrentWeekLocation();
         
