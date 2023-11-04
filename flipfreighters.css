@@ -267,6 +267,7 @@
     align-self: flex-start;
 }
 
+#ffg_discard_pile,
 .ffg_card{
     background-image: url('img/FULLREZ_CARDS.jpg');
     background-size: 700% 400%;
@@ -275,6 +276,17 @@
     margin: 10px;
     outline: 2px solid black;
     border-radius: 5%;
+}
+#ffg_discard_pile_wrapper{
+    width: var(--ffg_card_display_width);
+    width: max-content;
+    position: relative;
+    float: left;
+    margin-left: 10px;
+    cursor: help;
+}
+#ffg_discard_pile{
+    margin: 10px 0;
 }
 
 .ffg_card.ffg_selected{
@@ -393,6 +405,18 @@
 
 .ffg_animation_copy{
     z-index: 2;
+}
+
+.ffg_deck_size {
+    background: rgba(0,0,0,.7);
+    border-radius: 0 0 1rem 1rem;
+    bottom: 0;
+    color: #fff;
+    font-size: 20px;
+    left: 0;
+    position: absolute;
+    text-align: center;
+    width: 100%;
 }
 /* 
 ---------------------------- ----------------------------   ---------------------------- 

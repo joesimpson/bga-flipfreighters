@@ -48,6 +48,10 @@
         </div>
             
         <!-- END ffg_cards -->
+        <div id="ffg_discard_pile_wrapper" class="ffg_no_display">
+            <div id="ffg_discard_pile" class="ffg_card_back"></div>
+            <div id="ffg_discard_pile_size" class="ffg_deck_size">0</div>
+        </div>
     </div>
     
 <div id="ffg_all_players_board_wrap" class="">
@@ -189,6 +193,12 @@ var jstpl_playerBoardContainer = `<div id="ffg_modal_player_board_container_\${p
 var jstpl_playerBoard = `
     <div id="ffg_modal_player_board_\${player_id}" class="ffg_modal_player_board">
         <div class="ffg_modal_player_board_overlay"></div>
+    </div>
+`;
+
+var jstpl_discard_cards = `
+    <div id="ffg_modal_discard_pile" class="">
+        <div class="ffg_modal_discard_pile_content"></div>
     </div>
 `;
 

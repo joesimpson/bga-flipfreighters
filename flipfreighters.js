@@ -47,6 +47,8 @@ function (dojo, declare) {
             this.counterDelivered={};
             this.overtimeSuitVariant = false;
             
+            this.counterDiscardDeckSize = new ebg.counter();
+            this.counterDiscardDeckSize.create("ffg_discard_pile_size");
         },
         
         /*
@@ -110,6 +112,10 @@ function (dojo, declare) {
             dojo.query(".ffg_card").forEach(this.updateOvertimeHourOnCard);
             
             this.initTooltips(this.material.tooltips);
+            
+            this.updateDiscardPile(gamedatas.discard_pile);
+            this.addTooltip( "ffg_discard_pile_wrapper", _("Discard pile"), '' );
+            dojo.query("#ffg_discard_pile_wrapper").connect( 'onclick', this, 'onClickDiscardPile' );
             
             this.addTooltipToClass( "ffg_overtime_wrapper", _("Available overtime hours tokens"), '' );
             this.updatePlayersOvertimeHours(gamedatas.players);
@@ -414,6 +420,28 @@ function (dojo, declare) {
             dojo.style("popin_showBoardDialogId", "transform", `scale(${modalScale})`); 
         },
         
+        initShowDiscardPileDialog: function()
+        {
+            let title = dojo.string.substitute( _("Discard pile"), );
+            
+            // Create the new dialog over the play zone.
+            this.showDiscardPileDialog = new ebg.popindialog();
+            this.showDiscardPileDialog.create( 'showDiscardPileDialogId' );
+            this.showDiscardPileDialog.setTitle(title);
+            this.showDiscardPileDialog.setMaxWidth( 1000 ); 
+
+            // Create the HTML of my dialog. 
+            let html = this.format_block( 'jstpl_discard_cards', { } );  
+            this.showDiscardPileDialog.setContent( html );
+            
+            //PREPARE MODAL SIZE
+            let box = $("ebd-body").getBoundingClientRect();
+            let modalWidth = 1000;
+            let newModalWidth = box['width']*0.8;
+            let modalScale = newModalWidth / modalWidth;
+            if(modalScale > 1) modalScale = 1;
+            dojo.style("popin_showDiscardPileDialogId", "transform", `scale(${modalScale})`); 
+        },
         updatePlayersOvertimeHours: function(players)
         {
             console.log( "updatePlayersOvertimeHours" ,players); 
@@ -531,6 +559,15 @@ function (dojo, declare) {
                 if(card_id == this.dayCards[row].id) return row;
             }
             return undefined;
+        },
+        updateDiscardPile: function(list){
+            console.log( "updateDiscardPile",list); 
+            if(! this.gamedatas.showDiscardVariant || list ==null){
+                return;
+            }
+            this.counterDiscardDeckSize.setValue(list.length);
+            
+            dojo.removeClass("ffg_discard_pile_wrapper","ffg_no_display");
         },
         updateCardsUsage: function( ){
             console.log( "updateCardsUsage"); 
@@ -1475,6 +1512,17 @@ function (dojo, declare) {
             
             dojo.query("#modal_ffg_all_players_board_wrap *").removeClass("ffg_selectedPlayerId"); 
             dojo.addClass("modal_ffg_board_player_container_"+this.selectedPlayerId,"ffg_selectedPlayerId");
+        },
+        
+        onClickDiscardPile: function( evt )
+        {
+            console.log( 'onClickDiscardPile',evt );
+            
+            // Preventing default browser reaction
+            dojo.stopEvent( evt );
+            
+            this.initShowDiscardPileDialog();
+            this.showDiscardPileDialog.show();
         },
         ///////////////////////////////////////////////////
         //// Reaction to cometD notifications

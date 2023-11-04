@@ -94,7 +94,7 @@ class FlipFreighters extends Table
                 "turn_number" => 11,
             //      ...
                 "ffg_variant_overtime_hours" => 100,
-            //    "my_second_game_variant" => 101,
+                "ffg_variant_show_discard" => 101,
             //      ...
         ) );        
         
@@ -200,6 +200,8 @@ class FlipFreighters extends Table
         $result['dayCards'] = $this->getCurrentDayCards();
         
         $result['overtimeSuitVariant'] = $this->isActivatedOvertimeSuitVariant();
+        $result['showDiscardVariant'] = $this->isActivatedShowDiscardVariant();
+        $result['discard_pile'] = $result['showDiscardVariant'] ? $this->getDiscardPile() : null;
         
         $result['material'] = array( 
             'card_types' =>  $this->card_types,
@@ -363,6 +365,16 @@ class FlipFreighters extends Table
         }
     }
     
+    function isActivatedShowDiscardVariant()
+    { 
+        $variant_show_discard = self::getGameStateValue( 'ffg_variant_show_discard' );
+        switch($variant_show_discard){
+            case 1: return TRUE;
+            case 2: return FALSE;
+            default: return TRUE;
+        }
+    }
+    
     function getCurrentWeekLocation()
     { 
         $round = self::getGameStateValue( 'round_number');
@@ -381,6 +393,11 @@ class FlipFreighters extends Table
     function getCurrentDayCards()
     { 
         $dayCards = $this->cards->getCardsInLocation( DECK_LOCATION_DAY,null,'card_id' );
+        return $dayCards;
+    }
+    function getDiscardPile()
+    { 
+        $dayCards = $this->cards->getCardsInLocation( DECK_LOCATION_DISCARD_AFTER_DAY,null,'card_type' );
         return $dayCards;
     }
     
