@@ -167,14 +167,17 @@ class view_flipfreighters_flipfreighters extends game_view
                 for ($k =1; $k<= $truck_max_position; $k++ )
                 { //POSITIONS start at 1
                     $classes = " ffg_not_drawn_pos";
+                    $iconClasses ="ffg_hidden";
                     
                     if( isset($confirmed_pos) && $k<= $confirmed_pos){
                         $classes = " ffg_confirmed_pos";
+                        if($k == $confirmed_pos) $iconClasses = "";
                     } 
                     else if(isset($not_confirmed_pos) && $k<= $not_confirmed_pos){
                             
                         if( $is_current_player){
                             $classes = " ffg_not_confirmed_pos";
+                            if($k == $not_confirmed_pos) $iconClasses = "";
                         }
                         else {
                             
@@ -186,6 +189,7 @@ class view_flipfreighters_flipfreighters extends game_view
                                                             "TRUCK_ID" => $truck_id,
                                                             "INDEX" => $k,
                                                             "CLASSES" => $classes,
+                                                            "ICON_CLASSES" => $iconClasses,
                                                              ) );
                 }
             

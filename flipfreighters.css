@@ -1189,6 +1189,29 @@
     left: 1205px;
     top: 517px;
 }
+
+/* ---------------------------- ----------------------------   ---------------------------- */
+/* Truck ICONS on board to show position */
+.ffg_icon_truck_pos{
+    top: -30px;
+    position: relative;
+    font-size: 30px;
+    color: black;
+}
+.ffg_not_drawn_pos .ffg_icon_truck_pos{
+    visibility: hidden;
+}
+.ffg_not_confirmed_pos .ffg_icon_truck_pos{
+    color: #ca0000;
+}
+.ffg_truck[data_confirmed_state="4"] .ffg_icon_truck_pos{
+    /* DELIVERED */
+    color: darkgreen;
+}
+/** User preference */
+.ffg_display_truck_icon_no .ffg_icon_truck_pos{
+    display: none;
+}
 /* ---------------------------- ----------------------------   ---------------------------- */
 /* List of spaces to display trucks score on end of each line : they are listed by color order, not the same order of trucks around the board... */
 .ffg_truck_score{
@@ -1571,5 +1594,5 @@
 .multiplechoice_btn#choice_btn_1 {
     /*bgabutton_red*/
     background: #c92727;
-    border-color: #b20a0a;;
+    border-color: #b20a0a;
 }

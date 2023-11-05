@@ -66,5 +66,15 @@ $game_preferences = array(
             ),
             'default' => 1
     ),
+    
+    102 => array(
+            'name' => totranslate('Display mini truck icons'),
+            'needReload' => true, // after user changes this preference game interface would auto-reload
+            'values' => array(
+                    1 => array( 'name' => totranslate( 'Disabled' ), 'cssPref' => 'ffg_display_truck_icon_no' ),
+                    2 => array( 'name' => totranslate( 'Enabled' ), 'cssPref' => 'ffg_display_truck_icon_yes' )
+            ),
+            'default' => 1
+    ),
 );
 

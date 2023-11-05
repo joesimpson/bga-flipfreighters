@@ -795,6 +795,14 @@ function (dojo, declare) {
                 this.increasePlayerWeekScore(player_id,this.currentRound,truckScore);
             }
             
+            if(cssPos != "ffg_confirmed_pos"){
+                //CLEAN truck icons except confirmed one
+                dojo.query("#ffg_truck_"+player_id+"_"+truck_id+ " :not(.ffg_confirmed_pos) .ffg_icon_truck_pos").addClass("ffg_hidden" ) ;
+            }
+            else {
+                //CLEAN ALL truck icons 
+                dojo.query("#ffg_truck_"+player_id+"_"+truck_id+ " .ffg_icon_truck_pos").addClass("ffg_hidden" ) ;
+            }
             //Update possible moves by removing the one we did  (and the corresponding previous places too !)
             for (let k=fromPosition ; k<= position; k++ ){
                 let posId = truck_id+"_"+k;
@@ -803,6 +811,11 @@ function (dojo, declare) {
                 dojo.removeClass(posDivId,"ffg_not_drawn_pos ffg_not_confirmed_pos ffg_selectable") ;
                 dojo.addClass(posDivId,cssPos ) ;
                 this.animateMovePosition(posDivId);
+                
+                if( k== position){
+                    let truckIconDivId = posDivId + "_icon";
+                    dojo.removeClass(truckIconDivId,"ffg_hidden" ) ;
+                }
             }
         },
         
