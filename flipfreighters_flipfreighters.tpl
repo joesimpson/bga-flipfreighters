@@ -212,7 +212,7 @@ var jstpl_discard_cards = `
 var jstpl_discard_cards_row = `<tr id="ffg_discard_suit_\${suit}" style="color:\${COLOR};">
     <td class="ffg_row_label"><span class="ffg_discard_suit_title">\${name}</span></td><td><img class ="ffg_icon_card_suit ffg_icon_card_suit_\${suit}"></img></td>
     </tr>`;
-var jstpl_discard_cards_cell = `<td class="ffg_discard_suit_\${suit}_\${value}">\${value_label}</td>`;
+var jstpl_discard_cards_cell = `<td id="ffg_discard_\${card_id}" class="ffg_discard_suit_\${suit}_\${value}">\${value_label}</td>`;
 
 </script>  
 

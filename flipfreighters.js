@@ -184,9 +184,19 @@ function (dojo, declare) {
                 break;
                 
             case 'endTurn':
+                for(let row in this.dayCards){
+                    this.gamedatas.discard_pile.push(  dojo.clone(this.dayCards[row] ) );
+                    this.increaseDiscardPile(1);
+                }
+                
                 //TODO JSA Slide to discard if discard is visible
                 //Unflip all cards :
-                dojo.query(".ffg_card").forEach("item.setAttribute('data_id',0); item.setAttribute('data_value',0); item.setAttribute('data_suit',0); dojo.addClass(item,'ffg_card_back');"); 
+                dojo.query(".ffg_card").forEach( (item) => {
+                    item.setAttribute('data_id',0); 
+                    item.setAttribute('data_value',0); 
+                    item.setAttribute('data_suit',0); 
+                    dojo.addClass(item,'ffg_card_back');
+                }); 
                 break;
             }
         },
@@ -453,10 +463,13 @@ function (dojo, declare) {
                     'COLOR' : 'blue',
                 }), 'ffg_overview_body');
         
+            //resort this array :
+            this.gamedatas.discard_pile.sort(this.compareCards);
             //DEfine TABLE CELLS
             for(let i in this.gamedatas.discard_pile){
                 let card = this.gamedatas.discard_pile[i];
                 let dataCell = {
+                    'card_id' : card.id,
                     'suit' : card.type,
                     'value' : card.type_arg,
                     'value_label' : card.type !=this.constants.JOKER_TYPE ? card.type_arg : '*',
@@ -592,6 +605,14 @@ function (dojo, declare) {
             return undefined;
         },
         
+        compareCards: function(a, b){
+            if(a.type_arg > b.type_arg) return 1;
+            if(a.type_arg < b.type_arg) return -1;
+            if(a.type > b.type) return 1;
+            if(a.type < b.type) return -1;
+            return 0;
+        },
+        
         updateDiscardPile: function(list){
             console.log( "updateDiscardPile",list); 
             if(! this.gamedatas.showDiscardVariant || list ==null){
@@ -600,6 +621,13 @@ function (dojo, declare) {
             this.counterDiscardDeckSize.setValue(list.length);
             
             dojo.removeClass("ffg_discard_pile_wrapper","ffg_no_display");
+        },
+        increaseDiscardPile: function(delta){
+            console.log( "increaseDiscardPile",delta); 
+            if(! this.gamedatas.showDiscardVariant || delta ==null){
+                return;
+            }
+            this.counterDiscardDeckSize.incValue(delta);
         },
         updateCardsUsage: function( ){
             console.log( "updateCardsUsage"); 
