@@ -185,13 +185,17 @@ function (dojo, declare) {
                 
             case 'endTurn':
                 for(let row in this.dayCards){
-                    this.gamedatas.discard_pile.push(  dojo.clone(this.dayCards[row] ) );
+                    let card = dojo.clone(this.dayCards[row] );
+                    card.location = this.constants.DECK_LOCATION_DISCARD_AFTER_DAY;
+                    card.location_arg = this.currentRound;
+                    if(this.gamedatas.discard_pile !=null) this.gamedatas.discard_pile.push(  card );
                     this.increaseDiscardPile(1);
                 }
                 
-                //TODO JSA Slide to discard if discard is visible
                 //Unflip all cards :
                 dojo.query(".ffg_card").forEach( (item) => {
+                    this.animateDiscardCard(item, item.id.split("_").lastItem);
+                    
                     item.setAttribute('data_id',0); 
                     item.setAttribute('data_value',0); 
                     item.setAttribute('data_suit',0); 
@@ -564,10 +568,10 @@ function (dojo, declare) {
             }
             
             //ADD some animation :
-            this.animateDrawCard(div);
+            this.animateDrawCard(div,row);
         },
-        animateDrawCard: function(cardDiv){
-            console.log( "animateDrawCard ... " ,cardDiv);
+        animateDrawCard: function(cardDiv,row){
+            console.log( "animateDrawCard ... " ,cardDiv,row);
             let divId = cardDiv.id;
             //PLACE CARD COPY to avoid destroying / moving the card div
             let origin_copy = cardDiv.cloneNode();
@@ -590,10 +594,23 @@ function (dojo, declare) {
             */
             dojo.addClass(divId,"ffg_card_back") ;
             
-            let anim = this.slideTemporaryObject(origin_copy, 'ffg_cards', 'ffg_game_upper', divId ); 
+            let anim = this.slideTemporaryObject(origin_copy, 'ffg_cards', 'ffg_game_upper', divId,1000, row*200 ); 
             dojo.connect(anim, 'onEnd', (node) => {
                 dojo.removeClass(divId,"ffg_card_back") ;
             });
+            anim.play(); 
+        }, 
+        animateDiscardCard: function(cardDiv,row){
+            console.log( "animateDiscardCard ... " ,cardDiv,row);
+            if(! this.gamedatas.showDiscardVariant) return;
+            
+            let divId = cardDiv.id;
+            //PLACE CARD COPY to avoid destroying / moving the card div
+            let origin_copy = cardDiv.cloneNode();
+            origin_copy.id = divId+"_copy";
+            origin_copy.classList.add("ffg_animation_copy");
+            //dojo.addClass(divId,"ffg_card_back") ;
+            let anim = this.slideTemporaryObject(origin_copy, cardDiv, divId, 'ffg_discard_pile', 1000, row*200 ); 
             anim.play(); 
         }, 
         
