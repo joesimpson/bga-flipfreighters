@@ -397,8 +397,8 @@ class FlipFreighters extends Table
     }
     function getDiscardPile()
     { 
-        $dayCards = $this->cards->getCardsInLocation( DECK_LOCATION_DISCARD_AFTER_DAY,null,'card_type' );
-        return $dayCards;
+        $cards = $this->cards->getCardsInLocation( DECK_LOCATION_DISCARD_AFTER_DAY,null,'card_type_arg' );
+        return $cards;
     }
     
     /**

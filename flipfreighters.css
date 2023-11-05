@@ -361,6 +361,7 @@
     justify-content: space-evenly;
 }
 
+.ffg_icon_card_suit,
 .ffg_button_card_suit_modifier {
     background-image: url('img/FULLREZ_CARDS.jpg');
     background-size: 1000px;
@@ -368,15 +369,19 @@
     width: 6px;
     height: 25px;
 }
+.ffg_icon_card_suit_1,
 .ffg_button_card_suit_modifier_1 {
     background-position-y: -17px;
 }
+.ffg_icon_card_suit_2,
 .ffg_button_card_suit_modifier_2 {
     background-position-y: -212px;
 }
+.ffg_icon_card_suit_3,
 .ffg_button_card_suit_modifier_3 {
     background-position-y: -410px;
 }
+.ffg_icon_card_suit_4,
 .ffg_button_card_suit_modifier_4 {
     background-position-y: -605px;
 }
@@ -417,6 +422,58 @@
     position: absolute;
     text-align: center;
     width: 100%;
+}
+
+/* 
+---------------------------- ----------------------------   ---------------------------- 
+----------------------------  SHOW DISCARD DIALOG           ---------------------------- 
+---------------------------- ----------------------------   ---------------------------- 
+*/
+#popin_showDiscardPileDialogId {
+    border: 5px solid #6c2c12;
+}
+/*
+#ffg_modal_discard_pile_content table th {
+    border-right: 1px solid rgba(0,0,0,.2);
+    height: 70px;
+    min-width: 70px;
+    text-align: center;
+    vertical-align: middle;
+    font-size: 30px;
+}
+#ffg_modal_discard_pile_content table th>div{
+    display: inline-block;
+} */
+#ffg_modal_discard_pile_content table tbody tr td{
+    border-right: 1px solid rgba(0,0,0,.2);
+    font-family: Caveat;
+    font-size: x-large;
+    padding: 5px 8px;
+    text-align: center;
+    vertical-align: middle;
+}
+#ffg_modal_discard_pile_content table tbody tr:nth-of-type(odd) {
+    background-color: lightgray;
+}
+#ffg_modal_discard_pile_content .ffg_row_label{
+    text-align: right;
+}
+
+.ffg_discard_suit_title{
+    text-transform: uppercase;
+    vertical-align: middle;
+}
+
+.ffg_icon_card_suit{
+    width: 31px;
+    height: 39px;
+    vertical-align: middle;
+}
+.ffg_icon_card_suit_5
+{ /* JOKER entire card */
+    background-size: 700% 400%;
+    background-position-x: -600% !important;
+    background-position-y: -100% !important;
 }
 /* 
 ---------------------------- ----------------------------   ---------------------------- 

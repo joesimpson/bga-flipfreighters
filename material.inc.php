@@ -22,13 +22,13 @@
 //spade, heart, club, diamond
 $this->card_types  = array(
     CARGO_SUIT_SPADE => array( 'name' => clienttranslate('spade'),
-                'nametr' => self::_('spade') ),    
+                'nametr' => self::_('spade'), 'color' => 'black' ),    
     CARGO_SUIT_HEART => array( 'name' => clienttranslate('heart'),
-                'nametr' => self::_('heart') ),
+                'nametr' => self::_('heart'), 'color' => 'red' ),
     CARGO_SUIT_CLUB => array( 'name' => clienttranslate('club'),
-                'nametr' => self::_('club') ),
+                'nametr' => self::_('club'), 'color' => 'black' ),
     CARGO_SUIT_DIAMOND => array( 'name' => clienttranslate('diamond'),
-                'nametr' => self::_('diamond') ),
+                'nametr' => self::_('diamond'), 'color' => 'red' ),
 );
     //we have two of each label for suits. This is because sometimes we need translated values on the php side and sometimes we don't.
         // In this case nametr will return a translated value in php, which is only useful when you throw exceptions to show the right strings.

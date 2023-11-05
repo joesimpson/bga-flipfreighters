@@ -196,11 +196,23 @@ var jstpl_playerBoard = `
     </div>
 `;
 
+////////////////////////////////////////////////////////////////////////////////////
+////                        Show Discard pile in modal                          ////
+////////////////////////////////////////////////////////////////////////////////////
 var jstpl_discard_cards = `
     <div id="ffg_modal_discard_pile" class="">
-        <div class="ffg_modal_discard_pile_content"></div>
+        <div id="ffg_modal_discard_pile_content">
+            <table id="ffg_discard_overview">
+                <tbody id="ffg_overview_body">
+                </tbody>
+            </table>
+        </div>
     </div>
 `;
+var jstpl_discard_cards_row = `<tr id="ffg_discard_suit_\${suit}" style="color:\${COLOR};">
+    <td class="ffg_row_label"><span class="ffg_discard_suit_title">\${name}</span></td><td><img class ="ffg_icon_card_suit ffg_icon_card_suit_\${suit}"></img></td>
+    </tr>`;
+var jstpl_discard_cards_cell = `<td class="ffg_discard_suit_\${suit}_\${value}">\${value_label}</td>`;
 
 </script>  
 

@@ -113,7 +113,7 @@ function (dojo, declare) {
             
             this.initTooltips(this.material.tooltips);
             
-            this.updateDiscardPile(gamedatas.discard_pile);
+            this.updateDiscardPile(this.gamedatas.discard_pile);
             this.addTooltip( "ffg_discard_pile_wrapper", _("Discard pile"), '' );
             dojo.query("#ffg_discard_pile_wrapper").connect( 'onclick', this, 'onClickDiscardPile' );
             
@@ -184,6 +184,7 @@ function (dojo, declare) {
                 break;
                 
             case 'endTurn':
+                //TODO JSA Slide to discard if discard is visible
                 //Unflip all cards :
                 dojo.query(".ffg_card").forEach("item.setAttribute('data_id',0); item.setAttribute('data_value',0); item.setAttribute('data_suit',0); dojo.addClass(item,'ffg_card_back');"); 
                 break;
@@ -434,6 +435,36 @@ function (dojo, declare) {
             let html = this.format_block( 'jstpl_discard_cards', { } );  
             this.showDiscardPileDialog.setContent( html );
             
+            let card_types = this.gamedatas.material.card_types;
+            
+            //Define TABLE ROWS
+            for(let cardType in card_types){
+                let typeDatas = this.gamedatas.material.card_types[cardType];
+                let data = {
+                    'suit' : cardType,
+                    'COLOR' : typeDatas.color,
+                    'name' : typeDatas.name,
+                };
+                dojo.place(this.format_block('jstpl_discard_cards_row', data), 'ffg_overview_body');
+            }
+            dojo.place(this.format_block('jstpl_discard_cards_row', {
+                    'suit' : this.constants.JOKER_TYPE,
+                    'name' : _('Joker'),
+                    'COLOR' : 'blue',
+                }), 'ffg_overview_body');
+        
+            //DEfine TABLE CELLS
+            for(let i in this.gamedatas.discard_pile){
+                let card = this.gamedatas.discard_pile[i];
+                let dataCell = {
+                    'suit' : card.type,
+                    'value' : card.type_arg,
+                    'value_label' : card.type !=this.constants.JOKER_TYPE ? card.type_arg : '*',
+                };
+                
+                dojo.place(this.format_block('jstpl_discard_cards_cell', dataCell), 'ffg_discard_suit_'+card.type);
+            }
+            
             //PREPARE MODAL SIZE
             let box = $("ebd-body").getBoundingClientRect();
             let modalWidth = 1000;
@@ -560,6 +591,7 @@ function (dojo, declare) {
             }
             return undefined;
         },
+        
         updateDiscardPile: function(list){
             console.log( "updateDiscardPile",list); 
             if(! this.gamedatas.showDiscardVariant || list ==null){
