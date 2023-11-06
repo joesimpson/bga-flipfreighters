@@ -148,6 +148,26 @@ function (dojo, declare) {
             // Setup game notifications to handle (see "setupNotifications" method below)
             this.setupNotifications();
 
+
+            /* OVERRIDE BGA FUNCTION 
+            WHEN SCROLLING- adapting the status bar
+            */
+            gameui.adaptStatusBar = (function(_super) {
+                return function() {
+                    //BGA 
+                    _super.apply(this, arguments);
+                    //Add :
+                    console.log("ffg override adaptStatusBar..."); 
+                    if (dojo.hasClass('page-title', 'fixed-page-title')) {
+                        dojo.query("#ffg_game_upper").addClass("ffg_fixed_page_title");
+                    }
+                    else {
+                        dojo.query("#ffg_game_upper").removeClass("ffg_fixed_page_title");
+                    }
+                };         
+
+            })(gameui.adaptStatusBar);
+            
             console.log( "Ending game setup" );
         },
        
