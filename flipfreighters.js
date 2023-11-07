@@ -871,8 +871,7 @@ function (dojo, declare) {
             dojo.query(".ffg_container").removeClass("ffg_selectable") ;
             dojo.query(".ffg_truck_pos").removeClass("ffg_selectable") ;
             dojo.query(".ffg_cargo_amount").removeClass("ffg_selectable");
-            dojo.query("#ffg_cargo_amount_list").addClass("ffg_hidden");
-            dojo.query(".ffg_cargo_to_fill").removeClass("ffg_cargo_to_fill");
+            this.closeCargoAmountList();
         },
 
         /**
@@ -1270,8 +1269,7 @@ function (dojo, declare) {
             
             dojo.query(".ffg_card").removeClass("ffg_selected") ;
             dojo.query(".ffg_card_wrapper").removeClass("ffg_selected") ;
-            dojo.query("#ffg_cargo_amount_list").addClass("ffg_hidden");
-            dojo.query(".ffg_cargo_to_fill").removeClass("ffg_cargo_to_fill");
+            this.closeCargoAmountList();
             
             let card_id= evt.currentTarget.getAttribute("data_id") ;
             let data_value= evt.currentTarget.getAttribute("data_value") ;
@@ -1393,16 +1391,12 @@ function (dojo, declare) {
             }
             if( ! dojo.hasClass("ffg_cargo_amount_list","ffg_hidden") && this.selectedCargoContainer == container_id ){
                 //AMOUNT SELECTION already displayed, we want to hide this, like if we quit selection
-                dojo.query(".ffg_cargo_to_fill").removeClass("ffg_cargo_to_fill");
-                dojo.query("#ffg_cargo_amount_list").addClass("ffg_hidden");
-                this.selectedCargoContainer = null;
+                this.closeCargoAmountList();
                 return ;
             }
+            this.closeCargoAmountList();
             this.selectedCargoContainer = container_id;
             let cardSuit = dojo.query(".ffg_card[data_id="+cardId+"]")[0].getAttribute("data_suit") ;
-            
-            dojo.query(".ffg_cargo_to_fill").removeClass("ffg_cargo_to_fill");
-            dojo.query("#ffg_cargo_amount_list").addClass("ffg_hidden");
             
             let amount = this.selectedAmount;
             
