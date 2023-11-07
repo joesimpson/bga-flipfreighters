@@ -1223,6 +1223,17 @@
 .ffg_display_truck_icon_no .ffg_icon_truck_pos{
     display: none;
 }
+
+/* ---------------------------- ----------------------------   ---------------------------- */
+/* Black lines on board to link truck positions*/
+/* TODO JSA USER PREF On/Off */
+.ffg_truck_lines{
+    visibility: hidden;
+}
+#popin_showBoardDialogId_contents .ffg_truck_lines{
+    position: absolute;
+    top: 34px;
+}
 /* ---------------------------- ----------------------------   ---------------------------- */
 /* List of spaces to display trucks score on end of each line : they are listed by color order, not the same order of trucks around the board... */
 .ffg_truck_score{

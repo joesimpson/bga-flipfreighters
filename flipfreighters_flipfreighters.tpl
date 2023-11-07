@@ -129,6 +129,39 @@
                 </div>
                 <!-- END ffg_overtime_hour -->
             </div>
+            
+            <!-- Some viewer for drawing lines on the board : lines are at fixed positions, but may be hidden at start -->
+            <svg class="svg-viewer ffg_truck_lines" viewBox="-30 10 1400 1080">
+                <!-- TODO JSA DEFINE more lines -->
+                <line id="ffg_truck_line_{PLAYER_ID}_truck1_1" class="ffg_truck_line ffg_hidden" fill="transparent" stroke="black" stroke-width="12" x1="845" y1="182" x2="855" y2="240"></line> 
+                <line id="ffg_truck_line_{PLAYER_ID}_truck1_2" class="ffg_truck_line ffg_hidden" fill="transparent" stroke="black" stroke-width="12" x1="850" y1="260" x2="850" y2="300"></line>
+                <line id="ffg_truck_line_{PLAYER_ID}_truck1_3" class="ffg_truck_line ffg_hidden" fill="transparent" stroke="black" stroke-width="12" x1="850" y1="340" x2="850" y2="420"></line>
+                <line id="ffg_truck_line_{PLAYER_ID}_truck1_4" class="ffg_truck_line ffg_hidden" fill="transparent" stroke="black" stroke-width="12" x1="850" y1="450" x2="830" y2="500"></line>
+                <line id="ffg_truck_line_{PLAYER_ID}_truck1_5" class="ffg_truck_line ffg_hidden" fill="transparent" stroke="black" stroke-width="12" x1="820" y1="525" x2="820" y2="575"></line>
+                
+                <line id="ffg_truck_line_{PLAYER_ID}_truck2_1" class="ffg_truck_line ffg_hidden" fill="transparent" stroke="black" stroke-width="12" x1="500" y1="140" x2="490" y2="170"></line> 
+                <line id="ffg_truck_line_{PLAYER_ID}_truck2_2" class="ffg_truck_line ffg_hidden" fill="transparent" stroke="black" stroke-width="12" x1="490" y1="200" x2="490" y2="245"></line>
+                <line id="ffg_truck_line_{PLAYER_ID}_truck2_3" class="ffg_truck_line ffg_hidden" fill="transparent" stroke="black" stroke-width="12" x1="485" y1="275" x2="465" y2="335"></line>
+                <line id="ffg_truck_line_{PLAYER_ID}_truck2_4" class="ffg_truck_line ffg_hidden" fill="transparent" stroke="black" stroke-width="12" x1="465" y1="365" x2="465" y2="410"></line>
+                <line id="ffg_truck_line_{PLAYER_ID}_truck2_5" class="ffg_truck_line ffg_hidden" fill="transparent" stroke="black" stroke-width="12" x1="465" y1="450" x2="440" y2="500"></line>
+                
+                
+                <line id="ffg_truck_line_{PLAYER_ID}_truck3_1" class="ffg_truck_line ffg_hidden" fill="transparent" stroke="black" stroke-width="12" x1="380" y1="190" x2="412" y2="206"></line> 
+                <line id="ffg_truck_line_{PLAYER_ID}_truck3_2" class="ffg_truck_line ffg_hidden" fill="transparent" stroke="black" stroke-width="12" x1="437" y1="222" x2="461" y2="243"></line>
+                <line id="ffg_truck_line_{PLAYER_ID}_truck3_3" class="ffg_truck_line ffg_hidden" fill="transparent" stroke="black" stroke-width="12" x1="493" y1="268" x2="553" y2="277"></line>
+                <line id="ffg_truck_line_{PLAYER_ID}_truck3_4" class="ffg_truck_line ffg_hidden" fill="transparent" stroke="black" stroke-width="12" x1="575" y1="277" x2="665" y2="270"></line>
+                <line id="ffg_truck_line_{PLAYER_ID}_truck3_5" class="ffg_truck_line ffg_hidden" fill="transparent" stroke="black" stroke-width="12" x1="690" y1="270" x2="763" y2="270"></line>
+                <line id="ffg_truck_line_{PLAYER_ID}_truck3_6" class="ffg_truck_line ffg_hidden" fill="transparent" stroke="black" stroke-width="12" x1="785" y1="275" x2="825" y2="310"></line>
+                <line id="ffg_truck_line_{PLAYER_ID}_truck3_7" class="ffg_truck_line ffg_hidden" fill="transparent" stroke="black" stroke-width="12" x1="865" y1="325" x2="925" y2="380"></line>
+                
+                <line id="ffg_truck_line_{PLAYER_ID}_truck4_1" class="ffg_truck_line ffg_hidden" fill="transparent" stroke="black" stroke-width="12" x1="380" y1="390" x2="435" y2="430"></line>
+                <line id="ffg_truck_line_{PLAYER_ID}_truck4_2" class="ffg_truck_line ffg_hidden" fill="transparent" stroke="black" stroke-width="12" x1="480" y1="430" x2="530" y2="425"></line>
+                <line id="ffg_truck_line_{PLAYER_ID}_truck4_3" class="ffg_truck_line ffg_hidden" fill="transparent" stroke="black" stroke-width="12" x1="570" y1="430" x2="710" y2="470"></line>
+                <line id="ffg_truck_line_{PLAYER_ID}_truck4_4" class="ffg_truck_line ffg_hidden" fill="transparent" stroke="black" stroke-width="12" x1="735" y1="470" x2="825" y2="440"></line>
+                <line id="ffg_truck_line_{PLAYER_ID}_truck4_5" class="ffg_truck_line ffg_hidden" fill="transparent" stroke="black" stroke-width="12" y1="440" x1="860" y2="440" x2="924"></line>
+                <line id="ffg_truck_line_{PLAYER_ID}_truck4_6" class="ffg_truck_line ffg_hidden" fill="transparent" stroke="black" stroke-width="12" x1="940" y1="440" x2="1010" y2="455"></line>
+                <line id="ffg_truck_line_{PLAYER_ID}_truck4_7" class="ffg_truck_line ffg_hidden" fill="transparent" stroke="black" stroke-width="12" x1="1030" y1="460" x2="1120" y2="425"></line>
+            </svg>
         </div>
     </div>
     <!-- END ffg_playerBoard -->

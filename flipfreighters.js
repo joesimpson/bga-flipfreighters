@@ -145,6 +145,8 @@ function (dojo, declare) {
                 dojo.query(".ffg_button_card_suit_modifier").connect( 'onclick', this, 'onClickChangeSuit' );
             } 
             
+            this.drawTruckLines();
+            
             // Setup game notifications to handle (see "setupNotifications" method below)
             this.setupNotifications();
 
@@ -842,6 +844,7 @@ function (dojo, declare) {
                 dojo.removeClass(posDivId,"ffg_not_drawn_pos ffg_not_confirmed_pos ffg_selectable") ;
                 dojo.addClass(posDivId,cssPos ) ;
                 this.animateMovePosition(posDivId);
+                dojo.query("#ffg_truck_line_"+player_id+"_"+posId).forEach((a) => { dojo.removeClass(a,"ffg_hidden"); a.classList.remove("ffg_hidden"); }  ); //Dojo cannot modify class in svg?
                 
                 if( k== position){
                     let truckIconDivId = posDivId + "_icon";
@@ -867,6 +870,36 @@ function (dojo, declare) {
                 dojo.fadeIn( { node: divId  } )
             ] );
             anim.play();
+        },
+         
+        drawTruckLines: function(){
+            console.log( "drawTruckLines ... ");
+            //Hide all
+            dojo.query(".ffg_truck_line").forEach((a) => {
+                dojo.addClass(a,"ffg_hidden"); 
+                a.classList.add("ffg_hidden"); 
+            });
+            
+            //Show not_confirmed ones
+            dojo.query(".ffg_truck_pos.ffg_not_confirmed_pos").forEach((i) => { 
+                let posId = i.getAttribute("data_truck")+ "_"+i.getAttribute("data_position");
+                let player = i.getAttribute("data_player");
+                this.drawTruckLine(player,posId);
+            });
+            
+            //Show confirmed ones
+            dojo.query(".ffg_truck_pos.ffg_confirmed_pos").forEach((i) => { 
+                let posId = i.getAttribute("data_truck")+ "_"+i.getAttribute("data_position");
+                let player = i.getAttribute("data_player");
+                this.drawTruckLine(player,posId);
+            });
+        },
+        drawTruckLine: function(player_id, posId){
+            console.log( "drawTruckLine ... ",player_id, posId);
+            dojo.query("#ffg_truck_line_"+player_id+"_"+posId).forEach((a) => {
+                dojo.removeClass(a,"ffg_hidden"); 
+                a.classList.remove("ffg_hidden"); 
+            });
         },
         
         unselectCard : function()
@@ -1830,13 +1863,25 @@ function (dojo, declare) {
             playerContainers.forEach( dojo.hitch(this, "resetContainer"));
             
             //Clean truck positions :
-            dojo.query(".ffg_truck_pos.ffg_not_confirmed_pos[data_player='"+this.player_id+"']").addClass("ffg_not_drawn_pos").removeClass("ffg_not_confirmed_pos");
+            dojo.query(".ffg_truck_pos.ffg_not_confirmed_pos[data_player='"+this.player_id+"']").forEach((i) => { 
+                dojo.addClass(i,"ffg_not_drawn_pos"); 
+                dojo.removeClass(i,"ffg_not_confirmed_pos");
+                    
+                //Clean lines between positions
+                let posId = i.getAttribute("data_truck")+ "_"+i.getAttribute("data_position");
+                dojo.query("#ffg_truck_line_"+this.player_id+"_"+posId).forEach((a) => {
+                    dojo.addClass(a,"ffg_hidden"); 
+                    a.classList.add("ffg_hidden"); 
+                    });
+                });
+            
             dojo.query(".ffg_truck[data_player='"+this.player_id+"']:not([data_confirmed_state='"+this.constants.STATE_MOVE_DELIVERED_CONFIRMED+"']:not([data_confirmed_state='"+this.constants.STATE_MOVE_DELIVERED_TO_CONFIRM+"'])").forEach( (e) => { 
                 dojo.attr(e,"data_not_confirmed_state", ""); 
                 dojo.attr(e,"data_not_confirmed_position","");
                 dojo.attr(e,"data_score","0");
                 }
             );
+            
             //Clean trucks scores
             dojo.query(".ffg_truck[data_player='"+this.player_id+"'][data_score='0'] .ffg_score_number").forEach( (e) => { 
                 e.innerHTML = "0";
