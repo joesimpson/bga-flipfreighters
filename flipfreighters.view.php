@@ -281,6 +281,8 @@ class view_flipfreighters_flipfreighters extends game_view
                 //Never consider a negative modifier on Jokers
                 $modifier = max(0,$modifier); 
                 $amount = $modifier + $card_value;
+                //Don't consider joker suit as modified
+                $cardsSuitWithOvertime[$card_id] = $card['type'];
             }
             $classes ="";
             if($card_id == 0){
