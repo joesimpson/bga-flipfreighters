@@ -160,6 +160,11 @@ function (dojo, declare) {
                     console.log("ffg override adaptStatusBar..."); 
                     if (dojo.hasClass('page-title', 'fixed-page-title')) {
                         dojo.query("#ffg_game_upper").addClass("ffg_fixed_page_title");
+                        /* For a small screen, it is ok if we click the BGA zoom '+' icon
+                        if(this.selectedCargoContainer!=null){
+                            //ie. if we have buttons to select an amount
+                            dojo.style('page-title', 'width', 'auto');
+                        }*/
                     }
                     else {
                         dojo.query("#ffg_game_upper").removeClass("ffg_fixed_page_title");
@@ -252,6 +257,12 @@ function (dojo, declare) {
                 {
 
                 case 'playerTurn':
+                    for(let k=1;k<= this.constants.MAX_LOAD;k++){
+                        this.addActionButton('ffg_button_amount_'+k, (k), 'onClickCargoAmount');
+                        //HIDE it until needed :
+                        dojo.query("#ffg_button_amount_"+k).removeClass("ffg_selectable").addClass("ffg_no_display disabled");
+                    }
+                    
                     this.addActionButton( 'ffg_button_endturn', _('End turn'), 'onEndTurn' ); 
                     this.addActionButton( 'ffg_button_cancelturn', _('Restart turn'), 'onCancelTurn',null, false, 'red' );
                     break;
@@ -922,10 +933,14 @@ function (dojo, declare) {
             
             dojo.query("#ffg_cargo_amount_loading").removeClass("ffg_no_display");
             dojo.query(".ffg_cargo_amount").removeClass("ffg_selectable").addClass("ffg_no_display");
+            for(let k=1;k<= this.constants.MAX_LOAD;k++) dojo.query("#ffg_button_amount_"+k).removeClass("ffg_selectable").addClass("ffg_no_display disabled");
             
             for(let k=1; k<= amount; k++){
                 dojo.query("#ffg_cargo_amount_list_"+k).removeClass("ffg_no_display");
+                dojo.query("#ffg_button_amount_"+k).removeClass("ffg_no_display");
             }
+            //RECOMPUTE status bar length with buttons
+            //gameui.adaptStatusBar();
         
             let truck_id = $(div_id).getAttribute("data_truck");
             let truck_material = this.material.trucks_types[truck_id];
@@ -945,6 +960,8 @@ function (dojo, declare) {
             dojo.query(".ffg_cargo_to_fill").removeClass("ffg_cargo_to_fill");
             dojo.query("#ffg_cargo_amount_list").addClass("ffg_hidden");
             this.selectedCargoContainer = null;
+            
+            for(let k=1;k<= this.constants.MAX_LOAD;k++) dojo.query("#ffg_button_amount_"+k).removeClass("ffg_selectable").addClass("ffg_no_display");
         },
         
         resetContainer: function(containerDiv){
@@ -1427,6 +1444,24 @@ function (dojo, declare) {
             
             this.ajaxcallwrapper("loadTruck", {'cardId': this.selectedCard, 'containerId': this.selectedCargoContainer, 'amount': this.selectedAmount, 'suit': this.selectedSuit, });
         },
+        // SAME as previous method, but clicking on a button
+        onClickCargoAmount: function( evt )
+        {
+            console.log( 'onClickCargoAmount',evt )
+            // Preventing default browser reaction
+            dojo.stopEvent( evt );
+            
+            let div_id = evt.currentTarget.id;
+            this.selectedAmount = div_id.split("_").lastItem;
+            
+            if( ! dojo.hasClass( div_id, 'ffg_selectable' ) )
+            {
+                // This is not a possible action => the click does nothing
+                return ;
+            }
+            
+            this.ajaxcallwrapper("loadTruck", {'cardId': this.selectedCard, 'containerId': this.selectedCargoContainer, 'amount': this.selectedAmount, 'suit': this.selectedSuit, });
+        },
         
         onCloseCargoAmountSelection: function( evt )
         {
@@ -1698,6 +1733,7 @@ function (dojo, declare) {
             for ( let k in notif.args.possibles) {
                 let value = notif.args.possibles[k];
                 dojo.query("#ffg_cargo_amount_list_"+value).addClass("ffg_selectable");
+                dojo.query("#ffg_button_amount_"+value).removeClass("disabled").addClass("ffg_selectable");
             }
             
         },  

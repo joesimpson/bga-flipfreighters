@@ -69,7 +69,7 @@
 }
 
 .ffg_no_display{
-    display: none;
+    display: none !important;
 }
 
 #ffg_game_zone{
