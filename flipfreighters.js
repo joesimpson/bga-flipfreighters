@@ -50,6 +50,7 @@ function (dojo, declare) {
             
             this.counterDelivered={};
             this.overtimeSuitVariant = false;
+            this.selectedSuitCost = null;
             
             this.counterDiscardDeckSize = new ebg.counter();
             this.counterDiscardDeckSize.create("ffg_discard_pile_size");
@@ -958,6 +959,7 @@ function (dojo, declare) {
             this.selectedCard = null;
             this.selectedAmount = null;
             this.selectedSuit = null;
+            this.selectedSuitCost = null;
             this.selectedCargoContainer = null;
             dojo.query(".ffg_card").removeClass("ffg_selected") ;
             dojo.query(".ffg_card_wrapper").removeClass("ffg_selected") ;
@@ -1097,21 +1099,62 @@ function (dojo, declare) {
 
             let addClass ="";
             let delta = amount - card_value;
+            let innerHTML ="";
             if( delta>0 ){
-                cardModifier.innerHTML ="+";
+                innerHTML ="+";
                 addClass = "ffg_positive_value";
             } else if( delta<0 ) {
-                cardModifier.innerHTML ="";
+                innerHTML ="";
                 addClass = "ffg_negative_value";
             }
             else {
-                cardModifier.innerHTML = "";
+                innerHTML = "";
                 addClass = "ffg_empty_value";
             }
-            cardModifier.innerHTML = cardModifier.innerHTML +delta;
+            cardModifier.innerHTML = innerHTML +delta;
             dojo.addClass(cardModifier,addClass);
 
             return addClass;
+        },
+        
+        updateOvertimeHoursOnCurrentBoard: function(overtime_hours,addClass)
+        {
+            debug( "updateOvertimeHoursOnCurrentBoard()",overtime_hours,addClass);
+            dojo.query(".ffg_current_player .ffg_overtime").forEach( (item) =>{
+                dojo.removeClass(item,"ffg_empty_value ffg_positive_value ffg_negative_value"); 
+                if( parseInt(item.getAttribute("data_index"))<= overtime_hours ){
+                    dojo.addClass(item,addClass); 
+                } 
+                else { 
+                    dojo.addClass(item,"ffg_empty_value ");
+                }
+            });
+        },
+        increaseOvertimeHoursOnCurrentBoard: function(overtime_hours_delta)
+        {
+            debug( "increaseOvertimeHoursOnCurrentBoard()",overtime_hours_delta);
+            let cpt =0;
+            if(overtime_hours_delta>0){ 
+                //ADD overtime_hours_delta TOKEN 
+                for(let k=0; k<overtime_hours_delta;k++){
+                    let nextToken = dojo.query(".ffg_current_player .ffg_overtime:not(.ffg_negative_value):not(.ffg_positive_value)" )[0]; 
+                    if(nextToken !=undefined ){
+                        dojo.addClass(nextToken,"ffg_positive_value"); 
+                        cpt++;
+                    }
+                }
+            }
+            else if(overtime_hours_delta<0){
+                //or REMOVE overtime_hours_delta TOKEN 
+                for(let k=overtime_hours_delta; k<0;k++){
+                    let nextToken = dojo.query(".ffg_current_player .ffg_overtime.ffg_positive_value").lastItem; 
+                    if(nextToken !=undefined ){
+                        dojo.removeClass(nextToken,"ffg_positive_value"); 
+                        cpt++;
+                    }
+                }
+            }
+            return cpt;
         },
         
         setOvertimeHoursOnCard: function(divCard, set_val)
@@ -1161,21 +1204,11 @@ function (dojo, declare) {
                 }
             }
             
-            dojo.query(".ffg_current_player .ffg_overtime").forEach( (item) =>{
-                dojo.removeClass(item,"ffg_empty_value ffg_positive_value ffg_negative_value"); 
-                if( parseInt(item.getAttribute("data_index"))<= Math.abs(delta) ){
-                    dojo.addClass(item,addClass); 
-                } 
-                else { 
-                    dojo.addClass(item,"ffg_empty_value ");
-                }
-            });
+            this.updateOvertimeHoursOnCurrentBoard(Math.abs(delta),addClass);
+            this.increaseOvertimeHoursOnCurrentBoard(this.selectedSuitCost,"ffg_positive_value");
             
             //disable buttons and enable them again after receiving notif
-            dojo.query(".ffg_button_card_plus").removeClass("ffg_selectable");
-            dojo.query(".ffg_button_card_minus").removeClass("ffg_selectable");
-            dojo.query(".ffg_button_card_suit_modifier").removeClass("ffg_selectable");
-            dojo.query(".ffg_overtime.ffg_selectable").addClass("ffg_selectable_wait");
+            this.removeButtonsSelection();
             
             if(this.selectedAmount >0){
                 //CALL SERVER to refresh possible actions for this card ;
@@ -1191,7 +1224,15 @@ function (dojo, declare) {
             }
         },
         
+        removeButtonsSelection: function(){
+            debug("removeButtonsSelection");
+            dojo.query(".ffg_button_card_plus").removeClass("ffg_selectable");
+            dojo.query(".ffg_button_card_minus").removeClass("ffg_selectable");
+            dojo.query(".ffg_button_card_suit_modifier").removeClass("ffg_selectable");
+            dojo.query(".ffg_overtime.ffg_selectable").addClass("ffg_selectable_wait");
+        },
         resetButtonsSelection: function(){
+            debug("resetButtonsSelection");
             dojo.query(".ffg_button_card_plus").addClass("ffg_selectable");
             dojo.query(".ffg_button_card_minus").addClass("ffg_selectable");
             dojo.query(".ffg_button_card_suit_modifier").addClass("ffg_selectable");
@@ -1374,6 +1415,8 @@ function (dojo, declare) {
             let data_value= evt.currentTarget.getAttribute("data_value") ;
             let data_suit= evt.currentTarget.getAttribute("data_suit") ;
             let data_amount= evt.currentTarget.getAttribute("data_amount") ;
+            let card_row = div_id.split("_").lastItem;
+            let suit_reset = dojo.query("#ffg_card_wrapper_"+card_row+" .ffg_button_card_suit_reset")[0].getAttribute("data_suit"); 
             
             if(this.selectedCard == card_id ){
                 //IF ALREADY DISPLAYED , hide
@@ -1390,6 +1433,7 @@ function (dojo, declare) {
             this.selectedCard = card_id;
             this.selectedAmount = data_amount;
             this.selectedSuit = data_suit;
+            this.selectedSuitCost = (suit_reset !=data_suit ) ? 1 : null;
             this.displayOvertimeHoursOnCard();
             
             this.displayPossibleLoads( card_id);
@@ -1407,7 +1451,7 @@ function (dojo, declare) {
             }
             
             let delta_value = parseInt(dojo.query(".ffg_card.ffg_selected .ffg_cardModifier")[0].getAttribute("data_value") ) ;
-            if(Math.abs(delta_value +1) > this.counterOvertime[this.player_id].current_value ){
+            if(Math.abs(delta_value +1) + this.selectedSuitCost > this.counterOvertime[this.player_id].current_value ){
                 //We cannot use more tokens
                 return;
             }
@@ -1426,7 +1470,7 @@ function (dojo, declare) {
             }
             
             let delta_value = parseInt(dojo.query(".ffg_card.ffg_selected .ffg_cardModifier")[0].getAttribute("data_value") ) ;
-            if( Math.abs(delta_value - 1) > this.counterOvertime[this.player_id].current_value ){
+            if( Math.abs(delta_value - 1) + this.selectedSuitCost > this.counterOvertime[this.player_id].current_value ){
                 //We cannot use more tokens
                 return;
             }
@@ -1452,19 +1496,38 @@ function (dojo, declare) {
             if( ! dojo.hasClass( div_id, 'ffg_selectable' ) || this.selectedSuit!=null && this.selectedSuit == target_suit) {
                 return ;
             }
+            let suit_reset = dojo.query(".ffg_card_wrapper.ffg_selected .ffg_button_card_suit_reset")[0].getAttribute("data_suit"); 
+            let delta_value = parseInt(dojo.query(".ffg_card.ffg_selected .ffg_cardModifier")[0].getAttribute("data_value") ) ;
+            if(target_suit != suit_reset && this.selectedSuitCost!=1 && Math.abs(delta_value) + this.selectedSuitCost >= this.counterOvertime[this.player_id].current_value ){
+                //We cannot use more tokens
+                return;
+            }
+            
             //ACTION : USE 1 token , as we do when click +1 BUT update the suit of the card instead of amount
             let selectedCardDiv = dojo.query(".ffg_card.ffg_selected")[0] ;
             let card_id = parseInt(selectedCardDiv.getAttribute("data_id") ) ;
             this.selectedSuit = target_suit;
             selectedCardDiv.setAttribute("data_suit",this.selectedSuit);//UPDATE UI of the card
-                 
-            //TODO JSA ? add a 'global class' variable to keep track of overtime used on each button : only 1 overtime is needed when we change the suit of the card, but it adds to the ones played on the same card to modify amount
             
             //disable buttons and enable them again after receiving notif
-            dojo.query(".ffg_button_card_plus").removeClass("ffg_selectable");
-            dojo.query(".ffg_button_card_minus").removeClass("ffg_selectable");
-            dojo.query(".ffg_button_card_suit_modifier").removeClass("ffg_selectable");
-            dojo.query(".ffg_overtime.ffg_selectable").addClass("ffg_selectable_wait");
+            this.removeButtonsSelection();
+            
+            //TODO JSA ? add a 'global class' variable to keep track of overtime used on each button : only 1 overtime is needed when we change the suit of the card, but it adds to the ones played on the same card to modify amount
+            let addClass = "ffg_positive_value";
+            if(this.selectedSuit != suit_reset ){
+                if( this.selectedSuitCost == null || this.selectedSuitCost ==0) {
+                    //IF no suit has been selected yet
+                    this.increaseOvertimeHoursOnCurrentBoard(1,addClass);
+                }
+                this.selectedSuitCost = 1;
+            }
+            else {
+                if( this.selectedSuitCost != null) {
+                    //IF another suit has been selected before
+                    this.increaseOvertimeHoursOnCurrentBoard(-1,addClass);
+                }
+                this.selectedSuitCost = 0;
+            }
             
             //CALL SERVER to refresh possible actions for this card ;
             this.ajaxcallwrapper("getPossibleActionsForCard", {'cardId': card_id,'amount': this.selectedAmount, 'suit': this.selectedSuit,});
@@ -1626,15 +1689,8 @@ function (dojo, declare) {
                 eltClass = "ffg_empty_value";
             } 
             //ALL Tokens on left receive the same state
-            dojo.query(".ffg_current_player .ffg_overtime").forEach( (item) =>{
-                dojo.removeClass(item,"ffg_empty_value ffg_positive_value ffg_negative_value"); 
-                if( parseInt(item.getAttribute("data_index"))<= data_amount ){
-                    dojo.addClass(item,eltClass); 
-                } 
-                else { 
-                    dojo.addClass(item,"ffg_empty_value ");
-                }
-            });
+            this.updateOvertimeHoursOnCurrentBoard(data_amount,eltClass);
+            this.increaseOvertimeHoursOnCurrentBoard(this.selectedSuitCost,"ffg_positive_value");
             
             this.selectedAmount = null;
             this.selectedOvertimeToken = div_id;
