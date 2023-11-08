@@ -30,8 +30,8 @@ function (dojo, declare) {
             debug('flipfreighters constructor');
               
             // Here, you can init the global variables of your user interface
-            // Example:
-            // this.myGlobalValue = 0;
+            //Some bugs remains with this functionality, and according to the game designer, it is not necessary : TODO JSA CLEAN this functionality code
+            this.enable_multi_overtime_click = false;
             
             this.dayCards = [];
             this.possibleCards = [];
@@ -589,7 +589,7 @@ function (dojo, declare) {
             this.gamedatas.players[player_id].availableOvertime = nb;
             
             let selectableClass = "";
-            if(player_id == this.player_id){//CURRENT PLAYER
+            if(player_id == this.player_id && this.enable_multi_overtime_click){//CURRENT PLAYER
                 selectableClass = "ffg_selectable";
             }
             else {
