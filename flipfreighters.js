@@ -15,6 +15,10 @@
  *
  */
 
+//debug() LOG MANAGEMENT, as seen on tisaac's BGA Games
+var isDebug = window.location.host == 'studio.boardgamearena.com' || window.location.hash.indexOf('debug') > -1;
+var debug = isDebug ? console.info.bind(window.console) : function () {};
+
 define([
     "dojo","dojo/_base/declare",
     "ebg/core/gamegui",
@@ -23,7 +27,7 @@ define([
 function (dojo, declare) {
     return declare("bgagame.flipfreighters", ebg.core.gamegui, {
         constructor: function(){
-            console.log('flipfreighters constructor');
+            debug('flipfreighters constructor');
               
             // Here, you can init the global variables of your user interface
             // Example:
@@ -66,7 +70,7 @@ function (dojo, declare) {
         
         setup: function( gamedatas )
         {
-            console.log( "Starting game setup",gamedatas );
+            debug( "Starting game setup",gamedatas );
             
             this.constants  = gamedatas.constants;
             this.currentRound = gamedatas.round_number;
@@ -159,7 +163,7 @@ function (dojo, declare) {
                     //BGA 
                     _super.apply(this, arguments);
                     //Add :
-                    console.log("ffg override adaptStatusBar..."); 
+                    debug("ffg override adaptStatusBar..."); 
                     if (dojo.hasClass('page-title', 'fixed-page-title')) {
                         dojo.query("#ffg_game_upper").addClass("ffg_fixed_page_title");
                         /* For a small screen, it is ok if we click the BGA zoom '+' icon
@@ -175,7 +179,7 @@ function (dojo, declare) {
 
             })(gameui.adaptStatusBar);
             
-            console.log( "Ending game setup" );
+            debug( "Ending game setup" );
         },
        
 
@@ -187,7 +191,7 @@ function (dojo, declare) {
         //
         onEnteringState: function( stateName, args )
         {
-            console.log( 'Entering state: '+stateName,args.args );
+            debug( 'Entering state: '+stateName,args.args );
             
             switch( stateName )
             {
@@ -243,7 +247,7 @@ function (dojo, declare) {
         //
         onLeavingState: function( stateName )
         {
-            console.log( 'Leaving state: '+stateName );
+            debug( 'Leaving state: '+stateName );
             
             switch( stateName )
             {
@@ -257,7 +261,7 @@ function (dojo, declare) {
         //        
         onUpdateActionButtons: function( stateName, args )
         {
-            console.log( 'onUpdateActionButtons: '+stateName );
+            debug( 'onUpdateActionButtons: '+stateName );
                       
             if( this.isCurrentPlayerActive() )
             {            
@@ -315,7 +319,7 @@ function (dojo, declare) {
         Init board avatar with the same as displayed by BGA player panel,
         */
         initPayerAvatar: function( player_id) {
-            console.log( "initPayerAvatar ... " ,player_id);
+            debug( "initPayerAvatar ... " ,player_id);
             
             /*
             let bgaAvatar = dojo.query("#overall_player_board_"+player_id+" img#avatar_"+player_id) [0];
@@ -350,7 +354,7 @@ function (dojo, declare) {
         */
         updatePlayerDatas: function( player_id, playerDatas )
         {
-            console.log( 'updatePlayerDatas',player_id, playerDatas );
+            debug( 'updatePlayerDatas',player_id, playerDatas );
             this.gamedatas.players[player_id].score = playerDatas.score;
             this.gamedatas.players[player_id].score_aux = playerDatas.score_aux;
             this.gamedatas.players[player_id].score_week1 = playerDatas.score_week1;
@@ -361,16 +365,16 @@ function (dojo, declare) {
         },
         
         initTooltips: function (ffg_tooltips){
-            console.log( "initTooltips ... " ,ffg_tooltips);
+            debug( "initTooltips ... " ,ffg_tooltips);
             
             for(let k in ffg_tooltips.trucks) {
                 let message = ffg_tooltips.trucks[k];
-                console.log( "initTooltip trucks... " ,k, message);
+                debug( "initTooltip trucks... " ,k, message);
                 this.addTooltipToClass( "ffg_truck_symbol_"+k, message,'' );
             }
             for(let k in ffg_tooltips.delivery_score) {
                 let message = ffg_tooltips.delivery_score[k];
-                console.log( "initTooltip delivery_score... " ,k, message);
+                debug( "initTooltip delivery_score... " ,k, message);
                 this.addTooltipToClass( "ffg_score_"+k, message,'' );
             }
             
@@ -568,7 +572,7 @@ function (dojo, declare) {
         },
         updatePlayersOvertimeHours: function(players)
         {
-            console.log( "updatePlayersOvertimeHours" ,players); 
+            debug( "updatePlayersOvertimeHours" ,players); 
             //RESET to 0 in case some player is not in the array
             for ( let i in this.counterOvertime) {
                 this.counterOvertime[i].toValue(0);
@@ -580,7 +584,7 @@ function (dojo, declare) {
         },
         updatePlayerOvertimeHours: function(player_id, nb)
         {
-            console.log( "updatePlayerOvertimeHours" ,player_id, nb); 
+            debug( "updatePlayerOvertimeHours" ,player_id, nb); 
             this.counterOvertime[player_id].toValue(nb);
             this.gamedatas.players[player_id].availableOvertime = nb;
             
@@ -603,12 +607,12 @@ function (dojo, declare) {
         
         playCardOnTable: function( row,card_id, color, value )
         {            
-            console.log( "playCardOnTable ... " ,row,card_id, color, value);
+            debug( "playCardOnTable ... " ,row,card_id, color, value);
             
             let divId = "ffg_card_"+row;
             let div = dojo.query("#"+divId)[0];
             if(div == undefined) {
-                console.log( "playCardOnTable ...ERROR undefined row", row );
+                debug( "playCardOnTable ...ERROR undefined row", row );
                 return;
             }
             //UPDATE div datas :
@@ -649,7 +653,7 @@ function (dojo, declare) {
             this.animateDrawCard(div,row);
         },
         animateDrawCard: function(cardDiv,row){
-            console.log( "animateDrawCard ... " ,cardDiv,row);
+            debug( "animateDrawCard ... " ,cardDiv,row);
             let divId = cardDiv.id;
             //PLACE CARD COPY to avoid destroying / moving the card div
             let origin_copy = cardDiv.cloneNode();
@@ -679,7 +683,7 @@ function (dojo, declare) {
             anim.play(); 
         }, 
         animateDiscardCard: function(cardDiv,row){
-            console.log( "animateDiscardCard ... " ,cardDiv,row);
+            debug( "animateDiscardCard ... " ,cardDiv,row);
             if(! this.gamedatas.showDiscardVariant) return;
             
             let divId = cardDiv.id;
@@ -709,7 +713,7 @@ function (dojo, declare) {
         },
         
         updateDiscardPile: function(list){
-            console.log( "updateDiscardPile",list); 
+            debug( "updateDiscardPile",list); 
             if(! this.gamedatas.showDiscardVariant || list ==null){
                 return;
             }
@@ -718,20 +722,20 @@ function (dojo, declare) {
             dojo.removeClass("ffg_discard_pile_wrapper","ffg_no_display");
         },
         increaseDiscardPile: function(delta){
-            console.log( "increaseDiscardPile",delta); 
+            debug( "increaseDiscardPile",delta); 
             if(! this.gamedatas.showDiscardVariant || delta ==null){
                 return;
             }
             this.counterDiscardDeckSize.incValue(delta);
         },
         updateCardsUsage: function( ){
-            console.log( "updateCardsUsage"); 
+            debug( "updateCardsUsage"); 
             for(let row in this.dayCards){
                 this.updateCardUsage(row);
             }
         },
         updateCardUsage: function( row ){
-            console.log( "updateCardUsage",row); 
+            debug( "updateCardUsage",row); 
             let card = this.dayCards[row];
             let divUsage = dojo.query("#ffg_card_usage_"+row)[0];
             divUsage.innerHTML = card.usedPower;
@@ -743,7 +747,7 @@ function (dojo, declare) {
         
         displayPlayerPanel: function( player_id,player)
         {
-            console.log( "displayPlayerPanel" ,player_id,player); 
+            debug( "displayPlayerPanel" ,player_id,player); 
         
             let player_board_div = $('player_board_'+player_id);
             if(!player_board_div){
@@ -775,7 +779,7 @@ function (dojo, declare) {
         },
         displayPossibleLoads: function( card_id )
         {            
-            console.log( "displayPossibleLoads ... " ,card_id, this.possibleCards);
+            debug( "displayPossibleLoads ... " ,card_id, this.possibleCards);
             
             dojo.query(".ffg_container").removeClass("ffg_selectable") ;
              
@@ -784,7 +788,7 @@ function (dojo, declare) {
             }
             
             if(this.possibleCards [ card_id ] == undefined) {
-                console.log( "displayPossibleLoads ... Not possible card :", card_id );
+                debug( "displayPossibleLoads ... Not possible card :", card_id );
                 return ;
             }
             
@@ -798,7 +802,7 @@ function (dojo, declare) {
         },
         displayPossibleMoves: function( card_id )
         {            
-            console.log( "displayPossibleMoves ... " ,card_id, this.possibleCards);
+            debug( "displayPossibleMoves ... " ,card_id, this.possibleCards);
             
             dojo.query(".ffg_truck_pos").removeClass("ffg_selectable") ;
              
@@ -807,7 +811,7 @@ function (dojo, declare) {
             }
             
             if(this.possibleCards [ card_id ] == undefined) {
-                console.log( "displayPossibleMoves ... Not possible card :", card_id );
+                debug( "displayPossibleMoves ... Not possible card :", card_id );
                 return ;
             }
             
@@ -821,12 +825,12 @@ function (dojo, declare) {
         
         updateLoad: function(player_id,containerId,amount,state,card_id,overtime)
         {
-            console.log( "updateLoad ... ",player_id,containerId,amount,state,card_id,overtime);
+            debug( "updateLoad ... ",player_id,containerId,amount,state,card_id,overtime);
             
             let containerDivId = "ffg_container_"+player_id+"_"+containerId;
             let div = dojo.query("#"+containerDivId)[0];
             if(div == undefined) {
-                console.log( "updateLoad ...ERROR not found truck container", containerDivId );
+                debug( "updateLoad ...ERROR not found truck container", containerDivId );
                 return;
             }
             //UPDATE div datas :
@@ -843,12 +847,12 @@ function (dojo, declare) {
         },
         updateMove: function(player_id,truck_id,position,fromPosition,confirmed_position,confirmed_state,not_confirmed_state,not_confirmed_position,truckScore,cssPos)
         {
-            console.log( "updateMove ... ",player_id,truck_id,position,fromPosition,confirmed_position,confirmed_state,not_confirmed_state,not_confirmed_position,truckScore,cssPos);
+            debug( "updateMove ... ",player_id,truck_id,position,fromPosition,confirmed_position,confirmed_state,not_confirmed_state,not_confirmed_position,truckScore,cssPos);
             
             let truckDivId = "ffg_truck_"+player_id+"_"+truck_id;
             let truckDiv = dojo.query("#"+truckDivId)[0];
             if(truckDiv == undefined) {
-                console.log( "updateMove ...ERROR not found truck", truckDivId );
+                debug( "updateMove ...ERROR not found truck", truckDivId );
                 return;
             }
             
@@ -856,7 +860,7 @@ function (dojo, declare) {
             let posDivId = "ffg_truck_pos_"+player_id+"_"+posId;
             let div = dojo.query("#"+posDivId)[0];
             if(div == undefined) {
-                console.log( "updateMove ...ERROR not found truck position", posDivId );
+                debug( "updateMove ...ERROR not found truck position", posDivId );
                 return;
             }
             //UPDATE truck div datas :
@@ -899,11 +903,11 @@ function (dojo, declare) {
         },
         
         animateCargoPosition: function(divId){
-            console.log( "animateCargoPosition ... ",divId);
+            debug( "animateCargoPosition ... ",divId);
             this.animationBlink2Times(divId);
         },
         animateMovePosition: function(divId){
-            console.log( "animateMovePosition ... ",divId);
+            debug( "animateMovePosition ... ",divId);
             this.animationBlink2Times(divId);
         },
         animationBlink2Times: function(divId){
@@ -918,7 +922,7 @@ function (dojo, declare) {
         },
          
         drawTruckLines: function(){
-            console.log( "drawTruckLines ... ");
+            debug( "drawTruckLines ... ");
             //Hide all
             dojo.query(".ffg_truck_line").forEach((a) => {
                 dojo.addClass(a,"ffg_hidden"); 
@@ -940,7 +944,7 @@ function (dojo, declare) {
             });
         },
         drawTruckLine: function(player_id, posId){
-            console.log( "drawTruckLine ... ",player_id, posId);
+            debug( "drawTruckLine ... ",player_id, posId);
             dojo.query("#ffg_truck_line_"+player_id+"_"+posId).forEach((a) => {
                 dojo.removeClass(a,"ffg_hidden"); 
                 a.classList.remove("ffg_hidden"); 
@@ -949,7 +953,7 @@ function (dojo, declare) {
         
         unselectCard : function()
         {
-            console.log( "unselectCard ... ");
+            debug( "unselectCard ... ");
             
             this.selectedCard = null;
             this.selectedAmount = null;
@@ -969,7 +973,7 @@ function (dojo, declare) {
         */
         existPossibleCard: function()
         {
-            console.log( "existPossibleCard()", this.possibleCards);
+            debug( "existPossibleCard()", this.possibleCards);
             
             for(let i in this.possibleCards){
                 if(this.isPossibleCard(i)) return true;
@@ -980,7 +984,7 @@ function (dojo, declare) {
         
         isPossibleCard: function(cardIndex)
         {
-            console.log( "isPossibleCard()", cardIndex);
+            debug( "isPossibleCard()", cardIndex);
          
             let pcard = this.possibleCards[cardIndex];
             if( pcard["LOAD"].length > 0 ) return true;
@@ -991,7 +995,7 @@ function (dojo, declare) {
         
         updatePossibleCards: function()
         {
-            console.log( "updatePossibleCards()");
+            debug( "updatePossibleCards()");
          
             dojo.query(".ffg_card").removeClass("ffg_selectable");
             
@@ -1002,7 +1006,7 @@ function (dojo, declare) {
             }
         },
         updateCargoAmountList: function(div_id,container_id,amount){
-            console.log( "updateCargoAmountList()", div_id,container_id,amount);
+            debug( "updateCargoAmountList()", div_id,container_id,amount);
             
             dojo.query("#ffg_cargo_amount_list").removeClass("ffg_hidden");
             dojo.query("#"+div_id).addClass("ffg_cargo_to_fill");
@@ -1034,7 +1038,7 @@ function (dojo, declare) {
             }
         },
         closeCargoAmountList: function(){
-            console.log( "closeCargoAmountList()");
+            debug( "closeCargoAmountList()");
             dojo.query(".ffg_cargo_to_fill").removeClass("ffg_cargo_to_fill");
             dojo.query("#ffg_cargo_amount_list").addClass("ffg_hidden");
             this.selectedCargoContainer = null;
@@ -1043,7 +1047,7 @@ function (dojo, declare) {
         },
         
         resetContainer: function(containerDiv){
-            console.log( "resetContainer()",containerDiv);
+            debug( "resetContainer()",containerDiv);
             containerDiv.setAttribute("data_amount", "");
             containerDiv.setAttribute("data_state","0") ;
             containerDiv.setAttribute("data_card","") ;
@@ -1054,7 +1058,7 @@ function (dojo, declare) {
         
         displayOvertimeHoursOnCard: function()
         {
-            console.log( "displayOvertimeHoursOnCard()");
+            debug( "displayOvertimeHoursOnCard()");
              
             dojo.query(".ffg_card.ffg_selected .ffg_cardModifier").removeClass("ffg_empty_value ffg_positive_value ffg_negative_value");
             
@@ -1076,7 +1080,7 @@ function (dojo, declare) {
         },
         
         resetOvertimeHourOnCard: function(cardDiv){
-            console.log( "resetOvertimeHourOnCard()",cardDiv);
+            debug( "resetOvertimeHourOnCard()",cardDiv);
             let cardModifier =  dojo.query("#"+cardDiv.id+" .ffg_cardModifier")[0];
             let amount = parseInt(cardDiv.getAttribute("data_amount") ) ;
             let card_value = parseInt(cardDiv.getAttribute("data_value") ) ;
@@ -1086,7 +1090,7 @@ function (dojo, declare) {
             this.updateOvertimeHourOnCard(cardDiv);
         },
         updateOvertimeHourOnCard: function(cardDiv){
-            console.log( "updateOvertimeHourOnCard()",cardDiv);
+            debug( "updateOvertimeHourOnCard()",cardDiv);
             let cardModifier =  dojo.query("#"+cardDiv.id+" .ffg_cardModifier")[0];
             let amount = parseInt(cardDiv.getAttribute("data_amount") ) ;
             let card_value = parseInt(cardDiv.getAttribute("data_value") ) ;
@@ -1112,13 +1116,13 @@ function (dojo, declare) {
         
         setOvertimeHoursOnCard: function(divCard, set_val)
         {
-            console.log( "setOvertimeHoursOnCard()",divCard.id, null, set_val);
+            debug( "setOvertimeHoursOnCard()",divCard.id, null, set_val);
             this.increaseOvertimeHoursOnCard(divCard,null,set_val);
         },
         
         increaseOvertimeHoursOnCard: function(divCard, inc_val, set_val = undefined)
         {
-            console.log( "increaseOvertimeHoursOnCard()",divCard.id,inc_val,set_val);
+            debug( "increaseOvertimeHoursOnCard()",divCard.id,inc_val,set_val);
              
             dojo.query(".ffg_card.ffg_selected .ffg_cardModifier").removeClass("ffg_empty_value ffg_positive_value ffg_negative_value");
                         
@@ -1195,7 +1199,7 @@ function (dojo, declare) {
         },
         
         displayTruckScore: function(player_id, truckScore, truckDivId){
-            console.log("displayTruckScore",player_id, truckScore, truckDivId);
+            debug("displayTruckScore",player_id, truckScore, truckDivId);
             
             let numberDivs = dojo.query("#"+truckDivId+" .ffg_score_number");
             
@@ -1206,7 +1210,7 @@ function (dojo, declare) {
         },
         
         displayPlayerScores: function(playerDatas){
-            console.log("displayPlayerScores",playerDatas);
+            debug("displayPlayerScores",playerDatas);
             
             let k=1;
             while( k<= this.currentRound ){
@@ -1220,7 +1224,7 @@ function (dojo, declare) {
         },
         
         updatePlayerWeekScore: function(player_id, round,weekscore) {
-            console.log("updatePlayerWeekScore",player_id, weekscore , round);
+            debug("updatePlayerWeekScore",player_id, weekscore , round);
             
             let numberDiv = dojo.query("#ffg_week_score_"+player_id+"_"+round+" .ffg_score_number")[0];
             numberDiv.innerHTML = weekscore;
@@ -1228,7 +1232,7 @@ function (dojo, declare) {
             this.gamedatas.players[player_id]['score_week'+round] = weekscore;
         },
         increasePlayerWeekScore: function(player_id, round,delta_score) {
-            console.log("increasePlayerWeekScore",player_id, round,delta_score);
+            debug("increasePlayerWeekScore",player_id, round,delta_score);
             
             let numberDiv = dojo.query("#ffg_week_score_"+player_id+"_"+round+" .ffg_score_number")[0];
             let current_value = parseInt(numberDiv.innerHTML);
@@ -1240,14 +1244,14 @@ function (dojo, declare) {
         },
         
         updatePlayerTotalScore: function(player_id, score) {
-            console.log("updatePlayerTotalScore",player_id, score);
+            debug("updatePlayerTotalScore",player_id, score);
             
             let numberDiv = dojo.query("#ffg_total_score_"+player_id+" .ffg_score_number")[0];
             numberDiv.innerHTML = score;
         },
         
         increasePlayerTotalScore: function(player_id, delta_score) {
-            console.log("increasePlayerTotalScore",player_id, delta_score);
+            debug("increasePlayerTotalScore",player_id, delta_score);
             
             let numberDiv = dojo.query("#ffg_total_score_"+player_id+" .ffg_score_number")[0];
             let value = parseInt(numberDiv.innerHTML) + parseInt(delta_score);
@@ -1258,7 +1262,7 @@ function (dojo, declare) {
         Update BGA player panel score
         */
         updatePlayerScore: function(player_id,score) {
-            console.log("updatePlayerScore",player_id, score);
+            debug("updatePlayerScore",player_id, score);
             this.scoreCtrl[ player_id ].toValue( score );
             
             this.updatePlayerTotalScore(player_id, score);
@@ -1271,7 +1275,7 @@ function (dojo, declare) {
         (Useful when we don't want to compute all the score again)
         */
         increasePlayerScore: function(player_id,delta_score) {
-            console.log("increasePlayerScore",player_id, delta_score);
+            debug("increasePlayerScore",player_id, delta_score);
             this.scoreCtrl[ player_id ].incValue( delta_score );
             
             let value = this.scoreCtrl[ player_id ].getValue();
@@ -1286,7 +1290,7 @@ function (dojo, declare) {
         */
         updatePlayersScoreAux: function(players)
         {
-            console.log( "updatePlayersScoreAux" ,players); 
+            debug( "updatePlayersScoreAux" ,players); 
             //RESET to 0 in case some player is not in the array
             for ( let i in this.counterDelivered) {
                 this.counterDelivered[i].toValue(0);
@@ -1297,20 +1301,20 @@ function (dojo, declare) {
             }
         },
         updatePlayerScoreAux: function(player_id,score) {
-            console.log("updatePlayerScoreAux",player_id, score);
+            debug("updatePlayerScoreAux",player_id, score);
             this.counterDelivered[player_id].toValue( score );
             
             this.gamedatas.players[player_id].score_aux = score;
         },
         increasePlayerScoreAux: function(player_id,delta_score) {
-            console.log("increasePlayerScoreAux",player_id, delta_score);
+            debug("increasePlayerScoreAux",player_id, delta_score);
             this.counterDelivered[player_id].incValue( delta_score );
             
             this.gamedatas.players[player_id].score_aux = this.counterDelivered[player_id].getValue();
         },
         
         updateRoundLabel: function() {
-            console.log("updateRoundLabel");
+            debug("updateRoundLabel");
             
             let translated = dojo.string.substitute( _("Week ${x}/${totalX} - Day ${y}/${totalY}"), {
                 x: this.currentRound,
@@ -1340,7 +1344,7 @@ function (dojo, declare) {
         */
         onBoardSliderChange: function( evt )
         {
-            console.log( 'onBoardSliderChange',evt.currentTarget.value );
+            debug( 'onBoardSliderChange',evt.currentTarget.value );
             document.querySelector(":root").style.setProperty("--ffg_board_display_scale",evt.currentTarget.value /100);
         },        
         
@@ -1349,7 +1353,7 @@ function (dojo, declare) {
         */
         onSelectCard: function( evt )
         {
-            console.log( 'onSelectCard',evt );
+            debug( 'onSelectCard',evt );
             
             // Preventing default browser reaction
             dojo.stopEvent( evt );
@@ -1373,7 +1377,7 @@ function (dojo, declare) {
             
             if(this.selectedCard == card_id ){
                 //IF ALREADY DISPLAYED , hide
-                console.log("onSelectCard() => Hide :",card_id);
+                debug("onSelectCard() => Hide :",card_id);
                 this.unselectCard();
                 this.displayPossibleLoads( null);
                 this.displayPossibleMoves( null);
@@ -1394,7 +1398,7 @@ function (dojo, declare) {
         },     
         onClickCardPlus: function( evt )
         {
-            console.log( 'onClickCardPlus',evt );
+            debug( 'onClickCardPlus',evt );
             
             let div_id = evt.currentTarget.id;
             if(! dojo.hasClass( div_id, 'ffg_selectable' ) )
@@ -1413,7 +1417,7 @@ function (dojo, declare) {
         },
         onClickCardMinus: function( evt )
         {
-            console.log( 'onClickCardMinus',evt );
+            debug( 'onClickCardMinus',evt );
             
             let div_id = evt.currentTarget.id;
             if(! dojo.hasClass( div_id, 'ffg_selectable' ) )
@@ -1438,7 +1442,7 @@ function (dojo, declare) {
         
         onClickChangeSuit: function( evt )
         {
-            console.log( 'onClickChangeSuit',evt );
+            debug( 'onClickChangeSuit',evt );
             
             // Preventing default browser reaction
             dojo.stopEvent( evt );
@@ -1471,7 +1475,7 @@ function (dojo, declare) {
         */
         onSelectLoadTarget: function( evt )
         {
-            console.log( 'onSelectLoadTarget',evt );
+            debug( 'onSelectLoadTarget',evt );
             
             // Preventing default browser reaction
             dojo.stopEvent( evt );
@@ -1505,7 +1509,7 @@ function (dojo, declare) {
         
         onSelectCargoAmount: function( evt )
         {
-            console.log( 'onSelectCargoAmount',evt )
+            debug( 'onSelectCargoAmount',evt )
             // Preventing default browser reaction
             dojo.stopEvent( evt );
             
@@ -1525,7 +1529,7 @@ function (dojo, declare) {
         // SAME as previous method, but clicking on a button
         onClickCargoAmount: function( evt )
         {
-            console.log( 'onClickCargoAmount',evt )
+            debug( 'onClickCargoAmount',evt )
             // Preventing default browser reaction
             dojo.stopEvent( evt );
             
@@ -1543,7 +1547,7 @@ function (dojo, declare) {
         
         onCloseCargoAmountSelection: function( evt )
         {
-            console.log( 'onCloseCargoAmountSelection',evt )
+            debug( 'onCloseCargoAmountSelection',evt )
             // Preventing default browser reaction
             dojo.stopEvent( evt );
             
@@ -1555,7 +1559,7 @@ function (dojo, declare) {
         */
         onSelectTruckPos: function( evt )
         {
-            console.log( 'onSelectTruckPos',evt );
+            debug( 'onSelectTruckPos',evt );
             
             // Preventing default browser reaction
             dojo.stopEvent( evt );
@@ -1596,7 +1600,7 @@ function (dojo, declare) {
         
         onSelectOvertimeHour: function( evt )
         {
-            console.log( 'onSelectOvertimeHour',evt )
+            debug( 'onSelectOvertimeHour',evt )
             // Preventing default browser reaction
             dojo.stopEvent( evt );
             
@@ -1642,7 +1646,7 @@ function (dojo, declare) {
         
         onEndTurn: function( evt )
         {
-            console.log( 'onEndTurn',evt );
+            debug( 'onEndTurn',evt );
             
             // Preventing default browser reaction
             dojo.stopEvent( evt );
@@ -1659,7 +1663,7 @@ function (dojo, declare) {
         
         onCancelTurn: function( evt )
         {
-            console.log( 'onCancelTurn',evt );
+            debug( 'onCancelTurn',evt );
             
             // Preventing default browser reaction
             dojo.stopEvent( evt );
@@ -1674,7 +1678,7 @@ function (dojo, declare) {
         
         onClickShowScore: function( evt )
         {
-            console.log( 'onClickShowScore',evt );
+            debug( 'onClickShowScore',evt );
             
             // Preventing default browser reaction
             dojo.stopEvent( evt );
@@ -1688,7 +1692,7 @@ function (dojo, declare) {
         },
         onClickShowBoard: function( evt )
         {
-            console.log( 'onClickShowBoard',evt );
+            debug( 'onClickShowBoard',evt );
             
             // Preventing default browser reaction
             dojo.stopEvent( evt );
@@ -1703,7 +1707,7 @@ function (dojo, declare) {
         
         onClickSlideShowLeft: function( evt )
         {
-            console.log( 'onClickSlideShowLeft',evt );
+            debug( 'onClickSlideShowLeft',evt );
             
             // Preventing default browser reaction
             dojo.stopEvent( evt );
@@ -1718,7 +1722,7 @@ function (dojo, declare) {
         
         onClickSlideShowRight: function( evt )
         {
-            console.log( 'onClickSlideShowRight',evt );
+            debug( 'onClickSlideShowRight',evt );
             
             // Preventing default browser reaction
             dojo.stopEvent( evt );
@@ -1733,7 +1737,7 @@ function (dojo, declare) {
         
         onClickDiscardPile: function( evt )
         {
-            console.log( 'onClickDiscardPile',evt );
+            debug( 'onClickDiscardPile',evt );
             
             // Preventing default browser reaction
             dojo.stopEvent( evt );
@@ -1755,7 +1759,7 @@ function (dojo, declare) {
         */
         setupNotifications: function()
         {
-            console.log( 'notifications subscriptions setup' );
+            debug( 'notifications subscriptions setup' );
             
             // TODO: here, associate your game notifications with local methods
             
@@ -1787,7 +1791,7 @@ function (dojo, declare) {
         
         notif_newTurn: function( notif )
         {
-            console.log( 'notif_newTurn',notif );
+            debug( 'notif_newTurn',notif );
             
             this.updatePlayersOvertimeHours(notif.args.availableOvertimes);
             dojo.query(".ffg_card:not(.ffg_animation_copy)").forEach( dojo.hitch(this, "resetOvertimeHourOnCard"));
@@ -1797,7 +1801,7 @@ function (dojo, declare) {
         
         notif_possibleLoads: function( notif )
         {
-            console.log( 'notif_possibleLoads',notif );
+            debug( 'notif_possibleLoads',notif );
              
             dojo.query("#ffg_cargo_amount_loading").addClass("ffg_no_display");
             
@@ -1811,7 +1815,7 @@ function (dojo, declare) {
 
         notif_possibleCards: function( notif )
         {
-            console.log( 'notif_possibleCards',notif );
+            debug( 'notif_possibleCards',notif );
             
             let card_id = notif.args.cardId;
             if(card_id !=undefined){
@@ -1836,7 +1840,7 @@ function (dojo, declare) {
         },  
         notif_loadTruck: function( notif )
         {
-            console.log( 'notif_loadTruck',notif );
+            debug( 'notif_loadTruck',notif );
             
             let containerDivId = "ffg_container_"+this.player_id+"_"+notif.args.containerId;
             
@@ -1857,7 +1861,7 @@ function (dojo, declare) {
         
         notif_moveTruck: function( notif )
         {
-            console.log( 'notif_moveTruck',notif );
+            debug( 'notif_moveTruck',notif );
             
             this.updateMove(this.player_id, notif.args.truckId,notif.args.position, parseInt(notif.args.fromPosition) +1,notif.args.truckState.confirmed_position,notif.args.truckState.confirmed_state,notif.args.truckState.not_confirmed_state,notif.args.truckState.not_confirmed_position, notif.args.truckScore,"ffg_not_confirmed_pos");
             
@@ -1875,7 +1879,7 @@ function (dojo, declare) {
         
         notif_cancelTurnDatas: function( notif )
         {
-            console.log( 'notif_cancelTurnDatas',notif );
+            debug( 'notif_cancelTurnDatas',notif );
             
             this.updatePlayerOvertimeHours(this.player_id,notif.args.availableOvertime);
             dojo.query(".ffg_card").forEach( dojo.hitch(this, "resetOvertimeHourOnCard"));
@@ -1936,7 +1940,7 @@ function (dojo, declare) {
         
         notif_endTurnActions: function( notif )
         {
-            console.log( 'notif_endTurnActions',notif );
+            debug( 'notif_endTurnActions',notif );
 
             let listActions = notif.args.listActions;
             for (let i in listActions.trucks_cargos){
@@ -1954,14 +1958,14 @@ function (dojo, declare) {
         },
         notif_endTurnScore: function( notif )
         {
-            console.log( 'notif_endTurnScore',notif );
+            debug( 'notif_endTurnScore',notif );
             this.updatePlayerWeekScore(notif.args.player_id,notif.args.k,notif.args.nb );
             this.updatePlayerScore(notif.args.player_id,notif.args.newScore );
         },
         
         notif_endTurnPlayerDatas: function( notif )
         {
-            console.log( 'notif_endTurnPlayerDatas',notif );
+            debug( 'notif_endTurnPlayerDatas',notif );
             
             //Update  gamedatas.players
             for( let player_id in notif.args.players )
@@ -1973,7 +1977,7 @@ function (dojo, declare) {
         
         notif_newWeekScore: function( notif )
         {
-            console.log( 'notif_newWeekScore',notif );
+            debug( 'notif_newWeekScore',notif );
             this.updatePlayerWeekScore(notif.args.player_id,notif.args.k,notif.args.nb );
             this.updatePlayerScore(notif.args.player_id,notif.args.newScore );
         },
