@@ -1642,3 +1642,21 @@
     background: #c92727;
     border-color: #b20a0a;
 }
+
+
+
+
+
+/* ---------------------------- ----------------------------   ---------------------------- */
+/*** FIX BGA 3D mode clicks : **/
+.mode_3d #game_play_area_wrap {
+    pointer-events: none;
+ }
+ #ffg_game_zone {
+    pointer-events: all;
+ }
+ /* Override BGA preserve-3d, because after test it works now */
+.mode_3d #ffg_all_players_board_wrap div {
+    transform-style: flat;
+    -webkit-transform-style: flat;
+}
