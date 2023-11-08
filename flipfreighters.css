@@ -132,16 +132,21 @@
     text-shadow: 1px 1px 5px white;
 }
 /** Add a BLACK shadow behind player name in case of bright colors like white/orange*/
-.ffg_theme_dark .player_board_inner>.player-name>a[style='color: #ffa500'],
-.ffg_theme_dark .player_board_inner>.player-name>a[style='color: #ffffff'],
-.ffg_theme_dark .player_board_inner>.player-name>a[style='color: #72c3b1'],
-.ffg_theme_dark .player_board_inner>.player-name>a[style='color: #f07f16'],
-.ffg_theme_dark .player_board_inner>.player-name>a[style='color: #bdd002'],
-.ffg_theme_standard .player_board_inner>.player-name>a[style='color: #ffa500'],
-.ffg_theme_standard .player_board_inner>.player-name>a[style='color: #ffffff'],
-.ffg_theme_standard .player_board_inner>.player-name>a[style='color: #bdd002']
+.ffg_theme_dark .player_board_inner>.player-name>a[style*='color: #ffa500'],
+.ffg_theme_dark .player_board_inner>.player-name>a[style*='color: #ffffff'],
+.ffg_theme_dark .player_board_inner>.player-name>a[style*='color: #72c3b1'],
+.ffg_theme_dark .player_board_inner>.player-name>a[style*='color: #f07f16'],
+.ffg_theme_dark .player_board_inner>.player-name>a[style*='color: #bdd002'],
+.ffg_theme_standard .player_board_inner>.player-name>a[style*='color: #ffa500'],
+.ffg_theme_standard .player_board_inner>.player-name>a[style*='color: #ffffff'],
+.ffg_theme_standard .player_board_inner>.player-name>a[style*='color: #bdd002']
 {
     text-shadow: 1px 1px 5px black;
+}
+
+.ffg_theme_dark .player_board_inner .timeToThink[style*='color: red']
+{
+    text-shadow: 1px 1px 5px white;
 }
 
 .ffg_player_panel_details{
