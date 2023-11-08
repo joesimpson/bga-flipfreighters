@@ -628,7 +628,7 @@ function (dojo, declare) {
             this.updateCardUsage(row);
             
             if(this.overtimeSuitVariant){
-                dojo.query("#ffg_card_wrapper_"+row+" .ffg_button_card_suit_reset").forEach( (i) => { dojo.removeClass(i,"ffg_button_card_suit_reset"); } ); 
+                dojo.query("#ffg_card_wrapper_"+row+" .ffg_button_card_suit_reset").forEach( (i) => { dojo.removeClass(i,"ffg_button_card_suit_reset"); this.removeTooltip(i.id);  } ); 
                 
                 //hide suit modifiers IF JOKER (+ the same through init view)
                 if(color ==  this.constants.JOKER_TYPE) {
@@ -641,6 +641,7 @@ function (dojo, declare) {
                             dojo.addClass(i,"ffg_button_card_suit_reset");
                         }
                     } ); 
+                    this.addTooltipToClass( "ffg_button_card_suit_reset", _("Reset to original suit"), '' );
                 }
             }
             

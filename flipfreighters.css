@@ -409,8 +409,23 @@
 
 .ffg_button_card_suit_reset{
     outline: 4px solid black;
+    animation:shiny-outline 2s ease-in-out infinite;
 }
 
+@keyframes shiny-outline {
+    0% {
+        outline-color:black;
+        outline-width: 4px;
+    }
+    50% {
+        outline-color:gold;
+        outline-width: 6px;
+    }
+    to {
+        outline-color:black;
+        outline-width: 4px;
+    }
+}
 
 .ffg_card_wrapper:not(.ffg_selected) .ffg_card_usage_wrapper{
     display: none;
