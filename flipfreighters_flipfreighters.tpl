@@ -236,9 +236,17 @@ var jstpl_playerBoard = `
 ////////////////////////////////////////////////////////////////////////////////////
 var jstpl_discard_cards = `
     <div id="ffg_modal_discard_pile" class="">
-        <div id="ffg_modal_discard_pile_content">
+        <div id="ffg_modal_discard_pile_content" class="ffg_modal_pile_content">
             <table id="ffg_discard_overview">
-                <tbody id="ffg_overview_body">
+                <tbody id="ffg_discard_overview_body">
+                </tbody>
+            </table>
+        </div>
+        <hr>
+        <h2 id="ffg_modal_deck_title" class="standard_popin_title">{DECK_TITLE}</h2>
+        <div id="ffg_modal_deck_content" class="ffg_modal_pile_content">
+            <table id="ffg_deck_overview">
+                <tbody id="ffg_deck_overview_body">
                 </tbody>
             </table>
         </div>
@@ -247,7 +255,11 @@ var jstpl_discard_cards = `
 var jstpl_discard_cards_row = `<tr id="ffg_discard_suit_\${suit}" style="color:\${COLOR};">
     <td class="ffg_row_label"><span class="ffg_discard_suit_title">\${name}</span></td><td><img class ="ffg_icon_card_suit ffg_icon_card_suit_\${suit}"></img></td>
     </tr>`;
+var jstpl_deck_cards_row = `<tr id="ffg_deck_suit_\${suit}" style="color:\${COLOR};">
+    <td class="ffg_row_label"><span class="ffg_deck_suit_title">\${name}</span></td><td><img class ="ffg_icon_card_suit ffg_icon_card_suit_\${suit}"></img></td>
+    </tr>`;
 var jstpl_discard_cards_cell = `<td id="ffg_discard_\${card_id}" class="ffg_discard_suit_\${suit}_\${value}">\${value_label}</td>`;
+var jstpl_deck_cards_cell = `<td id="ffg_deck_\${card_id}" class="ffg_deck_suit_\${suit}_\${value}">\${value_label}</td>`;
 
 </script>  
 

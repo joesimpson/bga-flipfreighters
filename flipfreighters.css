@@ -443,8 +443,11 @@
 #popin_showDiscardPileDialogId {
     border: 5px solid #6c2c12;
 }
+#popin_showDiscardPileDialogId .standard_popin_title{
+    text-align: center;
+}
 /*
-#ffg_modal_discard_pile_content table th {
+.ffg_modal_pile_content table th {
     border-right: 1px solid rgba(0,0,0,.2);
     height: 70px;
     min-width: 70px;
@@ -452,10 +455,10 @@
     vertical-align: middle;
     font-size: 30px;
 }
-#ffg_modal_discard_pile_content table th>div{
+.ffg_modal_pile_content table th>div{
     display: inline-block;
 } */
-#ffg_modal_discard_pile_content table tbody tr td{
+.ffg_modal_pile_content table tbody tr td{
     border-right: 1px solid rgba(0,0,0,.2);
     font-family: Caveat;
     font-size: x-large;
@@ -463,13 +466,14 @@
     text-align: center;
     vertical-align: middle;
 }
-#ffg_modal_discard_pile_content table tbody tr:nth-of-type(odd) {
+.ffg_modal_pile_content table tbody tr:nth-of-type(odd) {
     background-color: lightgray;
 }
-#ffg_modal_discard_pile_content .ffg_row_label{
+.ffg_modal_pile_content.ffg_row_label{
     text-align: right;
 }
 
+.ffg_deck_suit_title,
 .ffg_discard_suit_title{
     text-transform: uppercase;
     vertical-align: middle;

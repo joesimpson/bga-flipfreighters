@@ -68,6 +68,10 @@ const CARGO_SUIT_DIAMOND = 4;
 
 const CARD_VALUE_MIN = 1;
 const CARD_VALUE_MAX = 6;
+// Number of values "duplicates" in the deck
+const CARD_VALUE_NUMBER = 2;
+// Number of joker "duplicates" in the deck
+const JOKER_NUMBER = 4;
 
 const NB_OVERTIME_TOKENS = 5;
 
@@ -214,9 +218,12 @@ class FlipFreighters extends Table
         
         $result['constants'] = array( 
             'JOKER_TYPE' => JOKER_TYPE,
+            'JOKER_VALUE' => JOKER_VALUE,
+            'JOKER_NUMBER' => JOKER_NUMBER,
             'NB_ROUNDS' => NB_ROUNDS,
             'NB_TURNS' => (NB_CARDS_BY_WEEK/NB_CARDS_BY_TURN),
             'CARD_VALUE_MAX' => CARD_VALUE_MAX,
+            'CARD_VALUE_NUMBER' => CARD_VALUE_NUMBER,
             'MAX_LOAD' => MAX_LOAD,
             'SCORE_BY_REMAINING_OVERTIME' => SCORE_BY_REMAINING_OVERTIME,
             'STATE_LOAD_TO_CONFIRM' => STATE_LOAD_TO_CONFIRM,
@@ -334,12 +341,12 @@ class FlipFreighters extends Table
         {
             for( $value=CARD_VALUE_MIN; $value<=CARD_VALUE_MAX; $value++ )   //  A,2, 3, 4,5,6
             {
-                $cards[] = array( 'type' => $color_id, 'type_arg' => $value, 'nbr' => 2);
+                $cards[] = array( 'type' => $color_id, 'type_arg' => $value, 'nbr' => CARD_VALUE_NUMBER);
             }
         }
         
         //We don't have any need to distinguish jokers :
-        $cards[] = array( 'type' => JOKER_TYPE, 'type_arg' => JOKER_VALUE, 'nbr' => 4);
+        $cards[] = array( 'type' => JOKER_TYPE, 'type_arg' => JOKER_VALUE, 'nbr' => JOKER_NUMBER);
 
         $this->cards->createCards( $cards, 'deck' );
         

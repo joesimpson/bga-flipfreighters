@@ -482,38 +482,75 @@ function (dojo, declare) {
             let html = this.format_block( 'jstpl_discard_cards', { } );  
             this.showDiscardPileDialog.setContent( html );
             
+            let jokerLabel = '*';//No need for translation for now
             let card_types = this.gamedatas.material.card_types;
             
             //Define TABLE ROWS
             for(let cardType in card_types){
                 let typeDatas = this.gamedatas.material.card_types[cardType];
-                let data = {
+                let dataDiscard = {
                     'suit' : cardType,
                     'COLOR' : typeDatas.color,
                     'name' : typeDatas.name,
                 };
-                dojo.place(this.format_block('jstpl_discard_cards_row', data), 'ffg_overview_body');
+                dojo.place(this.format_block('jstpl_discard_cards_row', dataDiscard), 'ffg_discard_overview_body');
+                dojo.place(this.format_block('jstpl_deck_cards_row', dataDiscard), 'ffg_deck_overview_body');
+                
+                //FIrst : fill DECK TABLE
+                for(let k=1;k<= this.constants.CARD_VALUE_MAX;k++){
+                    for(let i=1;i<= this.constants.CARD_VALUE_NUMBER;i++){
+                        let dataCell = {
+                            'card_id' : 'deck_'+cardType+'_'+k+'_'+i,// Virtual id because we don't care here
+                            'suit' : cardType,
+                            'value' : k,
+                            'value_label' : cardType !=this.constants.JOKER_TYPE ? k : jokerLabel,
+                        };
+                        
+                        dojo.place(this.format_block('jstpl_deck_cards_cell', dataCell), 'ffg_deck_suit_'+cardType);
+                    }
+                }
             }
-            dojo.place(this.format_block('jstpl_discard_cards_row', {
+            let jokerRowDatas = {
                     'suit' : this.constants.JOKER_TYPE,
                     'name' : _('Joker'),
                     'COLOR' : 'blue',
-                }), 'ffg_overview_body');
+                };
+            dojo.place(this.format_block('jstpl_discard_cards_row', jokerRowDatas), 'ffg_discard_overview_body');
+            dojo.place(this.format_block('jstpl_deck_cards_row', jokerRowDatas), 'ffg_deck_overview_body');
         
+            //DEfine TABLE CELLS 
+            //FIrst : fill DECK TABLE
+            for(let i=1;i<= this.constants.JOKER_NUMBER;i++){
+                let cardType = this.constants.JOKER_TYPE;
+                let value = this.constants.JOKER_VALUE;
+                let dataCell = {
+                    'card_id' : 'deck_'+cardType+'_'+value+'_'+i,// Virtual id because we don't care here
+                    'suit' : cardType,
+                    'value' : value,
+                    'value_label' : jokerLabel,
+                };
+                
+                dojo.place(this.format_block('jstpl_deck_cards_cell', dataCell), 'ffg_deck_suit_'+cardType);
+            }
+            //Then : fill Discard TABLE and update DECK TABLE
             //resort this array :
             this.gamedatas.discard_pile.sort(this.compareCards);
-            //DEfine TABLE CELLS
             for(let i in this.gamedatas.discard_pile){
                 let card = this.gamedatas.discard_pile[i];
                 let dataCell = {
                     'card_id' : card.id,
                     'suit' : card.type,
                     'value' : card.type_arg,
-                    'value_label' : card.type !=this.constants.JOKER_TYPE ? card.type_arg : '*',
+                    'value_label' : card.type !=this.constants.JOKER_TYPE ? card.type_arg : jokerLabel,
                 };
                 
                 dojo.place(this.format_block('jstpl_discard_cards_cell', dataCell), 'ffg_discard_suit_'+card.type);
+                
+                //Update deck table :
+                dojo.destroy( dojo.query(".ffg_deck_suit_"+card.type+"_"+card.type_arg).lastItem);
             }
+            //Update deck table by removing day cards too !
+            this.dayCards.forEach((card) => { dojo.destroy( dojo.query(".ffg_deck_suit_"+card.type+"_"+card.type_arg).lastItem); });
             
             //PREPARE MODAL SIZE
             let box = $("ebd-body").getBoundingClientRect();
