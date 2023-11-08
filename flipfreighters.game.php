@@ -1792,6 +1792,11 @@ class FlipFreighters extends Table
         self::trace("stPlayerTurn()");
         
         $this->gamestate->setAllPlayersMultiactive();
+        
+        $players = self::loadPlayersBasicInfos();
+        foreach($players as $player_id => $player){ 
+            self::giveExtraTime($player_id);
+        }
     }
     
     function stEndTurn()
