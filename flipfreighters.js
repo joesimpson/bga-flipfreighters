@@ -201,6 +201,12 @@ function (dojo, declare) {
                 this.currentRound = args.args.round_number;
                 this.currentTurn = args.args.turn_number;
                 this.updateRoundLabel();
+                for ( let i in args.args.newCards) {
+                    let card = args.args.newCards[i];
+                    let color = card.type;
+                    let value = card.type_arg;     
+                    this.playCardOnTable(i,card.id, color, value );
+                }
                 this.possibleCards = [];
                 if(args.args._private !=undefined){
                     if(args.args._private.possibleCards!=undefined){
@@ -613,6 +619,7 @@ function (dojo, declare) {
             div.setAttribute("data_amount",value);
             dojo.addClass(divId,"ffg_selectable") ;
             
+            if(this.dayCards[row] == undefined) this.dayCards [row] ={};
             this.dayCards[row].id = card_id;
             this.dayCards[row].type = color;
             this.dayCards[row].type_arg = value;
@@ -1780,13 +1787,6 @@ function (dojo, declare) {
         notif_newTurn: function( notif )
         {
             console.log( 'notif_newTurn',notif );
-            
-            for ( let i in notif.args.newCards) {
-                let card = notif.args.newCards[i];
-                let color = card.type;
-                let value = card.type_arg;     
-                this.playCardOnTable(i,card.id, color, value );
-            }
             
             this.updatePlayersOvertimeHours(notif.args.availableOvertimes);
             dojo.query(".ffg_card:not(.ffg_animation_copy)").forEach( dojo.hitch(this, "resetOvertimeHourOnCard"));

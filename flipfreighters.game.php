@@ -1687,6 +1687,7 @@ class FlipFreighters extends Table
         return array(
             'round_number' => self::getGameStateValue( 'round_number'),
             'turn_number' => self::getGameStateValue( 'turn_number'),
+            'newCards' => $this->getCurrentDayCards(),
             '_private' => $privateDatas,
         );
     }
@@ -1777,8 +1778,9 @@ class FlipFreighters extends Table
         }
         
         //NOTIF ALL about new cards
-        self::notifyAllPlayers( "newTurn", clienttranslate( 'Day ${day}/${max} : the game draws new cards' ), array( 
-            'newCards' => $newCards,
+        self::notifyAllPlayers( "newTurn", clienttranslate( 'Day ${day}/${max} : the game draws new cards' ), array(
+            //Cards are now sent through argNewTurn
+            //'newCards' => $newCards,
             'day' => $turn,
             'max' => $maxTurn,
             'availableOvertimes' => $availableOvertimes,
