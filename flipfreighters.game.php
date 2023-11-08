@@ -995,6 +995,17 @@ class FlipFreighters extends Table
         return 0; 
     }
     
+    function getCardsUsedPowerForMoves($player_id, $cards){
+        $result = array();
+        
+        for($k=0; $k<count($cards); $k++){ 
+            $card = $cards[$k];
+            $cardUsedPower = $this->getCardUsedPowerForMoves($player_id, $card["id"]);
+            $result[$card["id"]] = $cardUsedPower;
+        }
+        return $result;
+    }
+    
     function getCardUsedOvertimeForMoves($player_id, $card_id){
         $sql = " SELECT `fmove_card_id` as card_id, SUM(`fmove_overtime_used`) as  `overtime_used`, SUM( `fmove_position_to`- `fmove_position_from` - `fmove_overtime_used` ) as `card_used_power` FROM `freighter_move` where fmove_player_id = '$player_id' and `fmove_card_id` = $card_id group by `fmove_card_id` ";
         
@@ -1021,6 +1032,36 @@ class FlipFreighters extends Table
             "LOAD" => $this->getPossibleLoadsWithCard($card,$playerBoard),
             "MOVE" => $this->getPossibleMovesWithCard($card,$playerBoard),
             );
+    }
+    
+    function getCardsSuitWithOvertime($dayCards,$player_id ){
+        self::trace("getCardsSuitWithOvertime($player_id)...");
+        $cardsSuitWithOvertime = array();
+        $playerBoard = $this->getPlayerBoard($player_id);
+        foreach( $dayCards as $dayCard){
+            $cardsSuitWithOvertime[$dayCard['id']] = $dayCard["type"];
+            if($dayCard["type"] == JOKER_TYPE){
+                self::trace("getCardsSuitWithOvertime($player_id)... don't consider Joker : ".$dayCard["type"]);
+                continue;//Don't consider joker suit as modified
+            }
+            
+            //Look for each cargo to check if it is used by this card
+            //TODO JSA PERF improve by SQL select by card_id
+            $trucks_cargos = $playerBoard['trucks_cargos'];
+            foreach( $trucks_cargos as $truck_id => $truck_cargos )
+            {
+                foreach( $truck_cargos as $truck_cargo )
+                {
+                    $card_id = $truck_cargo['card_id'];
+                    if( $dayCard['id'] == $card_id ){
+                        $cargoSuit = $this->getTruckCargoSuit($truck_cargo) ;
+                        if(isset($cargoSuit)) $cardsSuitWithOvertime[$card_id] = $cargoSuit;
+                    }
+                }
+            }
+        }
+        self::dump("getCardsSuitWithOvertime($player_id)",$cardsSuitWithOvertime);
+        return $cardsSuitWithOvertime;
     }
     
     function insertLoadInTruck($player_id, $cargoId, $amount,$state,$cardId,$overtimeUsed){
@@ -1637,8 +1678,6 @@ class FlipFreighters extends Table
         
         $this->cancelTurnActions($player_id);
         
-        //TODO JSA notif player to refresh UI datas
-       
         self::notifyAllPlayers("cancelTurn", clienttranslate( '${player_name} restarts his turn' ), array(
             'player_id' => $player_id,
             'player_name' => $player_name,
@@ -1646,10 +1685,12 @@ class FlipFreighters extends Table
         
         $score = $this->dbGetScore($player_id);
         $round_number = self::getGameStateValue( 'round_number');
+        $dayCards = $this->getCurrentDayCards();//Resend cards in case of suit modifier used during turn
         
         self::notifyPlayer($player_id,"cancelTurnDatas", '', array(
             'availableOvertime' => $this->getPlayerAvailableOvertimeHoursPrivateState($player_id),
             'possibleCards' => $this->getPlayerPossibleCards($player_id ),
+            'dayCards' => $dayCards,
             'newScore' => $score ['player_score'],
             'newScoreAux' => $score ['player_score_aux'],
             'score_week' => self::getStat( "score_week".$round_number, $player_id ),
@@ -1677,17 +1718,20 @@ class FlipFreighters extends Table
         $players = self::loadPlayersBasicInfos();
         
         $privateDatas = array ();
+        $dayCards = $this->getCurrentDayCards();
         
         foreach($players as $player_id => $player){
             $privateDatas[$player_id] = array(
                 'possibleCards' => $this->getPlayerPossibleCards($player_id ),
+                'cardSuits' => $this->getCardsSuitWithOvertime($dayCards,$player_id ),
+                'cardUsedPower' => $this->getCardsUsedPowerForMoves($player_id, $dayCards),
             );
         }
         
         return array(
             'round_number' => self::getGameStateValue( 'round_number'),
             'turn_number' => self::getGameStateValue( 'turn_number'),
-            'newCards' => $this->getCurrentDayCards(),
+            'newCards' => $dayCards,
             '_private' => $privateDatas,
         );
     }

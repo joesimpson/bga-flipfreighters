@@ -254,6 +254,7 @@ class view_flipfreighters_flipfreighters extends game_view
         $card_suits = $this->game->card_types;
         
         //$this->game->dump("VIEW cardsWithOvertime :", $cardsWithOvertime);
+        $this->game->dump("VIEW cardsSuitWithOvertime",$cardsSuitWithOvertime ); 
         
         foreach( $cards as $card )
         {
@@ -277,7 +278,7 @@ class view_flipfreighters_flipfreighters extends game_view
             // IF current player already used overtime on this card, let's set this info
             $amount = $cardsWithOvertime[$card_id]+ $usedOvertimeForMoves[$card_id]; 
             $modifier = $amount - $card_value;
-                $this->game->trace("VIEW compute modifier $card_id : $modifier = $amount - $card_value " );   
+                $this->game->trace("VIEW compute modifier $card_id : $modifier = $amount - $card_value " );     
             if( $card['type'] == JOKER_TYPE){
                 //Never consider a negative modifier on Jokers
                 $modifier = max(0,$modifier); 
@@ -285,6 +286,7 @@ class view_flipfreighters_flipfreighters extends game_view
                 //Don't consider joker suit as modified
                 $cardsSuitWithOvertime[$card_id] = $card['type'];
             }
+            //BEWARE cardsSuitWithOvertime is recomputed in argPlayerTurn
             $classes ="";
             if($card_id == 0){
                 $classes = "ffg_card_back";

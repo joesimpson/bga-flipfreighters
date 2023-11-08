@@ -208,9 +208,17 @@ function (dojo, declare) {
                 this.updateRoundLabel();
                 for ( let i in args.args.newCards) {
                     let card = args.args.newCards[i];
-                    let color = card.type;
-                    let value = card.type_arg;     
-                    this.playCardOnTable(i,card.id, color, value );
+                    let suit = card.type;
+                    let value = card.type_arg; 
+                    let cardUsedPower = 0;
+                    if(args.args._private !=undefined && args.args._private.cardSuits!=undefined){
+                        let suitWithOvertime = args.args._private.cardSuits[card.id];
+                        suit = suitWithOvertime;
+                    } 
+                    if(args.args._private !=undefined && args.args._private.cardUsedPower!=undefined){
+                        cardUsedPower = args.args._private.cardUsedPower[card.id];
+                    } 
+                    this.playCardOnTable(i,card.id, suit, value, cardUsedPower );
                 }
                 this.possibleCards = [];
                 if(args.args._private !=undefined){
@@ -605,32 +613,11 @@ function (dojo, declare) {
                 dojo.addClass(item,"ffg_empty_value ");
             });
         },
-        
-        playCardOnTable: function( row,card_id, color, value )
-        {            
-            debug( "playCardOnTable ... " ,row,card_id, color, value);
-            
-            let divId = "ffg_card_"+row;
-            let div = dojo.query("#"+divId)[0];
-            if(div == undefined) {
-                debug( "playCardOnTable ...ERROR undefined row", row );
-                return;
-            }
-            //UPDATE div datas :
-            div.setAttribute("data_id",card_id);
-            div.setAttribute("data_suit",color);
-            div.setAttribute("data_value",value);
-            let amount = value;
-            div.setAttribute("data_amount",value);
-            dojo.addClass(divId,"ffg_selectable") ;
-            
-            if(this.dayCards[row] == undefined) this.dayCards [row] ={};
-            this.dayCards[row].id = card_id;
-            this.dayCards[row].type = color;
-            this.dayCards[row].type_arg = value;
-            //Updating location_arg does not seem useful
-            this.dayCards[row].usedPower = 0;
-            this.updateCardUsage(row);
+        /**
+        reset nth card origin suit
+        */
+        resetDayCardOriginSuit: function(row,card_id, color){
+            debug( "resetDayCardOriginSuit ... " ,row,card_id, color);
             
             if(this.overtimeSuitVariant){
                 dojo.query("#ffg_card_wrapper_"+row+" .ffg_button_card_suit_reset").forEach( (i) => { dojo.removeClass(i,"ffg_button_card_suit_reset"); this.removeTooltip(i.id);  } ); 
@@ -649,6 +636,45 @@ function (dojo, declare) {
                     this.addTooltipToClass( "ffg_button_card_suit_reset", _("Reset to original suit"), '' );
                 }
             }
+        },   
+        /**
+        reset nth dayCard data to specified value
+        */
+        resetDayCard: function(row,card_id, color, value,usedPower){
+            debug( "resetDayCard ... " ,row,card_id, color, value,usedPower);
+            if(this.dayCards[row] == undefined) this.dayCards[row] ={};
+            this.dayCards[row].id = card_id;
+            this.dayCards[row].type = color;
+            this.dayCards[row].type_arg = value;
+            //Updating location_arg does not seem useful
+            this.dayCards[row].usedPower = usedPower;  
+            
+            this.updateCardUsage(row);
+            this.resetDayCardOriginSuit(row,card_id, color);
+        },    
+        resetDayCardFromJson: function(row,datas){
+            this.resetDayCard(row, datas.id,datas.type,datas.type_arg,datas.usedPower);  
+        },       
+        
+        playCardOnTable: function( row,card_id, color, value,usedPower )
+        {            
+            debug( "playCardOnTable ... " ,row,card_id, color, value,usedPower);
+            
+            let divId = "ffg_card_"+row;
+            let div = dojo.query("#"+divId)[0];
+            if(div == undefined) {
+                debug( "playCardOnTable ...ERROR undefined row", row );
+                return;
+            }
+            //UPDATE div datas :
+            div.setAttribute("data_id",card_id);
+            div.setAttribute("data_suit",color);
+            div.setAttribute("data_value",value);
+            let amount = value;
+            div.setAttribute("data_amount",value);
+            dojo.addClass(divId,"ffg_selectable") ;
+            
+            this.resetDayCard(row,card_id, color, value, usedPower );
             
             //ADD some animation :
             this.animateDrawCard(div,row);
@@ -1416,7 +1442,7 @@ function (dojo, declare) {
             let data_suit= evt.currentTarget.getAttribute("data_suit") ;
             let data_amount= evt.currentTarget.getAttribute("data_amount") ;
             let card_row = div_id.split("_").lastItem;
-            let suit_reset = dojo.query("#ffg_card_wrapper_"+card_row+" .ffg_button_card_suit_reset")[0].getAttribute("data_suit"); 
+            let suit_reset = dojo.query("#ffg_card_wrapper_"+card_row+" .ffg_button_card_suit_reset")[0]?.getAttribute("data_suit"); 
             
             if(this.selectedCard == card_id ){
                 //IF ALREADY DISPLAYED , hide
@@ -1433,7 +1459,7 @@ function (dojo, declare) {
             this.selectedCard = card_id;
             this.selectedAmount = data_amount;
             this.selectedSuit = data_suit;
-            this.selectedSuitCost = (suit_reset !=data_suit ) ? 1 : null;
+            this.selectedSuitCost = (suit_reset !=data_suit && suit_reset != undefined ) ? 1 : null;//suit_reset undefined for Joker
             this.displayOvertimeHoursOnCard();
             
             this.displayPossibleLoads( card_id);
@@ -1942,12 +1968,13 @@ function (dojo, declare) {
             
             //CANCEL SUIT optional Changes
             for(let row in this.dayCards){
+                //Clean cards usage :
+                notif.args.dayCards[row].usedPower = 0;
+                this.resetDayCardFromJson(row,notif.args.dayCards[row]);
+                
                 let divId = "ffg_card_"+row;
                 let div = dojo.query("#"+divId)[0];
                 div.setAttribute("data_suit", this.dayCards[row].type);
-                //Clean cards usage :
-                this.dayCards[row].usedPower = 0;
-                this.updateCardUsage(row);
             }
             
             this.possibleCards = [];
