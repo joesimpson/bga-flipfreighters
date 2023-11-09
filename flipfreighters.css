@@ -203,7 +203,14 @@
 #modal_ffg_all_players_board_wrap .ffg_board_container:not(.ffg_selectedPlayerId) {
     display: none;
 }
-
+/** Modal player boards should not change size when the "real" boards change their size */
+#modal_ffg_all_players_board_wrap .ffg_board_container{
+    transform: scale(0.5);
+    transform-origin: top left;
+    /** Let's give some more pixels, because it adds some space and the outline won't be over the modal border :*/
+    width: calc(var(--ffg_board_display_width) * 0.51 );
+    height: calc(var(--ffg_board_display_height) * 0.51 );
+}
 #popin_showBoardDialogId .ffg_player_board_container{
     /** gain space between title and arrows line, by moving all up like if the arrows were on the title line */
     margin-top: -39px;
