@@ -217,7 +217,7 @@ var jstpl_showScore = `<div id="ffg_showScoreDialogContent">\
         </table>
     </div>`;
     
-var jstpl_showScoreRow = '<tr id="ffg_scorerow_${player_id}" class="${trclasses}"><td><span class="playername" style="color:#${player_color};">${player_name}</span></td><td>${score_week1}</td><td>${score_week2}</td><td>${score_week3}</td><td>${overtime}</td><td>${delivered}</td><td>${score}</td></tr>';
+var jstpl_showScoreRow = '<tr id="ffg_scorerow_${player_id}" class="${trclasses}"><td class="ffg_player_col"><span class="playername" style="color:#${player_color};">${player_name}</span></td><td>${score_week1}</td><td>${score_week2}</td><td>${score_week3}</td><td>${overtime}</td><td>${delivered}</td><td>${score}</td></tr>';
 
 
 ////////////////////////////////////////////////////////////////////////////////////
