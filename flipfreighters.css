@@ -350,7 +350,7 @@
     opacity: 0.5 !important;
     cursor: default;
 }
-.ffg_card.ffg_selectable:hover {
+.notouch-device .ffg_card.ffg_selectable:hover {
     scale: 1.15;
     cursor: pointer;
     margin-bottom: 20px;
@@ -436,7 +436,7 @@
 .ffg_button_card_suit_modifier_4 {
     background-position-y: -605px;
 }
-.ffg_button_card_suit_modifier.ffg_selectable:hover {
+.notouch-device .ffg_button_card_suit_modifier.ffg_selectable:hover {
     scale: 1.15;
     cursor: pointer;
     outline: 2px solid blue;
@@ -623,14 +623,14 @@
     background-color: #0800ff29;
     cursor: pointer;
 }
-.ffg_container.ffg_selectable:hover,
-.ffg_cargo_amount.ffg_selectable:hover {
+.notouch-device .ffg_container.ffg_selectable:hover,
+.notouch-device .ffg_cargo_amount.ffg_selectable:hover {
     scale: 1.2;
     outline-style: solid;
     outline-color: yellow;
     z-index: 2;
 }
-.ffg_cargo_amount.ffg_selectable:hover {
+.notouch-device .ffg_cargo_amount.ffg_selectable:hover {
     outline-color: red;
 }
 .ffg_container[data_state="1"]{
@@ -898,7 +898,7 @@
     outline: 5px solid blue;
     cursor: pointer;
 }
-.ffg_not_drawn_pos.ffg_selectable:hover {
+.notouch-device .ffg_not_drawn_pos.ffg_selectable:hover {
   scale: 1.1;
   outline-style: solid;
   outline-color: yellow;
@@ -1440,7 +1440,7 @@
     font-style: italic;
     color: #6b2912;
 }
-.ffg_total_score:hover{
+.notouch-device .ffg_total_score:hover{
     cursor: help;
 }
 /* ---------------------------- ----------------------------   ---------------------------- */
@@ -1450,8 +1450,8 @@
 .ffg_symbol_path_size{
     position: absolute;
 }
-.ffg_truck_symbol:hover,
-.ffg_symbol_path_size:hover{
+.notouch-device .ffg_truck_symbol:hover,
+.notouch-device .ffg_symbol_path_size:hover{
     outline: 2px solid green;
     border-radius: 15%;
     cursor: help;
@@ -1593,7 +1593,7 @@
 .ffg_icon_overtime_minus{
     color: red;
 }
-.ffg_overtime.ffg_selectable:hover{
+.notouch-device .ffg_overtime.ffg_selectable:hover{
     /*outline: 3px solid green;*/
     background-image: url('img/board.jpg');
     background-size: calc(var(--ffg_board_display_width) / var(--ffg_board_display_img_width) );
@@ -1613,31 +1613,31 @@
 .ffg_overtime[data_index='1']{
     left: 253px;
 }
-.ffg_overtime[data_index='1'].ffg_selectable:hover{
+.notouch-device .ffg_overtime[data_index='1'].ffg_selectable:hover{
     left: 245px; /* IMITATION of scale:2 ,  with the background-image : left = left - (50-30)/2 */
 }
 .ffg_overtime[data_index='2']{
     left: 288px;
 }
-.ffg_overtime[data_index='2'].ffg_selectable:hover{
+.notouch-device .ffg_overtime[data_index='2'].ffg_selectable:hover{
     left: 278px;
 }
 .ffg_overtime[data_index='3']{
     left: 324px;
 }
-.ffg_overtime[data_index='3'].ffg_selectable:hover{
+.notouch-device .ffg_overtime[data_index='3'].ffg_selectable:hover{
     left: 314px;
 }
 .ffg_overtime[data_index='4']{
     left: 360px;
 }
-.ffg_overtime[data_index='4'].ffg_selectable:hover{
+.notouch-device .ffg_overtime[data_index='4'].ffg_selectable:hover{
     left: 350px;
 }
 .ffg_overtime[data_index='5']{
     left: 396px;
 }
-.ffg_overtime[data_index='5'].ffg_selectable:hover{
+.notouch-device .ffg_overtime[data_index='5'].ffg_selectable:hover{
     left: 386px;
 }
 .ffg_noselect_text{
