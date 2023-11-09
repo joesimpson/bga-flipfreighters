@@ -25,6 +25,9 @@ define([
     "ebg/counter"
 ],
 function (dojo, declare) {
+    let HORIZONTAL = 0;
+    let VERTICAL = 1;
+    
     return declare("bgagame.flipfreighters", ebg.core.gamegui, {
         constructor: function(){
             debug('flipfreighters constructor');
@@ -33,6 +36,8 @@ function (dojo, declare) {
             //Some bugs remains with this functionality, and according to the game designer, it is not necessary : TODO JSA CLEAN this functionality code
             this.enable_multi_overtime_click = false;
             
+            this._scoreSheetZoom = this.getConfig('ffgScoreSheetZoom', 100);
+      
             this.dayCards = [];
             this.possibleCards = [];
             this.selectedCard = null;
@@ -299,6 +304,14 @@ function (dojo, declare) {
             }
         },        
 
+        // To be overrided by games
+        onScreenWidthChange(){
+            debug("onScreenWidthChange...");
+            //TODO JSA User SETTING if(this.display_mode == HORIZONTAL)
+                this.resizeHorizontal();
+            //else
+            //    this.resizeVertical();
+        },
         ///////////////////////////////////////////////////
         //// Utility methods
         
@@ -324,6 +337,32 @@ function (dojo, declare) {
             this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/" + action + ".html", args, this, (result) => { }, handler);
         },
         
+        /** Return User local config */
+        getConfig: function(value, v){
+            return localStorage.getItem(value) == null? v : localStorage.getItem(value);
+        },
+        /** Copied from Welcome (WTO): */
+        resizeHorizontal: function(){
+            debug( "resizeHorizontal ... " );
+            let gamecontainer = $('ffg_game_container');
+            let box = gamecontainer.getBoundingClientRect();
+            let sheetWidth = 1400;
+            let sheetZoom = this._scoreSheetZoom / 100;
+            let sheetRatio =  0.9; //(this._secondHandle - firstHandle) / 100;
+            let newSheetWidth = sheetZoom*sheetRatio*box['width'];
+            let sheetScale = newSheetWidth / sheetWidth;
+            document.querySelector(":root").style.setProperty("--ffg_board_display_scale",sheetScale) ;
+    
+        },
+        
+        setScoreSheetZoom(a){
+            debug( "setScoreSheetZoom ... ", a );
+            this._scoreSheetZoom = a;
+            localStorage.setItem("ffgLayout", HORIZONTAL);
+            localStorage.setItem("ffgScoreSheetZoom", a);
+            this.onScreenWidthChange();
+        },
+
         /*
         Init board avatar with the same as displayed by BGA player panel,
         */
@@ -1411,8 +1450,8 @@ function (dojo, declare) {
         */
         onBoardSliderChange: function( evt )
         {
-            debug( 'onBoardSliderChange',evt.currentTarget.value );
-            document.querySelector(":root").style.setProperty("--ffg_board_display_scale",evt.currentTarget.value /100);
+            //debug( 'onBoardSliderChange',evt.currentTarget.value );
+            this.setScoreSheetZoom(parseInt(evt.currentTarget.value));
         },        
         
         /**

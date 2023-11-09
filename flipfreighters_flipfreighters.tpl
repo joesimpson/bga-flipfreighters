@@ -14,14 +14,14 @@
 
 <div id="ffg_game_upper">
     <span id="ffg_round_label"></span>
-    <input type="range" min="30" max="150" value="60" class="slider" id="ffg_playerBoardSliderSize" list="ffg_slider_values">
+    <input type="range" min="5" max="100" value="60" class="slider" id="ffg_playerBoardSliderSize" list="ffg_slider_values">
     <datalist id="ffg_slider_values">
-      <option value="30" label="30"></option>
-      <option value="60" label="60"></option>
-      <option value="80" label="80"></option>
-      <option value="100" label="100"></option>
-      <option value="125" label="125"></option>
-      <option value="150" label="150"></option>
+        <option value="5" label="5"></option>
+        <option value="15" label="15"></option>
+        <option value="30" label="30"></option>
+        <option value="50" label="50"></option>
+        <option value="80" label="80"></option>
+        <option value="100" label="100"></option>
     </datalist>
 </div>
     
