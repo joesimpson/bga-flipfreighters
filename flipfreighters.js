@@ -36,7 +36,11 @@ function (dojo, declare) {
             //Some bugs remains with this functionality, and according to the game designer, it is not necessary : TODO JSA CLEAN this functionality code
             this.enable_multi_overtime_click = false;
             
-            this._scoreSheetZoom = this.getConfig('ffgScoreSheetZoom', 100);
+            this._cardsRatio = this.getConfig('ffg_cardsRatio', 10);
+            this._scoreSheetZoom = this.getConfig('ffg_ScoreSheetZoom', 100);
+            // init sliders with these values
+            document.getElementById("ffg_cardsSliderSize").value = this._cardsRatio;
+            document.getElementById("ffg_playerBoardSliderSize").value = this._scoreSheetZoom;
       
             this.dayCards = [];
             this.possibleCards = [];
@@ -123,6 +127,9 @@ function (dojo, declare) {
             
             this.initTooltips(this.material.tooltips);
             
+            this.addTooltip( "ffg_cardsSliderSize", _("Layout : Modify cards ratio"), '' );
+            this.addTooltip( "ffg_playerBoardSliderSize", _("Layout : Modify boards ratio"), '' ); 
+            
             this.updateDiscardPile(this.gamedatas.discard_pile);
             this.addTooltip( "ffg_discard_pile_wrapper", _("Discard pile"), '' );
             dojo.query("#ffg_discard_pile_wrapper").connect( 'onclick', this, 'onClickDiscardPile' );
@@ -134,7 +141,8 @@ function (dojo, declare) {
             this.addTooltipToClass( "ffg_delivered_trucks_wrapper", _("Number of delivered trucks"), '' );
             this.updatePlayersScoreAux(gamedatas.players);
             
-            dojo.query("#ffg_playerBoardSliderSize").connect( 'oninput', this, 'onBoardSliderChange' );
+            dojo.query("#ffg_cardsSliderSize").connect( 'oninput', this, 'onSliderChangeCards' );
+            dojo.query("#ffg_playerBoardSliderSize").connect( 'oninput', this, 'onSliderChangeBoard' );
             
             dojo.query(".ffg_card").connect( 'onclick', this, 'onSelectCard' );
             dojo.query(".ffg_current_player .ffg_truck_pos").connect( 'onclick', this, 'onSelectTruckPos' );
@@ -307,7 +315,7 @@ function (dojo, declare) {
         // To be overrided by games
         onScreenWidthChange(){
             debug("onScreenWidthChange...");
-            //TODO JSA User SETTING if(this.display_mode == HORIZONTAL)
+            //TODO JSA ? User SETTING if(this.display_mode == HORIZONTAL)
                 this.resizeHorizontal();
             //else
             //    this.resizeVertical();
@@ -338,8 +346,8 @@ function (dojo, declare) {
         },
         
         /** Return User local config */
-        getConfig: function(value, v){
-            return localStorage.getItem(value) == null? v : localStorage.getItem(value);
+        getConfig: function(value, default_value){
+            return localStorage.getItem(value) == null? default_value : localStorage.getItem(value);
         },
         /** Copied from Welcome (WTO): */
         resizeHorizontal: function(){
@@ -348,18 +356,37 @@ function (dojo, declare) {
             let box = gamecontainer.getBoundingClientRect();
             let sheetWidth = 1400;
             let sheetZoom = this._scoreSheetZoom / 100;
-            let sheetRatio =  0.9; //(this._secondHandle - firstHandle) / 100;
+            let sheetRatio =  (100 - this._cardsRatio) / 100;
             let newSheetWidth = sheetZoom*sheetRatio*box['width'];
             let sheetScale = newSheetWidth / sheetWidth;
             document.querySelector(":root").style.setProperty("--ffg_board_display_scale",sheetScale) ;
-    
+            
+            let cardsWidth = 130;
+            let cardsHeight = 963;
+            let cardsRatio = this._cardsRatio / 100;
+            let newCardsWidth = cardsRatio*box['width'];//Why -30 in WTO ?
+            let cardsScale = newCardsWidth / cardsWidth; 
+            //document.querySelector(":root").style.setProperty("--ffg_cards_display_scale",cardsScale) ;
+            dojo.style('ffg_cards_resizable', 'transform', `scale(${cardsScale})`);
+            dojo.style('ffg_cards_resizable', 'width', `${cardsWidth}px`);
+            dojo.style('ffg_cards_sticky', 'height', `${cardsHeight * cardsScale}px`);
+            dojo.style('ffg_cards_sticky', 'width', `${newCardsWidth}px`);
+            dojo.style('ffg_cards_container', 'width', `${newCardsWidth}px`);
         },
         
         setScoreSheetZoom(a){
             debug( "setScoreSheetZoom ... ", a );
             this._scoreSheetZoom = a;
-            localStorage.setItem("ffgLayout", HORIZONTAL);
-            localStorage.setItem("ffgScoreSheetZoom", a);
+            localStorage.setItem("ffg_Layout", HORIZONTAL);
+            localStorage.setItem("ffg_ScoreSheetZoom", a);
+            this.onScreenWidthChange();
+        },
+        
+        setCardsRatio(a){
+            debug( "setCardsRatio ... ", a );
+            this._cardsRatio = a;
+            localStorage.setItem("ffg_Layout", HORIZONTAL);
+            localStorage.setItem("ffg_cardsRatio", a);
             this.onScreenWidthChange();
         },
 
@@ -730,7 +757,7 @@ function (dojo, declare) {
                 origin_copy,
                 "ffg_round_label"
             );
-            //let target_placement = "ffg_cards";
+            //let target_placement = "ffg_cards_container";
             dojo.addClass(origin_copy.id ,"ffg_animation_copy") ;
             this.attachToNewParent(origin_copy.id, "ffg_round_label");
             let x = 0;
@@ -742,7 +769,7 @@ function (dojo, declare) {
             */
             dojo.addClass(divId,"ffg_card_back") ;
             
-            let anim = this.slideTemporaryObject(origin_copy, 'ffg_cards', 'ffg_game_upper', divId,1000, row*200 ); 
+            let anim = this.slideTemporaryObject(origin_copy, 'ffg_cards_container', 'ffg_game_upper', divId,1000, row*200 ); 
             dojo.connect(anim, 'onEnd', (node) => {
                 dojo.removeClass(divId,"ffg_card_back") ;
             });
@@ -1448,11 +1475,15 @@ function (dojo, declare) {
         /**
         Slider Handler :
         */
-        onBoardSliderChange: function( evt )
+        onSliderChangeBoard: function( evt )
         {
             //debug( 'onBoardSliderChange',evt.currentTarget.value );
             this.setScoreSheetZoom(parseInt(evt.currentTarget.value));
-        },        
+        },
+        onSliderChangeCards: function( evt )
+        {
+            this.setCardsRatio(parseInt(evt.currentTarget.value));
+        },
         
         /**
         Click Handler for choosing a card on the left : 

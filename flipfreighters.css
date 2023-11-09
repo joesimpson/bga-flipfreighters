@@ -61,6 +61,7 @@
   --ffg_board_display_height: 1080px;
   
   --ffg_board_display_scale: 0.6;
+  --ffg_cards_display_scale: 1;
   
   --ffg_container_width: 42px;
   
@@ -101,19 +102,28 @@
 .ffg_theme_dark #ffg_game_upper{
     color: white;
 }
-#ffg_round_label, #ffg_playerBoardSliderSize{
+#ffg_round_label, #ffg_playerBoardSliderSize, #ffg_cardsSliderSize{
     margin: 0 10px;
 }
 #ffg_game_upper.ffg_fixed_page_title {
+    /*  Left fixed Disabled because I linked onScreenWidthChange and sliders
     position: fixed;
     top: 100px;
     z-index: 5;
     background: #6a6868b5; 
     border-radius: 10%;
     writing-mode: vertical-lr;
-    /* text-orientation: upright; */
     text-orientation: initial;
     left: 20px;
+    */
+    /* V2 disabled because it is not enough to manage cases where status bar takes 2 lines or more + it prints a gray background above player panel (see with 3+ players)
+    position: fixed;
+    top: 57px;
+    z-index: 5;
+    background: #6a6868;
+    display: inline-block;
+    width: 100%;
+    */
 }
 /*
 ---------------------------------------------------------------------------------------
@@ -278,17 +288,32 @@
 ---------------------------- ----------------------------   ---------------------------- 
 */
 
-#ffg_cards{
+#ffg_cards_container{
     position: relative;
     align-self: flex-start;
+    
+    /*transform: scale(var(--ffg_cards_display_scale));*/
+}
+
+#ffg_cards_sticky {
+    position: sticky;
+    top: 60px; 
+}
+#ffg_cards_resizable {
+    display:flex;
+    flex-flow:column;
+    transform-origin:top left;
+    justify-content: space-around;
 }
 
 #ffg_discard_pile,
 .ffg_card{
     background-image: url('img/FULLREZ_CARDS.jpg');
     background-size: 700% 400%;
-    width: var(--ffg_card_display_width);
-    height: var(--ffg_card_display_height);
+    width: calc(var(--ffg_card_display_width) * 1 );
+    height: calc(var(--ffg_card_display_height) * 1  );
+    /*width: calc(var(--ffg_card_display_width) * var(--ffg_cards_display_scale)  );
+    height: calc(var(--ffg_card_display_height) * var(--ffg_cards_display_scale)  );*/
     margin: 10px;
     outline: 2px solid black;
     border-radius: 5%;

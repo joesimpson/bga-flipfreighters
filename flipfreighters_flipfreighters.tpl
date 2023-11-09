@@ -13,11 +13,13 @@
 <div id="ffg_game_container">
 
 <div id="ffg_game_upper">
+    <input type="range" min="5" max="30" value="10" class="slider" id="ffg_cardsSliderSize" list="ffg_slider_values">
     <span id="ffg_round_label"></span>
     <input type="range" min="5" max="100" value="60" class="slider" id="ffg_playerBoardSliderSize" list="ffg_slider_values">
     <datalist id="ffg_slider_values">
         <option value="5" label="5"></option>
-        <option value="15" label="15"></option>
+        <option value="10" label="10"></option>
+        <option value="20" label="20"></option>
         <option value="30" label="30"></option>
         <option value="50" label="50"></option>
         <option value="80" label="80"></option>
@@ -27,7 +29,9 @@
     
 <div id="ffg_game_zone">
 
-    <div id="ffg_cards" class="whiteblock">
+    <div id="ffg_cards_container" class="whiteblock">
+        <div id="ffg_cards_sticky">
+        <div id="ffg_cards_resizable">
         <!-- BEGIN ffg_cards -->
         <div id="ffg_card_wrapper_{INDEX}" class="ffg_card_wrapper">
             <div class="ffg_card_buttons_wrapper">
@@ -51,6 +55,8 @@
         <div id="ffg_discard_pile_wrapper" class="ffg_no_display">
             <div id="ffg_discard_pile" class="ffg_card_back"></div>
             <div id="ffg_discard_pile_size" class="ffg_deck_size">0</div>
+        </div>
+        </div>
         </div>
     </div>
     
