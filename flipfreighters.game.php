@@ -1108,7 +1108,7 @@ class FlipFreighters extends Table
     /**
     CONFIRM all players actions by updating to the corresponding state
     */
-    function confirmTurnActions($players, &$listUnconfirmedTurnActions){
+    function confirmTurnActions($players, &$listUnconfirmedTurnActions,&$usedOvertimeHours,&$deliveries){
         self::trace( "confirmTurnActions()...");
 
         $oldState = STATE_LOAD_TO_CONFIRM;
@@ -1154,6 +1154,7 @@ class FlipFreighters extends Table
                     if($action["truckScore"] > 0){
                         $this->dbIncreasePlayerScoreAux($player_id,1);
                         self::incStat( 1, "stat_delivered_trucks", $player_id );
+                        $deliveries[$player_id] += 1;
                     }
                 }
             }
@@ -1162,10 +1163,13 @@ class FlipFreighters extends Table
         }
         
         foreach($players as $player_id => $player){
+            $publicInfo = $this-> getPlayerAvailableOvertimeHours($player_id);
             ///Set the public data about spent overtime by getting the private info 
             $privateInfo = $this-> getPlayerAvailableOvertimeHoursPrivateState($player_id);
             $this->setPlayerAvailableOvertimeHours($player_id,$privateInfo);
             self::setStat( $privateInfo, "unused_overtime", $player_id );
+            
+            $usedOvertimeHours[$player_id] = $publicInfo - $privateInfo;
         }
     }
     /**
@@ -1849,7 +1853,6 @@ class FlipFreighters extends Table
     { 
         self::trace("stEndTurn()");
         
-        
         $players = self::loadPlayersBasicInfos();
         $round = self::getGameStateValue( 'round_number');
         
@@ -1859,9 +1862,17 @@ class FlipFreighters extends Table
         $week = $this->getCurrentWeekLocation();
         
         $listUnconfirmedTurnActions = $this->listUnconfirmedTurnActions();
+        $usedOvertimeHours = array();
+        $turnDeliveries = array();
+        
+        foreach($players as $player_id => $player){ 
+            $turnDeliveries[$player_id] = 0; 
+        }
         
         //Confirm actions and update list accordingly
-        $this->confirmTurnActions($players,$listUnconfirmedTurnActions);
+        $this->confirmTurnActions($players,$listUnconfirmedTurnActions,$usedOvertimeHours, $turnDeliveries);
+        
+        //self::dump("stEndTurn() after confirmTurnActions... usedOvertimeHours=",$usedOvertimeHours);// NOI18N
         
         self::notifyAllPlayers( "endTurnActions", '', array( 
             'listActions' => $listUnconfirmedTurnActions,
@@ -1877,6 +1888,23 @@ class FlipFreighters extends Table
             $this->dbUpdatePlayerScore($player_id,$newPlayerScore);
             
             $player_name = $player['player_name'];
+            $deliveries = $turnDeliveries[$player_id];
+            if($deliveries > 0) {
+                self::notifyAllPlayers( "endTurnDeliveries", clienttranslate( '${player_name} delivers ${n} trucks during this day'), array( 
+                    'player_id' => $player_id,
+                    'player_name' => $player_name,
+                    'n' => $deliveries,
+                ) );
+            }
+            $overtime = $usedOvertimeHours[$player_id];
+            if($overtime>0){
+                self::notifyAllPlayers( "endTurnSpentOvertime", clienttranslate( '${player_name} spends ${nh} overtime hours during this day'), array( 
+                    'player_id' => $player_id,
+                    'player_name' => $player_name,
+                    'nh' => $overtime,
+                ) );
+            }
+            
             self::notifyAllPlayers( "endTurnScore", '', array( 
                 'player_id' => $player_id,
                 'player_name' => $player_name,
