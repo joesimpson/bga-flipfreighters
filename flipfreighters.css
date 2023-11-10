@@ -1266,15 +1266,18 @@
     top: -30px;
     position: relative;
     font-size: 30px;
-    color: black;
+    cursor: help;
 }
 .ffg_not_drawn_pos .ffg_icon_truck_pos{
     visibility: hidden;
 }
-.ffg_not_confirmed_pos .ffg_icon_truck_pos{
+.ffg_not_confirmed_pos .ffg_icon_truck_pos, .ffg_tooltipIconTruck_option1{
     color: #ca0000;
 }
-.ffg_truck[data_confirmed_state="4"] .ffg_icon_truck_pos{
+.ffg_icon_truck_pos, .ffg_tooltipIconTruck_option2{
+    color: black;
+}
+.ffg_truck[data_confirmed_state="4"] .ffg_icon_truck_pos, .ffg_tooltipIconTruck_option3{
     /* DELIVERED */
     color: darkgreen;
 }
@@ -1703,3 +1706,12 @@
     transform-style: flat;
     -webkit-transform-style: flat;
 }
+
+
+
+
+
+/* ---------------------------- ----------------------------   ---------------------------- */
+/* Re enable list style over BGA common CSS, only for wanted section : game WIKI and some tooltips*/ 
+#pagesection_howtoplay li, .ffg_tooltipIconTruck li { margin-left: 2em; } 
+#pagesection_howtoplay ul li, .ffg_tooltipIconTruck ul li { list-style: disc; }

@@ -267,6 +267,16 @@ var jstpl_deck_cards_row = `<tr id="ffg_deck_suit_\${suit}" style="color:\${COLO
 var jstpl_discard_cards_cell = `<td id="ffg_discard_\${card_id}" class="ffg_discard_suit_\${suit}_\${value}">\${value_label}</td>`;
 var jstpl_deck_cards_cell = `<td id="ffg_deck_\${card_id}" class="ffg_deck_suit_\${suit}_\${value}">\${value_label}</td>`;
 
+var jstpl_tooltipIconTruck =  `<div class='ffg_tooltipIconTruck'>\${description}
+    <ul>
+        <li class='ffg_tooltipIconTruck_option1'>\${option1}</li>
+        <li class='ffg_tooltipIconTruck_option2'>\${option2}</li>
+        <li class='ffg_tooltipIconTruck_option3'>\${option3}</li>
+    </ul>
+<div>
+`;
+
+
 </script>  
 
 {OVERALL_GAME_FOOTER}

@@ -459,6 +459,17 @@ function (dojo, declare) {
             
             this.addTooltipToClass( "ffg_total_score", _("Overall score of this player"), '' );
             
+            
+            let tooltipIconTruck = this.format_block(
+                "jstpl_tooltipIconTruck",
+                {
+                    description :  _("Optional information : current position of the truck on its route"),
+                    option1 :  _("This color when cancelable in current turn"),
+                    option2 :  _("This color when not cancelable"),
+                    option3 :  _("This color when delivered"),
+                }
+                );
+            this.addTooltipHtmlToClass( "ffg_icon_truck_pos",tooltipIconTruck , '' );
         },
         
         initShowScoreDialog: function()
