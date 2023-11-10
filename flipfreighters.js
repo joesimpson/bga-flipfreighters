@@ -254,6 +254,19 @@ function (dojo, declare) {
                     item.setAttribute('data_value',0); 
                     item.setAttribute('data_suit',0); 
                     dojo.addClass(item,'ffg_card_back');
+                    dojo.removeClass(item,'ffg_selectable');
+                }); 
+                break;
+            case 'gameEnd':
+                this.dayCards = [];
+                //Unflip all cards :
+                dojo.query(".ffg_card").forEach( (item) => {
+                    item.setAttribute('data_id',0); 
+                    item.setAttribute('data_value',0); 
+                    item.setAttribute('data_suit',0); 
+                    dojo.addClass(item,'ffg_card_back');
+                    dojo.addClass(item,'disabled');
+                    dojo.removeClass(item,'ffg_selectable');
                 }); 
                 break;
             }
