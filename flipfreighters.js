@@ -459,6 +459,13 @@ function (dojo, declare) {
             
             this.addTooltipToClass( "ffg_total_score", _("Overall score of this player"), '' );
             
+            dojo.query(".ffg_week_score").forEach( (i) => { 
+                    let round = i.getAttribute("data_round") ;
+                    let tooltipText = dojo.string.substitute( _("Week ${n} score of this player"), {
+                        n: round,
+                    } );
+                    this.addTooltip(i.id, tooltipText,'');  
+                } ); 
             
             let tooltipIconTruck = this.format_block(
                 "jstpl_tooltipIconTruck",

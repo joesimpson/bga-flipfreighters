@@ -1303,6 +1303,7 @@
     height: 55px;
     position: absolute;
     z-index: 1;
+    cursor: help;
 }
 .ffg_truck[data_id='truck1']>.ffg_truck_score{
     top: 585px; 
@@ -1414,6 +1415,7 @@
     position: absolute;
     z-index: 1;
     left: 108px;
+    cursor: help;
 }
 .ffg_week_score>.ffg_score_number{
     line-height: 45px;
