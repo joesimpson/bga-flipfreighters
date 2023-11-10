@@ -110,7 +110,7 @@ function (dojo, declare) {
                 this.initPayerAvatar(player_id);
                 
             }
-            // TODO: Set up your game interface here, according to "gamedatas"
+            // Set up your game interface here, according to "gamedatas"
             
             if(!this.isSpectator){
                 //Display current player board first :
@@ -180,11 +180,6 @@ function (dojo, declare) {
                     debug("ffg override adaptStatusBar..."); 
                     if (dojo.hasClass('page-title', 'fixed-page-title')) {
                         dojo.query("#ffg_game_upper").addClass("ffg_fixed_page_title");
-                        /* For a small screen, it is ok if we click the BGA zoom '+' icon
-                        if(this.selectedCargoContainer!=null){
-                            //ie. if we have buttons to select an amount
-                            dojo.style('page-title', 'width', 'auto');
-                        }*/
                     }
                     else {
                         dojo.query("#ffg_game_upper").removeClass("ffg_fixed_page_title");
@@ -364,7 +359,7 @@ function (dojo, declare) {
             let cardsWidth = 130;
             let cardsHeight = 963;
             let cardsRatio = this._cardsRatio / 100;
-            let newCardsWidth = cardsRatio*box['width'];//Why -30 in WTO ?
+            let newCardsWidth = cardsRatio*box['width'];
             let cardsScale = newCardsWidth / cardsWidth; 
             //document.querySelector(":root").style.setProperty("--ffg_cards_display_scale",cardsScale) ;
             dojo.style('ffg_cards_resizable', 'transform', `scale(${cardsScale})`);
@@ -520,7 +515,6 @@ function (dojo, declare) {
         
         initShowBoardDialog: function( selectedPlayerId)
         {
-            //let title = dojo.string.substitute( _("${player_name}'s board"), { player_name: this.gamedatas.players[selectedPlayerId].name});
             let title = dojo.string.substitute( _("Players' boards"), );
             
             // Create the new dialog over the play zone.
@@ -770,21 +764,6 @@ function (dojo, declare) {
             let origin_copy = cardDiv.cloneNode();
             origin_copy.id = divId+"_copy";
             origin_copy.classList.add("ffg_animation_copy");
-            /*
-            dojo.place(
-                origin_copy,
-                "ffg_round_label"
-            );
-            //let target_placement = "ffg_cards_container";
-            dojo.addClass(origin_copy.id ,"ffg_animation_copy") ;
-            this.attachToNewParent(origin_copy.id, "ffg_round_label");
-            let x = 0;
-            let y = 0;
-            let anim = this.slideToObjectPos(origin_copy.id, divId,x,y,1000);
-            dojo.connect(anim, 'onEnd', (node) => {
-                dojo.destroy(node);
-            });
-            */
             dojo.addClass(divId,"ffg_card_back") ;
             
             let anim = this.slideTemporaryObject(origin_copy, 'ffg_cards_container', 'ffg_game_upper', divId,1000, row*200 ); 
@@ -907,7 +886,6 @@ function (dojo, declare) {
             for(i in containersToDisplay){
                 let container_id = containersToDisplay[i];
                 let containerDivId = "ffg_container_"+this.player_id+"_"+container_id;
-                //let containerDiv = dojo.query("#"+containerDivId);
                 dojo.addClass(containerDivId,"ffg_selectable") ;
             }
         },
@@ -1401,14 +1379,6 @@ function (dojo, declare) {
             numberDiv.innerHTML = score;
         },
         
-        increasePlayerTotalScore: function(player_id, delta_score) {
-            debug("increasePlayerTotalScore",player_id, delta_score);
-            
-            let numberDiv = dojo.query("#ffg_total_score_"+player_id+" .ffg_score_number")[0];
-            let value = parseInt(numberDiv.innerHTML) + parseInt(delta_score);
-            numberDiv.innerHTML = value;
-        },
-        
         /**
         Update BGA player panel score
         */
@@ -1430,8 +1400,7 @@ function (dojo, declare) {
             this.scoreCtrl[ player_id ].incValue( delta_score );
             
             let value = this.scoreCtrl[ player_id ].getValue();
-            //TODO JSA ? we could use get value and update : instead of another function increase
-            this.increasePlayerTotalScore(player_id, delta_score);
+            this.updatePlayerTotalScore(player_id, value);
             
             this.gamedatas.players[player_id].score = value;
         },
@@ -1932,17 +1901,6 @@ function (dojo, declare) {
             debug( 'notifications subscriptions setup' );
             
             // TODO: here, associate your game notifications with local methods
-            
-            // Example 1: standard notification handling
-            // dojo.subscribe( 'cardPlayed', this, "notif_cardPlayed" );
-            
-            // Example 2: standard notification handling + tell the user interface to wait
-            //            during 3 seconds after calling the method in order to let the players
-            //            see what is happening in the game.
-            // dojo.subscribe( 'cardPlayed', this, "notif_cardPlayed" );
-            // this.notifqueue.setSynchronous( 'cardPlayed', 3000 );
-            // 
-            
             dojo.subscribe( 'newTurn', this, "notif_newTurn" );
             dojo.subscribe( 'possibleLoads', this, "notif_possibleLoads" );
             dojo.subscribe( 'loadTruck', this, "notif_loadTruck" );

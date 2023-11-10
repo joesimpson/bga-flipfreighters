@@ -503,7 +503,7 @@
 
 /* 
 ---------------------------- ----------------------------   ---------------------------- 
-----------------------------  SHOW DISCARD DIALOG           ---------------------------- 
+----------------------------  SHOW Discard Pile/Deck DIALOG ---------------------------- 
 ---------------------------- ----------------------------   ---------------------------- 
 */
 #popin_showDiscardPileDialogId {
@@ -512,18 +512,6 @@
 #popin_showDiscardPileDialogId .standard_popin_title{
     text-align: center;
 }
-/*
-.ffg_modal_pile_content table th {
-    border-right: 1px solid rgba(0,0,0,.2);
-    height: 70px;
-    min-width: 70px;
-    text-align: center;
-    vertical-align: middle;
-    font-size: 30px;
-}
-.ffg_modal_pile_content table th>div{
-    display: inline-block;
-} */
 .ffg_modal_pile_content table tbody tr td{
     border-right: 1px solid rgba(0,0,0,.2);
     font-family: Caveat;
