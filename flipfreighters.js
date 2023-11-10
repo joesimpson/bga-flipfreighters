@@ -128,7 +128,7 @@ function (dojo, declare) {
             this.initTooltips(this.material.tooltips);
             
             this.addTooltip( "ffg_cardsSliderSize", _("Layout : Modify cards ratio"), '' );
-            this.addTooltip( "ffg_playerBoardSliderSize", _("Layout : Modify boards ratio"), '' ); 
+            this.addTooltip( "ffg_playerBoardSliderSize", _("Layout : Modify boards size"), '' ); 
             
             this.updateDiscardPile(this.gamedatas.discard_pile);
             this.addTooltip( "ffg_discard_pile_wrapper", _("Discard pile"), '' );
@@ -451,6 +451,8 @@ function (dojo, declare) {
             this.addTooltipToClass( "ffg_symbol_path_size", ffg_tooltips.path_size,'' );
             
             this.addTooltipToClass( "ffg_icon_show_score", _("Show current score situation"), '' );
+            
+            this.addTooltipToClass( "ffg_board_overtime_wrapper", _("Available overtime hours tokens"), '' );
             
             this.addTooltipToClass( "ffg_total_score", _("Overall score of this player"), '' );
             
