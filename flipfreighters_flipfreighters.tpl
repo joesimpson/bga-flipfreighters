@@ -200,16 +200,16 @@ var jstpl_player_board_details = '\<div class="ffg_player_panel_details" id="ffg
     </div>';
 
 
-var jstpl_showScore = `<div id="ffg_showScoreDialogContent">\
+var jstpl_showScore = `<div id="ffg_showScoreDialogContent">
         <table id='ffg_players_overview'>
           <thead>
             <tr>
               <th id="ffg_overview_user"><i class="fa fa-user"></i></th>
+              <th id="ffg_overview_deliveredtrucks"><i class="fa fa-truck fa-flip-horizontal"></i></th>
               <th id="ffg_overview_week1"><div></div></th>
               <th id="ffg_overview_week2"><div></div></th>
               <th id="ffg_overview_week3"><div></div></th>
               <th id="ffg_overview_overtime"><i class="fa fa-clock-o"></i></th>
-              <th id="ffg_overview_deliveredtrucks"><i class="fa fa-truck fa-flip-horizontal"></i></th>
               <th id="ffg_overview_total"><i class="fa fa-star"></i></th>
             </tr>
           </thead>
@@ -217,7 +217,15 @@ var jstpl_showScore = `<div id="ffg_showScoreDialogContent">\
         </table>
     </div>`;
     
-var jstpl_showScoreRow = '<tr id="ffg_scorerow_${player_id}" class="${trclasses}"><td class="ffg_player_col"><span class="playername" style="color:#${player_color};">${player_name}</span></td><td>${score_week1}</td><td>${score_week2}</td><td>${score_week3}</td><td>${overtime}</td><td>${delivered}</td><td>${score}</td></tr>';
+var jstpl_showScoreRow = `<tr id="ffg_scorerow_\${player_id}" class="\${trclasses}">
+        <td class="ffg_player_col"><span class="playername" style="color:#\${player_color};">\${player_name}</span></td>
+        <td class="ffg_delivered_col"><span>\${delivered}</span>/<span>9</span></td>
+        <td>\${score_week1}</td>
+        <td>\${score_week2}</td>
+        <td>\${score_week3}</td>
+        <td class="ffg_overtime_col"><span>\${overtime}</span>/<span>5</span></td>
+        <td>\${score}</td>
+    </tr>`;
 
 
 ////////////////////////////////////////////////////////////////////////////////////

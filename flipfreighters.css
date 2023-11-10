@@ -284,6 +284,17 @@
 #ffg_showScoreDialogContent table tbody tr td.ffg_player_col{
     word-wrap: break-word;
 }
+
+#ffg_showScoreDialogContent td.ffg_delivered_col span:first-child,
+#ffg_showScoreDialogContent td.ffg_overtime_col span:first-child {
+    position:relative;
+    top:-5px;
+}
+#ffg_showScoreDialogContent td.ffg_delivered_col span:last-child,
+#ffg_showScoreDialogContent td.ffg_overtime_col span:last-child {
+    position:relative;
+    top:5px;
+}
 #ffg_showScoreDialogContent table tbody tr:nth-of-type(odd) {
     background-color: lightgray;
 }
