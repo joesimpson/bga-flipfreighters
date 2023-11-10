@@ -13,9 +13,9 @@
 <div id="ffg_game_container">
 
 <div id="ffg_game_upper">
-    <input type="range" min="5" max="30" value="10" class="slider" id="ffg_cardsSliderSize" list="ffg_slider_values">
+    <input type="range" min="5" max="30" value="10" class="ffg_slider" id="ffg_cardsSliderSize" list="ffg_slider_values">
     <span id="ffg_round_label"></span>
-    <input type="range" min="5" max="100" value="60" class="slider" id="ffg_playerBoardSliderSize" list="ffg_slider_values">
+    <input type="range" min="5" max="100" value="60" class="ffg_slider" id="ffg_playerBoardSliderSize" list="ffg_slider_values">
     <datalist id="ffg_slider_values">
         <option value="5" label="5"></option>
         <option value="10" label="10"></option>

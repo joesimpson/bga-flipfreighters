@@ -102,6 +102,11 @@
 .ffg_theme_dark #ffg_game_upper{
     color: white;
 }
+.ffg_slider{
+    /** Needed for Chrome, Edge ? Not for FF ? */
+    color: inherit;
+}
+ 
 #ffg_round_label, #ffg_playerBoardSliderSize, #ffg_cardsSliderSize{
     margin: 0 10px;
 }
