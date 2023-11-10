@@ -1102,7 +1102,7 @@ class FlipFreighters extends Table
             "trucks_positions" => $trucks_positions,
         );
         
-        self::dump( "listUnconfirmedTurnActions()...> datas", $datas);
+        self::dump( "listUnconfirmedTurnActions()...> datas", $datas);// NOI18N 
         return $datas;
     }
     /**
@@ -1426,10 +1426,10 @@ class FlipFreighters extends Table
         $possibles = array();
          
         if($containerId == null )
-            throw new BgaVisibleSystemException( ("Unknown truck container"));
+            throw new BgaVisibleSystemException( ("Unknown truck container"));  // NOI18N 
         $container = $this->getTruckContainer($player_id,$containerId);
         if($container == null )
-            throw new BgaVisibleSystemException( ("Unknown truck container"));
+            throw new BgaVisibleSystemException( ("Unknown truck container")); // NOI18N 
         
         $truck_id = $container['truck_id'];
         $truckDatas = $this->getTruckPositions($truck_id,$player_id);
@@ -1466,9 +1466,9 @@ class FlipFreighters extends Table
         
         $card = $this->cards->getCard($cardId);
         if($card == null )
-            throw new BgaVisibleSystemException( ("Unknown card"));
+            throw new BgaVisibleSystemException( ("Unknown card")); // NOI18N 
         if($card['location'] != DECK_LOCATION_DAY )
-            throw new BgaVisibleSystemException( ("You cannot play that card know"));
+            throw new BgaVisibleSystemException( ("You cannot play that card know")); // NOI18N 
         
         $card_suit = $card['type'];
         $card['type_arg'] = $amount; //Don't save this in card, but allow to run rules on this value
@@ -1497,12 +1497,12 @@ class FlipFreighters extends Table
         
         //ANTICHEAT CHECKS :
         if($amount == null || $amount<=0 || $amount> MAX_LOAD)
-            throw new BgaVisibleSystemException( ("Incorrect quantity for loading this truck here"));
+            throw new BgaVisibleSystemException( ("Incorrect quantity for loading this truck here")); // NOI18N 
         $card = $this->cards->getCard($cardId);
         if($card == null )
-            throw new BgaVisibleSystemException( ("Unknown card"));
+            throw new BgaVisibleSystemException( ("Unknown card")); // NOI18N 
         if($card['location'] != DECK_LOCATION_DAY )
-            throw new BgaVisibleSystemException( ("You cannot play that card know"));
+            throw new BgaVisibleSystemException( ("You cannot play that card know")); // NOI18N 
         $card_suit = $card['type'];
         
         $usedOvertime = 0;
@@ -1516,13 +1516,13 @@ class FlipFreighters extends Table
         $usedOvertime += abs($amount - $card['type_arg']);
         if( $card_suit == JOKER_TYPE) $usedOvertime = max(0,$amount - CARD_VALUE_MAX); //IF joker is used for a low value, don't consider overtime
         if($usedOvertime > $originalAvailableOvertime)
-            throw new BgaVisibleSystemException( ("You don't have enough overtime hours to do that"));
+            throw new BgaVisibleSystemException( ("You don't have enough overtime hours to do that")); // NOI18N 
         
         if($containerId == null )
-            throw new BgaVisibleSystemException( ("Unknown truck container"));
+            throw new BgaVisibleSystemException( ("Unknown truck container")); // NOI18N 
         $container = $this->getTruckContainer($player_id,$containerId);
         if($container == null )
-            throw new BgaVisibleSystemException( ("Unknown truck container"));
+            throw new BgaVisibleSystemException( ("Unknown truck container")); // NOI18N 
         
         //LOGIC CHECK :
         $truck_id = $container['truck_id'];
@@ -1533,11 +1533,11 @@ class FlipFreighters extends Table
         $truckCargos = $trucks_cargos [$truck_id];
         $cardUsedPower = $this->getCardUsedPowerForMoves($player_id, $cardId);//>0 if card used for part of a move
         if( $this->cardAlreadyUsed($player_id,$card, $trucks_cargos) || $cardUsedPower >0)  {//ANTICHEAT
-            throw new BgaVisibleSystemException( ("You already used that card"));
+            throw new BgaVisibleSystemException( ("You already used that card")); // NOI18N 
         }
         $card['type_arg'] = $amount; //Don't save this in card, but allow to run rules on this value
         if($this->isPossibleLoadWithCard($card,$container,$truckDatas,$truckCargos,true) == false ) {
-            throw new BgaVisibleSystemException( ("You cannot load at this place"));
+            throw new BgaVisibleSystemException( ("You cannot load at this place")); // NOI18N 
         }
         
         
@@ -1576,33 +1576,33 @@ class FlipFreighters extends Table
         
         //ANTICHEAT CHECKS :
         if($cardId == null )
-            throw new BgaVisibleSystemException( ("Unknown card"));
+            throw new BgaVisibleSystemException( ("Unknown card")); // NOI18N 
         $card = $this->cards->getCard($cardId);
         if($card == null )
-            throw new BgaVisibleSystemException( ("Unknown card"));
+            throw new BgaVisibleSystemException( ("Unknown card")); // NOI18N 
         if($card['location'] != DECK_LOCATION_DAY )
-            throw new BgaVisibleSystemException( ("You cannot play that card know"));
+            throw new BgaVisibleSystemException( ("You cannot play that card know")); // NOI18N 
         $card_suit = $card['type'];
         if( !array_key_exists($truckId, $this->trucks_types ))
-            throw new BgaVisibleSystemException( ("Unknown truck"));
+            throw new BgaVisibleSystemException( ("Unknown truck")); // NOI18N 
         $fromPosition = $this->getCurrentTruckPosition($truckId,$player_id);
         $truck_material = $this->trucks_types[$truckId];
         $path_size = $truck_material ['path_size'];
         $truck_max_position = end($path_size);
         if($position <=$fromPosition || $position > $truck_max_position )
-            throw new BgaVisibleSystemException( ("Wrong position"));
+            throw new BgaVisibleSystemException( ("Wrong position")); // NOI18N 
         if($isDelivery && array_search($position,$path_size) ===FALSE)
-            throw new BgaVisibleSystemException( ("You cannot deliver here"));
+            throw new BgaVisibleSystemException( ("You cannot deliver here")); // NOI18N 
         $trucks_cargos = $this->getTruckCargos($player_id);
         if( $this->cardAlreadyUsed($player_id,$card, $trucks_cargos))  {
-            throw new BgaVisibleSystemException( ("You already used that card"));
+            throw new BgaVisibleSystemException( ("You already used that card")); // NOI18N 
         }
         $amount = $position - $fromPosition;
         $originalAvailableOvertime = $this->getPlayerAvailableOvertimeHoursPrivateState($player_id);
         $cardUsedPower = $this->getCardUsedPowerForMoves($player_id, $cardId);
         $usedOvertime = max(0,$amount - ($card['type_arg'] -$cardUsedPower) );
         if($usedOvertime > $originalAvailableOvertime)
-            throw new BgaVisibleSystemException( ("You don't have enough overtime hours to do that"));
+            throw new BgaVisibleSystemException( ("You don't have enough overtime hours to do that")); // NOI18N 
         
         //LOGIC CHECKS
         $truckState = $this->getCurrentTruckState($truckId,$player_id);
@@ -1611,7 +1611,7 @@ class FlipFreighters extends Table
         self::trace("moveTruck($cardId, $truckId, $position,$isDelivery,$player_id,$player_name ) ... cardMovePower=$cardMovePower");
         $card['type_arg'] = $amount; //Don't save this in card, but allow to run rules on this value
         if($this->isPossibleMoveWithCard($card,$fromPosition,$truckState,$truckCargos,$truckId,$position,$cardMovePower,$cardUsedPower) == false ) {
-            throw new BgaVisibleSystemException( ("You cannot move to this place"));
+            throw new BgaVisibleSystemException( ("You cannot move to this place")); // NOI18N 
         }
         
         //REAL ACTION :
