@@ -139,6 +139,11 @@ $gameinfos = array(
 //    totranslate(" "),
 ),
 
+'custom_buy_button' => array(
+   'url' => 'https://www.pnparcade.com/products/flip-freighters',
+   'label' => 'PnP Arcade'
+),
+
 //////// BGA SANDBOX ONLY PARAMETERS (DO NOT MODIFY)
 
 // simple : A plays, B plays, C plays, A plays, B plays, ...
