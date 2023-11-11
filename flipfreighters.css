@@ -886,27 +886,47 @@
     z-index: 1;
     border-radius: 100%;
 }
+/** Safari issue : recreate the outline from scratch */
+.ffg_truck_pos::after {
+   content: '';
+   position: absolute;
+   left: -5px;
+   top: -5px;
+   right: -5px;
+   bottom: -5px;
+   border-radius: 100%;
+}
 .ffg_confirmed_pos{
     background-color: black;
-    outline: 2px solid yellow;
+    /*outline: 2px solid yellow;*/
+}
+.ffg_confirmed_pos::after {
+    /* Maybe this is prettier without any border in that case*/
+    /* border: 5px solid yellowgreen; */
 }
 .ffg_not_confirmed_pos{
     background-color: black;
-    outline: 5px dashed red;
+    /*outline: 5px dashed red;*/
+}
+.ffg_not_confirmed_pos::after {
+    border: 5px dashed red;
 }
 .ffg_not_drawn_pos.ffg_selectable{
     /* Don't hide it because we want to be able to draw it later for selection
     visibility: hidden;
     */
     background-color: transparent;
-    outline: 5px solid blue;
+    /*outline: 5px solid blue;*/
     cursor: pointer;
 }
-.notouch-device .ffg_not_drawn_pos.ffg_selectable:hover {
-  scale: 1.1;
-  outline-style: solid;
-  outline-color: yellow;
-  z-index: 2;
+.ffg_not_drawn_pos.ffg_selectable::after {
+    border: 5px solid blue;
+}
+.notouch-device .ffg_not_drawn_pos.ffg_selectable:hover::after {
+    scale: 1.1;
+    border-style: solid;
+    border-color: yellow;
+    z-index: 2;
 }
 
 /* 
@@ -923,21 +943,26 @@
     height: var(--ffg_truck_position_medium_size);
     left: 877px;
     top: 327px;
+    transform: rotate(7deg);
+}
+.ffg_truck[data_id='truck1']>.ffg_truck_pos[data_position="2"], .ffg_truck[data_id='truck1']>.ffg_truck_pos[data_position="2"]::after,
+.ffg_truck[data_id='truck1']>.ffg_truck_pos[data_position="3"], .ffg_truck[data_id='truck1']>.ffg_truck_pos[data_position="3"]::after,
+.ffg_truck[data_id='truck2']>.ffg_truck_pos[data_position="2"], .ffg_truck[data_id='truck2']>.ffg_truck_pos[data_position="2"]::after,
+.ffg_truck[data_id='truck2']>.ffg_truck_pos[data_position="4"], .ffg_truck[data_id='truck2']>.ffg_truck_pos[data_position="4"]::after,
+.ffg_truck[data_id='truck6']>.ffg_truck_pos[data_position="4"], .ffg_truck[data_id='truck6']>.ffg_truck_pos[data_position="4"]::after,
+.ffg_truck[data_id='truck6']>.ffg_truck_pos[data_position="7"], .ffg_truck[data_id='truck6']>.ffg_truck_pos[data_position="7"]::after,
+.ffg_truck[data_id='truck7']>.ffg_truck_pos[data_position="6"], .ffg_truck[data_id='truck7']>.ffg_truck_pos[data_position="6"]::after{
+    /* HALF CIRCLE RIGHT-SIDE*/
     border-bottom-right-radius: var(--ffg_truck_position_medium_size);
     border-top-right-radius: var(--ffg_truck_position_medium_size);
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
-    transform: rotate(7deg);
 }
 .ffg_truck[data_id='truck1']>.ffg_truck_pos[data_position="3"]{
     width: calc(0.5 * var(--ffg_truck_position_medium_size) );
     height: var(--ffg_truck_position_medium_size);
     left: 876px;
     top: 443px;
-    border-bottom-right-radius: var(--ffg_truck_position_medium_size);
-    border-top-right-radius: var(--ffg_truck_position_medium_size);
-    border-top-left-radius: 0;
-    border-bottom-left-radius: 0;
     transform: rotate(10deg);
 }
 .ffg_truck[data_id='truck1']>.ffg_truck_pos[data_position="4"]{
@@ -958,10 +983,6 @@
     height: var(--ffg_truck_position_medium_size);
     left: 509px;
     top: 267px;
-    border-bottom-right-radius: var(--ffg_truck_position_medium_size);
-    border-top-right-radius: var(--ffg_truck_position_medium_size);
-    border-top-left-radius: 0;
-    border-bottom-left-radius: 0;
     transform: rotate(17deg);
 }
 .ffg_truck[data_id='truck2']>.ffg_truck_pos[data_position="3"]{
@@ -973,10 +994,6 @@
     height: var(--ffg_truck_position_medium_size);
     left: 490px;
     top: 433px;
-    border-bottom-right-radius: var(--ffg_truck_position_medium_size);
-    border-top-right-radius: var(--ffg_truck_position_medium_size);
-    border-top-left-radius: 0;
-    border-bottom-left-radius: 0;
 }
 .ffg_truck[data_id='truck2']>.ffg_truck_pos[data_position="5"]{
     left: 452px;
@@ -992,11 +1009,20 @@
     height: var(--ffg_truck_position_medium_size);
     left: 482px;
     top: 260px;
+    transform: rotate(17deg);
+}
+.ffg_truck[data_id='truck3']>.ffg_truck_pos[data_position="2"], .ffg_truck[data_id='truck3']>.ffg_truck_pos[data_position="2"]::after,
+.ffg_truck[data_id='truck3']>.ffg_truck_pos[data_position="6"], .ffg_truck[data_id='truck3']>.ffg_truck_pos[data_position="6"]::after,
+.ffg_truck[data_id='truck4']>.ffg_truck_pos[data_position="1"], .ffg_truck[data_id='truck4']>.ffg_truck_pos[data_position="1"]::after,
+.ffg_truck[data_id='truck4']>.ffg_truck_pos[data_position="2"], .ffg_truck[data_id='truck4']>.ffg_truck_pos[data_position="2"]::after,
+.ffg_truck[data_id='truck4']>.ffg_truck_pos[data_position="4"], .ffg_truck[data_id='truck4']>.ffg_truck_pos[data_position="4"]::after,
+.ffg_truck[data_id='truck5']>.ffg_truck_pos[data_position="1"], .ffg_truck[data_id='truck5']>.ffg_truck_pos[data_position="1"]::after,
+.ffg_truck[data_id='truck5']>.ffg_truck_pos[data_position="3"], .ffg_truck[data_id='truck5']>.ffg_truck_pos[data_position="3"]::after{
+    /* HALF CIRCLE LEFT-SIDE*/
     border-bottom-right-radius: 0;
     border-top-right-radius: 0;
     border-top-left-radius: var(--ffg_truck_position_medium_size);
     border-bottom-left-radius: var(--ffg_truck_position_medium_size);
-    transform: rotate(17deg);
 }
 .ffg_truck[data_id='truck3']>.ffg_truck_pos[data_position="3"]{
     left: 579px;
@@ -1015,10 +1041,6 @@
     height: var(--ffg_truck_position_medium_size);
     left: 850px;
     top: 324px;
-    border-bottom-right-radius: 0;
-    border-top-right-radius: 0;
-    border-top-left-radius: var(--ffg_truck_position_medium_size);
-    border-bottom-left-radius: var(--ffg_truck_position_medium_size);
     transform: rotate(7deg);
 }
 .ffg_truck[data_id='truck3']>.ffg_truck_pos[data_position="7"]{
@@ -1031,20 +1053,12 @@
     height: var(--ffg_truck_position_medium_size);
     left: 464px;
     top: 433px;
-    border-bottom-right-radius: 0;
-    border-top-right-radius: 0;
-    border-top-left-radius: var(--ffg_truck_position_medium_size);
-    border-bottom-left-radius: var(--ffg_truck_position_medium_size);
 }
 .ffg_truck[data_id='truck4']>.ffg_truck_pos[data_position="2"]{
     width: calc(0.5 * var(--ffg_truck_position_medium_size) );
     height: var(--ffg_truck_position_medium_size);
     left: 555px;
     top: 427px;
-    border-bottom-right-radius: 0;
-    border-top-right-radius: 0;
-    border-top-left-radius: var(--ffg_truck_position_medium_size);
-    border-bottom-left-radius: var(--ffg_truck_position_medium_size);
     transform: rotate(7deg);
 }
 .ffg_truck[data_id='truck4']>.ffg_truck_pos[data_position="3"]{
@@ -1056,10 +1070,6 @@
     height: var(--ffg_truck_position_medium_size);
     left: 852px;
     top: 440px;
-    border-bottom-right-radius: 0;
-    border-top-right-radius: 0;
-    border-top-left-radius: var(--ffg_truck_position_medium_size);
-    border-bottom-left-radius: var(--ffg_truck_position_medium_size);
     transform: rotate(10deg);
 }
 .ffg_truck[data_id='truck4']>.ffg_truck_pos[data_position="5"]{
@@ -1080,10 +1090,6 @@
     height: var(--ffg_truck_position_medium_size);
     left: 510px;
     top: 628px;
-    border-bottom-right-radius: 0;
-    border-top-right-radius: 0;
-    border-top-left-radius: var(--ffg_truck_position_medium_size);
-    border-bottom-left-radius: var(--ffg_truck_position_medium_size);
     transform: rotate(1deg);
 }
 .ffg_truck[data_id='truck5']>.ffg_truck_pos[data_position="2"]{
@@ -1095,10 +1101,6 @@
     height: var(--ffg_truck_position_medium_size);
     left: 761px;
     top: 644px;
-    border-bottom-right-radius: 0;
-    border-top-right-radius: 0;
-    border-top-left-radius: var(--ffg_truck_position_medium_size);
-    border-bottom-left-radius: var(--ffg_truck_position_medium_size);
     transform: rotate(-3deg);
 }
 .ffg_truck[data_id='truck5']>.ffg_truck_pos[data_position="4"]{
@@ -1127,10 +1129,6 @@
     height: var(--ffg_truck_position_medium_size);
     left: 537px;
     top: 628px;
-    border-bottom-right-radius: var(--ffg_truck_position_medium_size);
-    border-top-right-radius: var(--ffg_truck_position_medium_size);
-    border-top-left-radius: 0;
-    border-bottom-left-radius: 0;
     transform: rotate(1deg);
 }
 .ffg_truck[data_id='truck6']>.ffg_truck_pos[data_position="5"]{
@@ -1146,10 +1144,6 @@
     height: var(--ffg_truck_position_medium_size);
     left: 579px;
     top: 429px;
-    border-bottom-right-radius: var(--ffg_truck_position_medium_size);
-    border-top-right-radius: var(--ffg_truck_position_medium_size);
-    border-top-left-radius: 0;
-    border-bottom-left-radius: 0;
     transform: rotate(7deg);
 }
 .ffg_truck[data_id='truck6']>.ffg_truck_pos[data_position="8"]{
@@ -1182,10 +1176,6 @@
     height: var(--ffg_truck_position_medium_size);
     left: 786px;
     top: 644px;
-    border-bottom-right-radius: var(--ffg_truck_position_medium_size);
-    border-top-right-radius: var(--ffg_truck_position_medium_size);
-    border-top-left-radius: 0;
-    border-bottom-left-radius: 0;
     transform: rotate(-3deg);
 }
 .ffg_truck[data_id='truck7']>.ffg_truck_pos[data_position="7"]{
