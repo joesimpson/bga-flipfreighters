@@ -1996,6 +1996,8 @@ function (dojo, declare) {
                 this.displayPossibleLoads( card_id);
                 this.displayPossibleMoves( card_id);
                 //}
+                
+                //Don't call updatePossibleCards because we don't want the current card to be disabled (in order to be able to modify it again) and there is no reason to update other cards
             }  
             else { //GENERAL CASE, get all 3 cards infos
                 this.possibleCards = [];
@@ -2003,9 +2005,9 @@ function (dojo, declare) {
                     this.possibleCards = notif.args.possibleCards;
                 }
                 this.possibleCardsBeforeOvertime = dojo.clone(this.possibleCards);
+                this.updatePossibleCards();
             }
             
-            this.updatePossibleCards();
             this.resetButtonsSelection();
             
         },  
