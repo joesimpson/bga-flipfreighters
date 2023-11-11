@@ -38,33 +38,20 @@
             self::trace( "Complete reinitialization of board game" );
       }
   	} 
-  	
-  	// TODO: defines your action entry points there
-
-
-    /*
     
-    Example:
-  	
-    public function myAction()
+    /* Check Helper, not a real action */
+  	private function checkVersion()
     {
-        self::setAjaxMode();     
-
-        // Retrieve arguments
-        // Note: these arguments correspond to what has been sent through the javascript "ajaxcall" method
-        $arg1 = self::getArg( "myArgument1", AT_posint, true );
-        $arg2 = self::getArg( "myArgument2", AT_posint, true );
-
-        // Then, call the appropriate method in your game logic, like "playCard" or "myAction"
-        $this->game->myAction( $arg1, $arg2 );
-
-        self::ajaxResponse( );
+        $clientVersion = (int) self::getArg('version', AT_int, false);
+        $this->game->checkVersion($clientVersion);
     }
-    
-    */
+  
+  	// defines your action entry points there
+  
     public function loadTruck()
     {
-        self::setAjaxMode();     
+        self::setAjaxMode();
+        self::checkVersion(); 
 
         // Retrieve arguments
         // Note: these arguments correspond to what has been sent through the javascript "ajaxcall" method
@@ -81,7 +68,8 @@
     
     public function getPossibleLoads()
     {
-        self::setAjaxMode();     
+        self::setAjaxMode();    
+        self::checkVersion();  
 
         // Retrieve arguments
         // Note: these arguments correspond to what has been sent through the javascript "ajaxcall" method
@@ -95,7 +83,8 @@
 
     public function getPossibleActionsForCard()
     {
-        self::setAjaxMode();     
+        self::setAjaxMode();    
+        self::checkVersion();  
 
         // Retrieve arguments
         // Note: these arguments correspond to what has been sent through the javascript "ajaxcall" method
@@ -111,7 +100,8 @@
     
     public function moveTruck()
     {
-        self::setAjaxMode();     
+        self::setAjaxMode();  
+        self::checkVersion();    
 
         // Retrieve arguments
         // Note: these arguments correspond to what has been sent through the javascript "ajaxcall" method
@@ -128,7 +118,8 @@
     
     public function endTurn()
     {
-        self::setAjaxMode();     
+        self::setAjaxMode();  
+        self::checkVersion();    
 
         // Then, call the appropriate method in your game logic 
         $this->game->endTurn();
@@ -138,12 +129,14 @@
     
     public function cancelTurn() {
        self::setAjaxMode();
+        self::checkVersion(); 
        $this->game->cancelTurn();
        self::ajaxResponse();
     }
    
     public function showScoringDialog() {
        self::setAjaxMode();
+       self::checkVersion(); 
        $this->game->showScoringDialog();
        self::ajaxResponse();
     }

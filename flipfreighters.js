@@ -349,10 +349,35 @@ function (dojo, declare) {
             if (!args) {
                 args = {};
             }
+            args.version = this.gamedatas.version;
             //Beware of "Move recorded, waiting for update...." when lock enabled
             args.lock = true;
             debug( "ajaxcallwrapperNoCheck ... ",action, args, handler );
-            this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/" + action + ".html", args, this, (result) => { }, handler);
+            this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/" + action + ".html", args, this, 
+                (result) => { }, 
+                (error, errorMsg, errorCode) => {
+                    if (error && errorMsg == "!!!checkVersion") {
+                        this.infoDialog(
+                            _("A new version of this game is now available"),
+                            _("Reload Required"),
+                            () => {
+                                window.location.reload(true);
+                            },
+                            true
+                        );
+                    } else {
+                        if (handler) handler(error, errorMsg, errorCode);
+                    }
+                }
+            );
+        },
+        
+        /* @Override BGA standard error handling (for specific errors only) */
+        showMessage: function (msg, type) {
+            if (type == "error" && msg && msg.startsWith("!!!")) {
+                return; // suppress red banner and gamelog message
+            }
+            this.inherited(arguments);
         },
         
         /** Return User local config */

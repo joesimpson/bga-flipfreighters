@@ -195,6 +195,8 @@ class FlipFreighters extends Table
         
         // Gather all information about current game situation (visible by player $current_player_id).
         
+        $result['version'] = intval($this->gamestate->table_globals[300]);//GAMESTATE_GAMEVERSION
+        
         $round_number = self::getGameStateValue( 'round_number');
         $result['round_number'] = $round_number;
         $result['turn_number'] = self::getGameStateValue( 'turn_number');
@@ -317,6 +319,21 @@ class FlipFreighters extends Table
         return self::isSpectator();
     }
     
+    /**
+    Check Server version to compare with client version : throw an error in case it 's not the same
+    From https://en.doc.boardgamearena.com/BGA_Studio_Cookbook#Force_players_to_refresh_after_new_deploy
+    */
+    public function checkVersion(int $clientVersion): void
+    {
+        if ($clientVersion != intval($this->gamestate->table_globals[300])) {
+            // Simplest way is to throw a "visible" exception
+            // It's ugly but comes with a "click here" link to refresh
+            //throw new BgaVisibleSystemException(self::_("A new version of this game is now available. Please reload the page (F5)."));
+
+            // For something prettier, throw a "user" exception and handle in JS
+            throw new BgaUserException('!!!checkVersion');
+        }
+    }
     /**
     Init the deck component with  52 cards:
         + 2->6 + Ace of each suit (color)
