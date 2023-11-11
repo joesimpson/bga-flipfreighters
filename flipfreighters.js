@@ -1514,7 +1514,9 @@ function (dojo, declare) {
             let data_suit= evt.currentTarget.getAttribute("data_suit") ;
             let data_amount= evt.currentTarget.getAttribute("data_amount") ;
             let card_row = div_id.split("_").lastItem;
-            let suit_reset = dojo.query("#ffg_card_wrapper_"+card_row+" .ffg_button_card_suit_reset")[0]?.getAttribute("data_suit"); 
+            let suit_reset = undefined;
+            let elt = dojo.query("#ffg_card_wrapper_"+card_row+" .ffg_button_card_suit_reset")[0]; 
+            if (elt != undefined) suit_reset = elt.getAttribute("data_suit"); 
             
             if(this.selectedCard == card_id ){
                 //IF ALREADY DISPLAYED , hide
