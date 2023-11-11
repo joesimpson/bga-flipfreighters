@@ -744,7 +744,7 @@ class FlipFreighters extends Table
         );
     }
     
-    function getSQLSelectTruckCargos($player_id,$truck_id,$cargo_id,$state){
+    function getSQLSelectTruckCargos($player_id,$truck_id,$cargo_id,$state,$card_id){
         $sql = "SELECT SUBSTRING(cargo_key FROM 1 FOR 6) truck_id, cargo_key id,cargo_amount  amount, cargo_state state,cargo_card_id card_id, cargo_overtime_used overtime, SUBSTRING(cargo_key FROM 8 FOR 2) cargo_index, cargo_player_id player_id
             FROM freighter_cargo ";
             if(isset($player_id) ){
@@ -756,11 +756,13 @@ class FlipFreighters extends Table
             $sql = "SELECT * FROM ( ".$sql.") c WHERE id ='$cargo_id' ";
         } else if(isset($state) ){
             $sql = "SELECT * FROM ( ".$sql.") c WHERE state =$state ";
+        } else if(isset($card_id) ){
+            $sql = "SELECT * FROM ( ".$sql.") c WHERE card_id =$card_id ";
         } 
         return $sql;
     }
     function getTruckCargos($player_id,$truck_id = null){
-        $sql = $this->getSQLSelectTruckCargos($player_id,$truck_id,null,null);
+        $sql = $this->getSQLSelectTruckCargos($player_id,$truck_id,null,null,null);
         $trucks_cargos = $this->getDoubleKeyCollectionFromDB( $sql);
         
         //LOOP ON EACH TRUCK to add trucks which are not selected by this player yet
@@ -783,7 +785,7 @@ class FlipFreighters extends Table
         return $trucks_cargos;    
     }
     function getTruckContainer($player_id,$cargo_id){
-        $sql = $this->getSQLSelectTruckCargos($player_id,null,$cargo_id,null);
+        $sql = $this->getSQLSelectTruckCargos($player_id,null,$cargo_id,null,null);
         $datas = $this->getObjectFromDB($sql);
         //self::dump("getTruckContainer($player_id,$cargo_id)", $datas);   
         
@@ -804,9 +806,14 @@ class FlipFreighters extends Table
         return $datas;    
     }
     function getExistingTruckCargosByState($state){
-        $sql = $this->getSQLSelectTruckCargos(null,null,null,$state);
+        $sql = $this->getSQLSelectTruckCargos(null,null,null,$state,null);
         $trucks_cargos = $this->getObjectListFromDB( $sql);
         return $trucks_cargos;    
+    }
+    function getExistingTruckCargoByCard($player_id,$card_id){
+        $sql = $this->getSQLSelectTruckCargos($player_id,null,null,null,$card_id);
+        $truck_cargo = $this->getObjectFromDB( $sql);
+        return $truck_cargo;
     }
     
     function getEmptyTruckCargo($player_id,$truck_id, $cargo_index){
@@ -990,7 +997,6 @@ class FlipFreighters extends Table
     function getCardsSuitWithOvertime($dayCards,$player_id ){
         self::trace("getCardsSuitWithOvertime($player_id)...");
         $cardsSuitWithOvertime = array();
-        $playerBoard = $this->getPlayerBoard($player_id);
         foreach( $dayCards as $dayCard){
             $cardsSuitWithOvertime[$dayCard['id']] = $dayCard["type"];
             if($dayCard["type"] == JOKER_TYPE){
@@ -999,18 +1005,11 @@ class FlipFreighters extends Table
             }
             
             //Look for each cargo to check if it is used by this card
-            //TODO JSA PERF improve by SQL select by card_id
-            $trucks_cargos = $playerBoard['trucks_cargos'];
-            foreach( $trucks_cargos as $truck_id => $truck_cargos )
-            {
-                foreach( $truck_cargos as $truck_cargo )
-                {
-                    $card_id = $truck_cargo['card_id'];
-                    if( $dayCard['id'] == $card_id ){
-                        $cargoSuit = $this->getTruckCargoSuit($truck_cargo) ;
-                        if(isset($cargoSuit)) $cardsSuitWithOvertime[$card_id] = $cargoSuit;
-                    }
-                }
+            $card_id = $dayCard['id'];
+            $truck_cargo = $this->getExistingTruckCargoByCard($player_id,$card_id );
+            if(isset($truck_cargo)){
+                $cargoSuit = $this->getTruckCargoSuit($truck_cargo) ;
+                if(isset($cargoSuit)) $cardsSuitWithOvertime[$card_id] = $cargoSuit;
             }
         }
         //self::dump("getCardsSuitWithOvertime($player_id)",$cardsSuitWithOvertime);
