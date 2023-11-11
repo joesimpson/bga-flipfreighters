@@ -1435,7 +1435,10 @@
 .ffg_total_score>.ffg_score_number{
     line-height: 45px;
     font-size: 56px;
+    /* KO On Mobile Safari 
     justify-content: right;
+    */
+    justify-content: flex-end;
     font-style: italic;
     color: #6b2912;
 }
@@ -1583,7 +1586,7 @@
     outline: 3px solid blue;
 }
 .ffg_overtime:not(.ffg_selectable){
-    cursor: initial;
+    cursor: inherit;
 }
 .ffg_overtime.ffg_selectable .ffg_icon_overtime_used,
 .ffg_overtime.ffg_selectable_for_others .ffg_icon_overtime_used,
