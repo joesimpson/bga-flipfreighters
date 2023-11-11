@@ -2043,6 +2043,11 @@ function (dojo, declare) {
             this.dayCards[cardRow].usedPower = notif.args.cardUsage;
             this.updateCardUsage(cardRow);
             
+            if(notif.args.usedOvertime == 0){
+                //For example if we had a 6 +/-1 and we click on position 2, it doesn't cost anything
+                this.resetOvertimeHourOnCard($("ffg_card_"+cardRow), true);
+            }
+            
             //unselect card
             this.unselectCard();
             
