@@ -234,6 +234,8 @@ function (dojo, declare) {
                         this.possibleCards = args.args._private.possibleCards;
                     }
                 } 
+                //Preserve value in case we use overtime during turn and want to cancel
+                this.possibleCardsBeforeOvertime = dojo.clone(this.possibleCards);
                 this.updatePossibleCards();
                 break;
                 
@@ -349,7 +351,7 @@ function (dojo, declare) {
             }
             //Beware of "Move recorded, waiting for update...." when lock enabled
             args.lock = true;
-
+            debug( "ajaxcallwrapperNoCheck ... ",action, args, handler );
             this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/" + action + ".html", args, this, (result) => { }, handler);
         },
         
@@ -1184,13 +1186,27 @@ function (dojo, declare) {
             }
         },
         
-        resetOvertimeHourOnCard: function(cardDiv){
-            debug( "resetOvertimeHourOnCard()",cardDiv);
+        resetOvertimeHourOnCard: function(cardDiv, updatePossibleValues = false){
+            debug( "resetOvertimeHourOnCard()",cardDiv,updatePossibleValues);
             let cardModifier =  dojo.query("#"+cardDiv.id+" .ffg_cardModifier")[0];
             let amount = parseInt(cardDiv.getAttribute("data_amount") ) ;
             let card_value = parseInt(cardDiv.getAttribute("data_value") ) ;
+            let card_id = parseInt(cardDiv.getAttribute("data_id") ) ;
+            let card_suit = parseInt(cardDiv.getAttribute("data_suit") ) ;
             cardDiv.setAttribute("data_amount", card_value);
             cardModifier.setAttribute("data_value",0) ;
+            if(updatePossibleValues ){
+                /*
+                if( amount!=card_value){
+                    debug( "resetOvertimeHourOnCard()... recall server to get updated values for card ", card_id);
+                    this.ajaxcallwrapper("getPossibleActionsForCard", {'cardId': card_id,'amount': card_value, 'suit':card_suit, 'refreshNoDisplay':true });
+                }*/
+                //Instead of recalling server and create race conditions, let's reset to values of this turn :
+                this.possibleCards[card_id] = dojo.clone(this.possibleCardsBeforeOvertime [card_id]);
+                //Reset suit:
+                let row = cardDiv.id.split("_").lastItem;
+                cardDiv.setAttribute('data_suit',this.dayCards[row].type);
+            }
             
             this.updateOvertimeHourOnCard(cardDiv);
         },
@@ -1517,6 +1533,13 @@ function (dojo, declare) {
             let suit_reset = undefined;
             let elt = dojo.query("#ffg_card_wrapper_"+card_row+" .ffg_button_card_suit_reset")[0]; 
             if (elt != undefined) suit_reset = elt.getAttribute("data_suit"); 
+            
+            //Reset overtime indicator on ALL CARDS which are not used yet :
+            dojo.query(".ffg_card.ffg_selectable").forEach((i) => {
+                    this.resetOvertimeHourOnCard(i, true);
+                });
+            //RESET board overtime tokens to 0 :
+            this.updateOvertimeHoursOnCurrentBoard(0,''); 
             
             if(this.selectedCard == card_id ){
                 //IF ALREADY DISPLAYED , hide
@@ -1969,14 +1992,17 @@ function (dojo, declare) {
                 if(notif.args.possibleCards !=undefined){
                     this.possibleCards[card_id] = notif.args.possibleCards;
                 }
+                //if(notif.args.refreshNoDisplay == false){
                 this.displayPossibleLoads( card_id);
                 this.displayPossibleMoves( card_id);
+                //}
             }  
             else { //GENERAL CASE, get all 3 cards infos
                 this.possibleCards = [];
                 if(notif.args.possibleCards !=undefined){
                     this.possibleCards = notif.args.possibleCards;
                 }
+                this.possibleCardsBeforeOvertime = dojo.clone(this.possibleCards);
             }
             
             this.updatePossibleCards();
@@ -2044,6 +2070,7 @@ function (dojo, declare) {
             if(notif.args.possibleCards !=undefined){
                 this.possibleCards = notif.args.possibleCards;
             } 
+            this.possibleCardsBeforeOvertime = dojo.clone(this.possibleCards);
             this.updatePossibleCards();
             
             //Clean containers :
