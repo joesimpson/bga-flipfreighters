@@ -19,9 +19,7 @@
 
 require_once( APP_GAMEMODULE_PATH.'module/table/table.game.php' );
 
-//TODO JSA constants file
 const JOKER_TYPE = 5;
-//const JOKER_VALUE = 15;
 const JOKER_VALUE = 6; // USE CARD_VALUE_MAX in order to have the maximum value when using overtime hours tokens
 
 const NB_CARDS_BY_WEEK = 15;// BY ROUND
@@ -168,7 +166,6 @@ class FlipFreighters extends Table
 
         // setup the initial game situation here
         $this->initDeck();
-        $this->initPlayerBoard();
 
         // Activate first player (which is in general a good idea :) )
         $this->activeNextPlayer();
@@ -196,7 +193,7 @@ class FlipFreighters extends Table
         $sql = "SELECT player_id id, player_score score, player_score_aux score_aux FROM player ";
         $result['players'] = self::getCollectionFromDb( $sql );
         
-        // TODO: Gather all information about current game situation (visible by player $current_player_id).
+        // Gather all information about current game situation (visible by player $current_player_id).
         
         $round_number = self::getGameStateValue( 'round_number');
         $result['round_number'] = $round_number;
@@ -240,14 +237,7 @@ class FlipFreighters extends Table
         foreach($result['players'] as $player){ 
             $player_id = $player["id"];
             for($k=1; $k <= NB_ROUNDS;$k++){
-                
-                /* if($k == $result['round_number'] && $player_id  == $current_player_id) {
-                    //Recompute private score with possible
-                    $result['players'][$player_id]["score_week".$k] = $this->computePlayerWeekScore( $player_id);
-                }
-                else {*/
                 $result['players'][$player_id]["score_week".$k] = self::getStat( "score_week".$k, $player_id );
-                //}
             }
             
             $availableOvertime = $this->getPlayerAvailableOvertimeHours($player_id);
@@ -577,11 +567,6 @@ class FlipFreighters extends Table
     */
     function isPossibleLoadWithCard($card,$container,$truck,$cargos, $strictValue)
     { 
-        // 'id' absent with php array datas
-        //$card_id = $card['id'];
-        //self::dump("isPossibleLoadWithCard($card_id)", $container);
-        //self::dump("isPossibleLoadWithCard($card_id)", $truck);
-        
         //IF Container is not empty KO
         if( array_key_exists('amount',$container) && $container['amount']>0 ) {
             return false;
@@ -673,7 +658,7 @@ class FlipFreighters extends Table
         foreach( $trucks_positions as $truck_position ){
             $truck_id = $truck_position['truck_id'];
             $material = $this->trucks_types[$truck_id];
-            $truck_max_position = end($material['path_size']);//TODO JSA GAME RULES
+            $truck_max_position = end($material['path_size']);
             $truck_cargos = $trucks_cargos[$truck_id];
             $currentTruckPosition = $this->getCurrentTruckPositionInDatas($truck_position);
             $truckState = $this->getCurrentTruckStateInDatas($truck_position);
@@ -717,35 +702,6 @@ class FlipFreighters extends Table
         return true;
     }
     
-    //TODO JSA separate module for player board / truck
-    function initPlayerBoard()
-    {
-        $players = self::loadPlayersBasicInfos();
-        
-        //CLEAN BEFORE (useful FOR TESTING)
-        self::DbQuery( "DELETE FROM freighter_cargo " );
-        
-        $trucks = $this->trucks_types;
-        
-        /*
-        // may be unnecessary if we use material container_ids to retrieve possibles actions, so we insert only when loaded ?
-        //Step 1 : prepare an entry for all possible cargo in every players trucks :
-        $sql = "INSERT INTO freighter_cargo (cargo_player_id, cargo_key) VALUES ";
-        $values = array();
-        foreach( $players as $player_id => $player )
-        {
-            foreach( $trucks as $truck_id => $truck ) {
-                foreach( $truck['containers'] as $container_id => $container ){
-                    $values[] = "( '$player_id', '".$truck_id."_$container_id' )";
-                }
-            }
-        }
-        $sql .= implode( ',', $values );
-        self::DbQuery( $sql );
-        */
-        
-    }
-    
     function getPlayerBoard($player_id){
         
         $trucks_cargos = $this->getTruckCargos($player_id);
@@ -779,8 +735,6 @@ class FlipFreighters extends Table
             $trucks_scores[$truck_type_id] = $this->computeScore($player_id,$truck_type_id, $trucks_cargos[$truck_type_id], $trucks_positions[$truck_type_id] ); 
         }
         //self::dump("getPlayerBoard($player_id) trucks_positions AFTER ",$trucks_positions);
-        
-        //TODO JSA get cards spend overtime
         
         return array( 
             "player_id" => $player_id,
@@ -831,7 +785,7 @@ class FlipFreighters extends Table
     function getTruckContainer($player_id,$cargo_id){
         $sql = $this->getSQLSelectTruckCargos($player_id,null,$cargo_id,null);
         $datas = $this->getObjectFromDB($sql);
-        self::dump("getTruckContainer($player_id,$cargo_id)", $datas);   
+        //self::dump("getTruckContainer($player_id,$cargo_id)", $datas);   
         
         if( $datas == null){
             //Cargo is not inserted yet...
@@ -902,7 +856,6 @@ class FlipFreighters extends Table
               on a.fmove_player_id = b.fmove_player_id AND  a.fmove_truck_id = b.fmove_truck_id 
             ORDER BY 1,2
              ";
-             //TODO JSA WHERE fmove_player_id ='$player_id'
         if(isset($player_id) ){
             $sql = "SELECT * FROM ( ".$sql.") c WHERE player_id ='$player_id' ";
         } else if(isset($not_confirmed_states) ){
@@ -1060,7 +1013,7 @@ class FlipFreighters extends Table
                 }
             }
         }
-        self::dump("getCardsSuitWithOvertime($player_id)",$cardsSuitWithOvertime);
+        //self::dump("getCardsSuitWithOvertime($player_id)",$cardsSuitWithOvertime);
         return $cardsSuitWithOvertime;
     }
     
@@ -1102,7 +1055,7 @@ class FlipFreighters extends Table
             "trucks_positions" => $trucks_positions,
         );
         
-        self::dump( "listUnconfirmedTurnActions()...> datas", $datas);// NOI18N 
+        //self::dump( "listUnconfirmedTurnActions()...> datas", $datas);// NOI18N 
         return $datas;
     }
     /**
@@ -1133,11 +1086,8 @@ class FlipFreighters extends Table
                 self::incStat( 1, "stat_player_loading", $player_id );
                 self::incStat( $cargo["amount"], "stat_total_goods", $player_id );
             }
-            //for($i=0;$i< count($listUnconfirmedTurnActions["trucks_positions"]); $i++){
             foreach($listUnconfirmedTurnActions["trucks_positions"] as $i => $actions){
-                //for($j=0;$j< count($listUnconfirmedTurnActions["trucks_positions"][$i]); $j++){
                 foreach($listUnconfirmedTurnActions["trucks_positions"][$i] as $j => $action){
-                //foreach($actions as $action){
                     $action = $listUnconfirmedTurnActions["trucks_positions"][$i][$j];
                     $distance = $action['not_confirmed_position'];
                     if($action['confirmed_position'] != null) $distance = $distance - $action['confirmed_position'];
@@ -1190,10 +1140,6 @@ class FlipFreighters extends Table
     function cancelTurnActions($player_id){
         self::trace( "cancelTurnActions($player_id)...");
         $oldState = STATE_LOAD_TO_CONFIRM;
-        /*
-        $newState = STATE_LOAD_INITIAL;
-        $this->DbQuery("UPDATE freighter_cargo SET cargo_state= $newState, cargo_amount = NULL, cargo_card_id = NULL, cargo_overtime_used = 0 WHERE cargo_state = $oldState AND cargo_player_id ='$player_id'");
-        */
         $this->DbQuery("DELETE FROM freighter_cargo WHERE cargo_state = $oldState AND cargo_player_id ='$player_id'");
         
         $oldState1 = STATE_MOVE_TO_CONFIRM;
@@ -1439,7 +1385,7 @@ class FlipFreighters extends Table
         $truckDatas = $this->getTruckPositions($truck_id,$player_id);
         $truckCargos = $this->getTruckCargos($player_id,$truck_id) [$truck_id];
         
-        $cardSuit = JOKER_TYPE; //TODO JSA check how to use this method with a standard card
+        $cardSuit = JOKER_TYPE;
         
         for( $k =1; $k<= MAX_LOAD; $k++ )
         {
@@ -1914,7 +1860,7 @@ class FlipFreighters extends Table
             ) );
         }
         
-        //TODO JSA FACTORIZE ? this sql is almost the same as the one in getAllDatas
+        // this sql is almost the same as the one in getAllDatas
         $sql = "SELECT player_id id, player_score score, player_score_aux score_aux FROM player ";
         $playersData = self::getCollectionFromDb( $sql );
         foreach($playersData as $player){ 
@@ -1966,7 +1912,6 @@ class FlipFreighters extends Table
             
             $this->notifyScoringDialog();
         }
-        
         
         //CHECK round_number and end if >=MAX
         if($round >= NB_ROUNDS ){
