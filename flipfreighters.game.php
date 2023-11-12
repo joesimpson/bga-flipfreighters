@@ -1471,11 +1471,20 @@ class FlipFreighters extends Table
             throw new BgaVisibleSystemException( ("You cannot play that card know")); // NOI18N 
         $card_suit = $card['type'];
         
+        if($containerId == null )
+            throw new BgaVisibleSystemException( ("Unknown truck container")); // NOI18N 
+        $container = $this->getTruckContainer($player_id,$containerId);
+        if($container == null )
+            throw new BgaVisibleSystemException( ("Unknown truck container")); // NOI18N 
+        
         $usedOvertime = 0;
         if($card_suit != JOKER_TYPE && $card['type'] != $suit && $this->isActivatedOvertimeSuitVariant() && isset($this->card_types [$suit])){
-            self::trace("loadTruck($cardId,.., $suit,..)... SPECIAL OVERTIME VARIANT :  change the suit color");
-            $card['type'] = $suit;
-            $usedOvertime ++;
+            //IF TRUCK TYPE ALL SUITS it doesn't cost !
+            if( null != $this->getTruckCargoSuit($container) ){
+                self::trace("loadTruck($cardId,.., $suit,..)... SPECIAL OVERTIME VARIANT :  change the suit color");
+                $card['type'] = $suit;
+                $usedOvertime ++;
+            }
         }
         
         $originalAvailableOvertime = $this->getPlayerAvailableOvertimeHoursPrivateState($player_id);
@@ -1483,12 +1492,6 @@ class FlipFreighters extends Table
         if( $card_suit == JOKER_TYPE) $usedOvertime = max(0,$amount - CARD_VALUE_MAX); //IF joker is used for a low value, don't consider overtime
         if($usedOvertime > $originalAvailableOvertime)
             throw new BgaVisibleSystemException( ("You don't have enough overtime hours to do that")); // NOI18N 
-        
-        if($containerId == null )
-            throw new BgaVisibleSystemException( ("Unknown truck container")); // NOI18N 
-        $container = $this->getTruckContainer($player_id,$containerId);
-        if($container == null )
-            throw new BgaVisibleSystemException( ("Unknown truck container")); // NOI18N 
         
         //LOGIC CHECK :
         $truck_id = $container['truck_id'];
