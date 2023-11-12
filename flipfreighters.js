@@ -1235,6 +1235,13 @@ function (dojo, declare) {
             
             this.updateOvertimeHourOnCard(cardDiv);
         },
+        setOvertimeHourOnCard: function(cardDiv, overtime){
+            debug( "setOvertimeHourOnCard()",cardDiv,overtime);
+            let card_value = parseInt(cardDiv.getAttribute("data_value") ) ;
+            let amount = card_value + overtime;
+            cardDiv.setAttribute("data_amount", amount);
+            this.updateOvertimeHourOnCard(cardDiv);
+        },
         updateOvertimeHourOnCard: function(cardDiv){
             debug( "updateOvertimeHourOnCard()",cardDiv);
             let cardModifier =  dojo.query("#"+cardDiv.id+" .ffg_cardModifier")[0];
@@ -2052,6 +2059,14 @@ function (dojo, declare) {
             dojo.query(".ffg_cargo_amount").removeClass("ffg_selectable");
             dojo.query(".ffg_cargo_to_fill").removeClass("ffg_cargo_to_fill");
             
+            let cardRow = this.getCardRowFromId(notif.args.card_id);
+            if(notif.args.usedOvertime == 0){
+                //For example if we had a JOKER+1 and we click on load 1-6, it doesn't cost anything
+                this.resetOvertimeHourOnCard($("ffg_card_"+cardRow), true);
+            }
+            else {
+                this.setOvertimeHourOnCard($("ffg_card_"+cardRow),notif.args.usedOvertime);
+            }
             //unselect card
             this.unselectCard();
             
@@ -2073,6 +2088,9 @@ function (dojo, declare) {
             if(notif.args.usedOvertime == 0){
                 //For example if we had a 6 +/-1 and we click on position 2, it doesn't cost anything
                 this.resetOvertimeHourOnCard($("ffg_card_"+cardRow), true);
+            }
+            else {
+                this.setOvertimeHourOnCard($("ffg_card_"+cardRow),notif.args.usedOvertime);
             }
             
             //unselect card
