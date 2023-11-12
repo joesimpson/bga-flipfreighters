@@ -38,8 +38,8 @@ $game_options = array(
     101 => array(
                 'name' => totranslate('Show discard pile'),    
                 'values' => array(
-                            1 => array( 'name' => totranslate('On'), 'description' => totranslate('Players can look at already played cards in the discard pile. (Not the cards staying in the game box)')),
-                            2 => array( 'name' => totranslate('Off'), 'description' => totranslate('Players cannot see the discard pile')),
+                            1 => array( 'name' => totranslate('Enabled'), 'description' => totranslate('Players can look at already played cards in the discard pile. (Not the cards staying in the game box)')),
+                            2 => array( 'name' => totranslate('Disabled'), 'description' => totranslate('Players cannot see the discard pile')),
                         ),
                 'default' => 1
             ),
