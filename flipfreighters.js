@@ -1235,10 +1235,16 @@ function (dojo, declare) {
             
             this.updateOvertimeHourOnCard(cardDiv);
         },
-        setOvertimeHourOnCard: function(cardDiv, overtime){
-            debug( "setOvertimeHourOnCard()",cardDiv,overtime);
+        setOvertimeHourOnCard: function(cardDiv, overtime,pAmount){
+            debug( "setOvertimeHourOnCard()",cardDiv,overtime,pAmount);
+            let amount = pAmount;
+            /*Only rely on pAmount because overtime may include suit cost (that we don't display here)
             let card_value = parseInt(cardDiv.getAttribute("data_value") ) ;
-            let amount = card_value + overtime;
+            if(pAmount<card_value){ 
+                amount = card_value - overtime;
+            } else if(pAmount>card_value) {
+                    amount = card_value + overtime;
+            }*/
             cardDiv.setAttribute("data_amount", amount);
             this.updateOvertimeHourOnCard(cardDiv);
         },
@@ -2065,7 +2071,8 @@ function (dojo, declare) {
                 this.resetOvertimeHourOnCard($("ffg_card_"+cardRow), true);
             }
             else {
-                this.setOvertimeHourOnCard($("ffg_card_"+cardRow),notif.args.usedOvertime);
+                let modifier = notif.args.usedOvertime;
+                this.setOvertimeHourOnCard($("ffg_card_"+cardRow),notif.args.usedOvertime, notif.args.amount);
             }
             //unselect card
             this.unselectCard();
@@ -2090,7 +2097,7 @@ function (dojo, declare) {
                 this.resetOvertimeHourOnCard($("ffg_card_"+cardRow), true);
             }
             else {
-                this.setOvertimeHourOnCard($("ffg_card_"+cardRow),notif.args.usedOvertime);
+                this.setOvertimeHourOnCard($("ffg_card_"+cardRow),notif.args.usedOvertime, notif.args.cardUsage);
             }
             
             //unselect card
