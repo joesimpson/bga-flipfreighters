@@ -1567,7 +1567,7 @@ function (dojo, declare) {
             if (elt != undefined) suit_reset = elt.getAttribute("data_suit"); 
             
             //Reset overtime indicator on ALL CARDS which are not used yet :
-            dojo.query(".ffg_card.ffg_selectable").forEach((i) => {
+            dojo.query(".ffg_card.ffg_selectable:not(.ffg_animation_copy)").forEach((i) => {
                     this.resetOvertimeHourOnCard(i, true);
                 });
             //RESET board overtime tokens to 0 :
@@ -2103,7 +2103,7 @@ function (dojo, declare) {
             debug( 'notif_cancelTurnDatas',notif );
             
             this.updatePlayerOvertimeHours(this.player_id,notif.args.availableOvertime);
-            dojo.query(".ffg_card").forEach( dojo.hitch(this, "resetOvertimeHourOnCard"));
+            dojo.query(".ffg_card:not(.ffg_animation_copy)").forEach( dojo.hitch(this, "resetOvertimeHourOnCard"));
             
             //CANCEL SUIT optional Changes
             for(let row in this.dayCards){
