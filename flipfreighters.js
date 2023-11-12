@@ -811,6 +811,8 @@ function (dojo, declare) {
             let anim = this.slideTemporaryObject(origin_copy, 'ffg_cards_container', 'ffg_game_upper', divId,1000, row*200 ); 
             dojo.connect(anim, 'onEnd', (node) => {
                 dojo.removeClass(divId,"ffg_card_back") ;
+                //Needed in 3d ?
+                dojo.destroy(origin_copy.id);
             });
             anim.play(); 
         }, 
@@ -825,6 +827,10 @@ function (dojo, declare) {
             origin_copy.classList.add("ffg_animation_copy");
             //dojo.addClass(divId,"ffg_card_back") ;
             let anim = this.slideTemporaryObject(origin_copy, cardDiv, divId, 'ffg_discard_pile', 1000, row*200 ); 
+            dojo.connect(anim, 'onEnd', (node) => {
+                //Needed in 3d ?
+                dojo.destroy(origin_copy.id);
+            });
             anim.play(); 
         }, 
         
