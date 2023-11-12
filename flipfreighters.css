@@ -1270,6 +1270,7 @@
 }
 .ffg_icon_truck_pos, .ffg_tooltipIconTruck_option2{
     color: black;
+    text-shadow: 1px 1px 5px white;
 }
 .ffg_truck[data_confirmed_state="4"] .ffg_icon_truck_pos, .ffg_tooltipIconTruck_option3{
     /* DELIVERED */
@@ -1282,13 +1283,20 @@
 
 /* ---------------------------- ----------------------------   ---------------------------- */
 /* Black lines on board to link truck positions*/
-/* TODO JSA USER PREF On/Off */
-.ffg_truck_lines{
+/* USER PREF On/Off */
+.ffg_display_truck_route_no .ffg_truck_lines{
     visibility: hidden;
+}
+.ffg_display_truck_route_yes .ffg_truck_lines{
+    visibility: visible;
 }
 #popin_showBoardDialogId_contents .ffg_truck_lines{
     position: absolute;
     top: 34px;
+}
+.ffg_truck_line{
+    stroke: black;
+    stroke-width: 12;
 }
 /* ---------------------------- ----------------------------   ---------------------------- */
 /* List of spaces to display trucks score on end of each line : they are listed by color order, not the same order of trucks around the board... */

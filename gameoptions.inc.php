@@ -67,7 +67,18 @@ $game_preferences = array(
             'default' => 1
     ),
     
-    102 => array(
+    105 => array(
+            'name' => totranslate('Display route taken by trucks'),
+            'needReload' => true, // after user changes this preference game interface would auto-reload
+            'values' => array(
+                    1 => array( 'name' => totranslate( 'Disabled' ), 'cssPref' => 'ffg_display_truck_route_no' ),
+                    2 => array( 'name' => totranslate( 'Enabled' ), 'cssPref' => 'ffg_display_truck_route_yes' )
+            ),
+            'default' => 2
+    ),
+    
+    //Leave space for future others prefs, because this one seems to be the most useless
+    120 => array(
             'name' => totranslate('Display mini truck icons'),
             'needReload' => true, // after user changes this preference game interface would auto-reload
             'values' => array(
