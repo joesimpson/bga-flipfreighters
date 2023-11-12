@@ -1524,6 +1524,12 @@ class FlipFreighters extends Table
             'usedOvertime' => $usedOvertime,
             'availableOvertime' => $availableOvertime,
         ) );
+        if($usedOvertime>0){
+            self::notifyPlayer($player_id, "loadTruckCost", clienttranslate( 'You spend ${nh} overtime hours to play this card' ), array(
+                'player_id' => $player_id,
+                'nh' => $usedOvertime,
+            ) );
+        }
         
         //resend possiblePositions (MOVE become possible)
         self::notifyPlayer($player_id, "possibleCards", '', array(
@@ -1609,6 +1615,12 @@ class FlipFreighters extends Table
             'amount' => $amount,
             'cardUsage' => ($amount + $cardUsedPower),
         ) );
+        if($usedOvertime>0){
+            self::notifyPlayer($player_id, "moveTruckCost", clienttranslate( 'You spend ${nh} overtime hours to play this card' ), array(
+                'player_id' => $player_id,
+                'nh' => $usedOvertime,
+            ) );
+        }
         
         //resend possiblePositions (MOVE become possible)
         self::notifyPlayer($player_id, "possibleCards", '', array(
