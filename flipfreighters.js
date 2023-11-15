@@ -478,17 +478,17 @@ function (dojo, declare) {
             debug( "initTooltips ... " ,ffg_tooltips);
             
             for(let k in ffg_tooltips.trucks) {
-                let message = ffg_tooltips.trucks[k];
+                let message =  _(ffg_tooltips.trucks[k]);
                 debug( "initTooltip trucks... " ,k, message);
                 this.addTooltipToClass( "ffg_truck_symbol_"+k, message,'' );
             }
             for(let k in ffg_tooltips.delivery_score) {
-                let message = ffg_tooltips.delivery_score[k];
+                let message = _(ffg_tooltips.delivery_score[k]);
                 debug( "initTooltip delivery_score... " ,k, message);
                 this.addTooltipToClass( "ffg_score_"+k, message,'' );
             }
             
-            this.addTooltipToClass( "ffg_symbol_path_size", ffg_tooltips.path_size,'' );
+            this.addTooltipToClass( "ffg_symbol_path_size", _(ffg_tooltips.path_size),'' );
             
             this.addTooltipToClass( "ffg_icon_show_score", _("Show current score situation"), '' );
             
@@ -610,6 +610,7 @@ function (dojo, declare) {
         initShowDiscardPileDialog: function()
         {
             let title = dojo.string.substitute( _("Discard pile"), );
+            let deckTitle = _("Deck");
             
             // Create the new dialog over the play zone.
             this.showDiscardPileDialog = new ebg.popindialog();
@@ -618,7 +619,7 @@ function (dojo, declare) {
             this.showDiscardPileDialog.setMaxWidth( 1000 ); 
 
             // Create the HTML of my dialog. 
-            let html = this.format_block( 'jstpl_discard_cards', { } );  
+            let html = this.format_block( 'jstpl_discard_cards', { 'DECK_TITLE': deckTitle } );  
             this.showDiscardPileDialog.setContent( html );
             
             let jokerLabel = '*';//No need for translation for now

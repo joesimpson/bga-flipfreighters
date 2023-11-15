@@ -297,7 +297,7 @@ var jstpl_discard_cards = `
             </table>
         </div>
         <hr>
-        <h2 id="ffg_modal_deck_title" class="standard_popin_title">{DECK_TITLE}</h2>
+        <h2 id="ffg_modal_deck_title" class="standard_popin_title">\${DECK_TITLE}</h2>
         <div id="ffg_modal_deck_content" class="ffg_modal_pile_content">
             <table id="ffg_deck_overview">
                 <tbody id="ffg_deck_overview_body">

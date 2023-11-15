@@ -50,7 +50,6 @@ class view_flipfreighters_flipfreighters extends game_view
         $this->tpl['TURN_LABEL'] = sprintf( self::_("D %s/%s"), $turn, NB_CARDS_BY_WEEK/NB_CARDS_BY_TURN );*/
         
         $this->tpl['CARD_USAGE_LABEL'] = self::_("Used moves :");
-        $this->tpl['DECK_TITLE'] = self::_("Deck");
         
         $cards = $this->game->getCurrentDayCards();
         $cardsWithOvertime = array();
@@ -267,7 +266,7 @@ class view_flipfreighters_flipfreighters extends game_view
                 $this->page->insert_block( "ffg_cards_suit_modifier", array( 
                                                         "INDEX" => $index,
                                                         "SUIT" => $card_suit_id,
-                                                        "SUIT_LABEL" => $card_suit['name'],
+                                                        "SUIT_LABEL" => $card_suit['nametr'],
                                                         "OPT_CLASSES" => $classes,
                                                          ) );
             }

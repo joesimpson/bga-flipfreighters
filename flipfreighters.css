@@ -1459,6 +1459,7 @@
 .ffg_truck_symbol,
 .ffg_symbol_path_size{
     position: absolute;
+    z-index: 2;
 }
 .notouch-device .ffg_truck_symbol:hover,
 .notouch-device .ffg_symbol_path_size:hover{
