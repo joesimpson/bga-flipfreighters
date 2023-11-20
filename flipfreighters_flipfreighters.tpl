@@ -281,7 +281,6 @@ var jstpl_playerBoardContainer = `<div id="ffg_modal_player_board_container_\${p
 </div>`;
 var jstpl_playerBoard = `
     <div id="ffg_modal_player_board_\${player_id}" class="ffg_modal_player_board">
-        <div class="ffg_modal_player_board_overlay"></div>
     </div>
 `;
 

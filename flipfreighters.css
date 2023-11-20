@@ -144,7 +144,7 @@
 }
 /** Add a WHITE shadow behind player name in case of dark colors like red/blue*/
 .ffg_theme_dark .player_board_inner>.player-name>a:first-child{
-    text-shadow: 1px 1px 5px white;
+    text-shadow: 1px 0px 1px white, 0px 1px 1px white,-1px 0px 1px white,0px -1px 1px white;
 }
 /** Add a BLACK shadow behind player name in case of bright colors like white/orange*/
 .ffg_theme_dark .player_board_inner>.player-name>a[style*='color: #ffa500'],
@@ -156,12 +156,12 @@
 .ffg_theme_standard .player_board_inner>.player-name>a[style*='color: #ffffff'],
 .ffg_theme_standard .player_board_inner>.player-name>a[style*='color: #bdd002']
 {
-    text-shadow: 1px 1px 5px black;
+    text-shadow: 1px 0px 1px black, 0px 1px 1px black,-1px 0px 1px black,0px -1px 1px black;
 }
 
 .ffg_theme_dark .player_board_inner .timeToThink[style*='color: red']
 {
-    text-shadow: 1px 1px 5px white;
+    text-shadow: 1px 0px 5px white, 0px 1px 5px white,-1px 0px 5px white,0px -1px 5px white;
 }
 
 .ffg_player_panel_details{
@@ -641,6 +641,9 @@
     /**  STATE_LOAD_TO_CONFIRM */
     outline: 4px dashed red;
     background-color: #ff000073;
+}
+.ffg_container[data_state="1"] .ffg_container_number{
+    text-shadow: 1px 0px 1px white, 0px 1px 1px white,-1px 0px 1px white,0px -1px 1px white;
 }
 
 .ffg_container.ffg_cargo_to_fill{
@@ -1270,7 +1273,7 @@
 }
 .ffg_icon_truck_pos, .ffg_tooltipIconTruck_option2{
     color: black;
-    text-shadow: 1px 1px 5px white;
+    text-shadow: 1px 0px 1px white, 0px 1px 1px white,-1px 0px 1px white,0px -1px 1px white;
 }
 .ffg_truck[data_confirmed_state="4"] .ffg_icon_truck_pos, .ffg_tooltipIconTruck_option3{
     /* DELIVERED */
@@ -1695,7 +1698,7 @@
     line-height: var(--ffg_card_display_height);
     text-align: center;
     color: blue;
-    text-shadow: 1px 1px 20px gold;
+    text-shadow: 1px 0px 5px gold, 0px 1px 5px gold,-1px 0px 5px gold,0px -1px 5px gold;
     cursor: inherit;
 }
 .ffg_cardModifier.ffg_empty_value, .ffg_cardModifier[data_value="0"]{
