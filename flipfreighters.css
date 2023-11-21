@@ -1283,6 +1283,33 @@
 .ffg_display_truck_icon_no .ffg_icon_truck_pos{
     display: none;
 }
+.ffg_truck[data_id='truck1']>.ffg_truck_pos[data_position="2"] .ffg_icon_truck_pos,
+.ffg_truck[data_id='truck1']>.ffg_truck_pos[data_position="3"] .ffg_icon_truck_pos,
+.ffg_truck[data_id='truck2']>.ffg_truck_pos[data_position="2"] .ffg_icon_truck_pos,
+.ffg_truck[data_id='truck2']>.ffg_truck_pos[data_position="4"] .ffg_icon_truck_pos,
+.ffg_truck[data_id='truck6']>.ffg_truck_pos[data_position="4"] .ffg_icon_truck_pos,
+.ffg_truck[data_id='truck6']>.ffg_truck_pos[data_position="7"] .ffg_icon_truck_pos,
+.ffg_truck[data_id='truck7']>.ffg_truck_pos[data_position="6"] .ffg_icon_truck_pos{
+    /* HALF CIRCLE RIGHT-SIDE*/
+    left: 10px;
+    top: -25px;
+}
+.ffg_truck[data_id='truck3']>.ffg_truck_pos[data_position="2"] .ffg_icon_truck_pos,
+.ffg_truck[data_id='truck3']>.ffg_truck_pos[data_position="6"] .ffg_icon_truck_pos,
+.ffg_truck[data_id='truck4']>.ffg_truck_pos[data_position="1"] .ffg_icon_truck_pos,
+.ffg_truck[data_id='truck4']>.ffg_truck_pos[data_position="2"] .ffg_icon_truck_pos,
+.ffg_truck[data_id='truck4']>.ffg_truck_pos[data_position="4"] .ffg_icon_truck_pos,
+.ffg_truck[data_id='truck5']>.ffg_truck_pos[data_position="1"] .ffg_icon_truck_pos,
+.ffg_truck[data_id='truck5']>.ffg_truck_pos[data_position="3"] .ffg_icon_truck_pos{
+    /* HALF CIRCLE LEFT-SIDE*/
+    right: 25px;
+    top: -20px;
+}
+.ffg_truck[data_id='truck3']>.ffg_truck_pos[data_position="2"] .ffg_icon_truck_pos,
+.ffg_truck[data_id='truck3']>.ffg_truck_pos[data_position="6"] .ffg_icon_truck_pos{
+    /* More specific ...*/
+    top: 20px;
+}
 
 /* ---------------------------- ----------------------------   ---------------------------- */
 /* Black lines on board to link truck positions*/
