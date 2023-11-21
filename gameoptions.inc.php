@@ -85,6 +85,19 @@ $game_preferences = array(
             ),
             'default' => 1
     ),
+    104 => array(
+            'name' => totranslate('Route colors'),
+            'needReload' => true, // after user changes this preference game interface would auto-reload
+            'values' => array(
+                    1 => array( 'name' => totranslate( 'Depends on position' ), 'cssPref' => 'ffg_display_truck_route_mutlicolors' ),
+                    11 => array( 'name' => totranslate( 'Black' ), 'cssPref' => 'ffg_display_truck_route_black' ),
+                    12 => array( 'name' => totranslate( 'Blue' ), 'cssPref' => 'ffg_display_truck_route_blue' ),
+                    13 => array( 'name' => totranslate( 'Gray' ), 'cssPref' => 'ffg_display_truck_route_gray' ),
+                    14 => array( 'name' => totranslate( 'Turquoise' ), 'cssPref' => 'ffg_display_truck_route_turquoise' ),
+                    15 => array( 'name' => totranslate( 'Violet' ), 'cssPref' => 'ffg_display_truck_route_violet' ),
+            ),
+            'default' => 1
+    ),
     
     //Leave space for future others prefs, because this one seems to be the most useless
     120 => array(

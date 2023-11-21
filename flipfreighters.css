@@ -1340,6 +1340,39 @@
 .ffg_truck_line{
     stroke-linecap: round;
 }
+/** USER PREF Line color */
+.ffg_display_truck_route_mutlicolors .ffg_truck_line,
+.ffg_display_truck_route_mutlicolors .ffg_truck_route{
+    stroke: black;
+}
+.ffg_display_truck_route_mutlicolors .ffg_truck_line.ffg_delivery_done,
+.ffg_display_truck_route_mutlicolors .ffg_truck_route.ffg_delivery_done{
+    stroke: darkgreen;
+}
+.ffg_display_truck_route_mutlicolors .ffg_truck_line.ffg_not_confirmed_move,
+.ffg_display_truck_route_mutlicolors .ffg_truck_route.ffg_not_confirmed_move{
+    stroke: #ca0000;
+}
+.ffg_display_truck_route_black .ffg_truck_line,
+.ffg_display_truck_route_black .ffg_truck_route{
+    stroke: black;
+}
+.ffg_display_truck_route_blue .ffg_truck_line,
+.ffg_display_truck_route_blue .ffg_truck_route{
+    stroke: darkblue;
+}
+.ffg_display_truck_route_gray .ffg_truck_line,
+.ffg_display_truck_route_gray .ffg_truck_route{
+    stroke: darkgray;
+}
+.ffg_display_truck_route_turquoise .ffg_truck_line,
+.ffg_display_truck_route_turquoise .ffg_truck_route{
+    stroke: darkturquoise;
+}
+.ffg_display_truck_route_violet .ffg_truck_line,
+.ffg_display_truck_route_violet .ffg_truck_route{
+    stroke: darkviolet;
+}
 /* ---------------------------- ----------------------------   ---------------------------- */
 /* List of spaces to display trucks score on end of each line : they are listed by color order, not the same order of trucks around the board... */
 .ffg_truck_score{

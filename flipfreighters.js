@@ -1008,11 +1008,15 @@ function (dojo, declare) {
             truckDiv.setAttribute("data_not_confirmed_position",not_confirmed_position);
             truckDiv.setAttribute("data_score",truckScore);
             this.displayTruckScore(player_id, truckScore,truckDivId);   
-            if(not_confirmed_state == 3 || confirmed_state == 4 && this.player_id != player_id){
+            if(not_confirmed_state == this.constants.STATE_MOVE_DELIVERED_TO_CONFIRM || confirmed_state == this.constants.STATE_MOVE_DELIVERED_CONFIRMED && this.player_id != player_id){
                 this.increasePlayerScore(player_id,truckScore);
                 //Add 1 truck delivered only once for the player moving the truck, or receiving infos from others moving
                 this.increasePlayerScoreAux(player_id,1);
                 this.increasePlayerWeekScore(player_id,this.currentRound,truckScore);
+            }
+            let isDelivery = false;
+            if(not_confirmed_state == this.constants.STATE_MOVE_DELIVERED_TO_CONFIRM || confirmed_state == this.constants.STATE_MOVE_DELIVERED_CONFIRMED ){
+                isDelivery = true;
             }
             
             if(cssPos != "ffg_confirmed_pos"){
@@ -1031,7 +1035,8 @@ function (dojo, declare) {
                 dojo.removeClass(posDivId,"ffg_not_drawn_pos ffg_not_confirmed_pos ffg_selectable") ;
                 dojo.addClass(posDivId,cssPos ) ;
                 this.animateMovePosition(posDivId);
-                this.drawTruckLine(player_id, posId);
+                let state = ( confirmed_position < k ) ? not_confirmed_state : confirmed_state;
+                this.drawTruckLine(player_id, posId,state);
                 
                 if( k== position){
                     let truckIconDivId = posDivId + "_icon";
@@ -1062,51 +1067,57 @@ function (dojo, declare) {
         drawTruckLines: function(){
             debug( "drawTruckLines ... ");
             //Hide all
-            dojo.query(".ffg_truck_line").forEach((a) => {
+            dojo.query(".ffg_truck_line, .ffg_truck_route").forEach((a) => {
                 dojo.addClass(a,"ffg_hidden"); 
                 a.classList.add("ffg_hidden"); 
-            });
-            dojo.query(".ffg_truck_route").forEach((a) => {
-                dojo.addClass(a,"ffg_hidden"); 
-                a.classList.add("ffg_hidden"); 
+                a.classList.remove("ffg_delivery_done"); 
             });
             
             //Show not_confirmed ones
             dojo.query(".ffg_truck_pos.ffg_not_confirmed_pos").forEach((i) => { 
                 let posId = i.getAttribute("data_truck")+ "_"+i.getAttribute("data_position");
                 let player = i.getAttribute("data_player");
-                this.drawTruckLine(player,posId);
+                let not_confirmed_state = i.parentElement.getAttribute("data_not_confirmed_state");
+                this.drawTruckLine(player,posId,not_confirmed_state);
             });
             
             //Show confirmed ones
             dojo.query(".ffg_truck_pos.ffg_confirmed_pos").forEach((i) => { 
                 let posId = i.getAttribute("data_truck")+ "_"+i.getAttribute("data_position");
+                let confirmed_state = i.parentElement.getAttribute("data_confirmed_state");
                 let player = i.getAttribute("data_player");
-                this.drawTruckLine(player,posId);
+                this.drawTruckLine(player,posId,confirmed_state);
             });
         },
-        drawTruckLine: function(player_id, posId){
-            debug( "drawTruckLine ... ",player_id, posId);
-            dojo.query("#ffg_truck_line_"+player_id+"_"+posId).forEach((a) => {
-                dojo.removeClass(a,"ffg_hidden"); 
+        drawTruckLine: function(player_id, posId,state){
+            debug( "drawTruckLine ... ",player_id, posId,state);
+            
+            let isDelivery = (state == this.constants.STATE_MOVE_DELIVERED_TO_CONFIRM || state == this.constants.STATE_MOVE_DELIVERED_CONFIRMED);
+            let notConfirmed = (state == this.constants.STATE_MOVE_TO_CONFIRM || state == this.constants.STATE_MOVE_DELIVERED_TO_CONFIRM);
+                
+            dojo.query("#ffg_truck_line_"+player_id+"_"+posId+", #ffg_truck_route_"+player_id+"_"+posId).forEach((a) => {
+                dojo.removeClass(a,"ffg_hidden ffg_not_confirmed_move ffg_delivery_done"); 
                 a.classList.remove("ffg_hidden"); 
-            });
-            dojo.query("#ffg_truck_route_"+player_id+"_"+posId).forEach((a) => {
-                dojo.removeClass(a,"ffg_hidden"); 
-                a.classList.remove("ffg_hidden"); 
+                a.classList.remove("ffg_not_confirmed_move"); 
+                a.classList.remove("ffg_delivery_done"); 
+                if(notConfirmed){
+                    a.classList.add("ffg_not_confirmed_move"); 
+                }
+                if(isDelivery){
+                    a.classList.add("ffg_delivery_done"); 
+                }
             });
         },
         /**
         Opposite of drawTruckLine()
         */
         undrawTruckLine: function(player_id, posId){
-            dojo.query("#ffg_truck_line_"+player_id+"_"+posId).forEach((a) => {
+            dojo.query("#ffg_truck_line_"+player_id+"_"+posId+", #ffg_truck_route_"+player_id+"_"+posId).forEach((a) => {
+                dojo.removeClass(a,"ffg_not_confirmed_move ffg_delivery_done"); 
                 dojo.addClass(a,"ffg_hidden"); 
                 a.classList.add("ffg_hidden"); 
-            });
-            dojo.query("#ffg_truck_route_"+player_id+"_"+posId).forEach((a) => {
-                dojo.addClass(a,"ffg_hidden"); 
-                a.classList.add("ffg_hidden"); 
+                a.classList.remove("ffg_not_confirmed_move"); 
+                a.classList.remove("ffg_delivery_done"); 
             });
         },
         unselectCard : function()
