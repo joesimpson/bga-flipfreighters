@@ -202,6 +202,8 @@ function (dojo, declare) {
         {
             debug( 'Entering state: '+stateName,args.args );
             
+            this.previouspagemaintitletext = $('pagemaintitletext').innerHTML ;
+            
             switch( stateName )
             {
             case 'newTurn':
@@ -378,6 +380,14 @@ function (dojo, declare) {
                 return; // suppress red banner and gamelog message
             }
             this.inherited(arguments);
+        },
+        /** Update title in BGA status bar without waiting for status change*/
+        setMainTitle: function(text) {
+            this.previouspagemaintitletext = $('pagemaintitletext').innerHTML ;
+            $('pagemaintitletext').innerHTML = text;
+        },
+        resetMainTitle: function() {
+            $('pagemaintitletext').innerHTML = this.previouspagemaintitletext;
         },
         
         /** Return User local config */
@@ -1193,6 +1203,7 @@ function (dojo, declare) {
             }
             //RECOMPUTE status bar length with buttons
             //gameui.adaptStatusBar();
+            this.setMainTitle(_('Please select a possible load for this joker...'));
         
             let truck_id = $(div_id).getAttribute("data_truck");
             let truck_material = this.material.trucks_types[truck_id];
@@ -1214,6 +1225,8 @@ function (dojo, declare) {
             this.selectedCargoContainer = null;
             
             for(let k=1;k<= this.constants.MAX_LOAD;k++) dojo.query("#ffg_button_amount_"+k).removeClass("ffg_selectable").addClass("ffg_no_display");
+            
+            this.resetMainTitle();
         },
         
         resetContainer: function(containerDiv){
