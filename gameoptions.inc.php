@@ -76,6 +76,15 @@ $game_preferences = array(
             ),
             'default' => 2
     ),
+    103 => array(
+            'name' => totranslate('Route style'),
+            'needReload' => true, // after user changes this preference game interface would auto-reload
+            'values' => array(
+                    1 => array( 'name' => totranslate( 'Accurate' ), 'cssPref' => 'ffg_display_truck_route_accurate' ),
+                    2 => array( 'name' => totranslate( 'Straight lines' ), 'cssPref' => 'ffg_display_truck_route_straight' )
+            ),
+            'default' => 1
+    ),
     
     //Leave space for future others prefs, because this one seems to be the most useless
     120 => array(

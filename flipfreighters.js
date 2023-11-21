@@ -1031,7 +1031,7 @@ function (dojo, declare) {
                 dojo.removeClass(posDivId,"ffg_not_drawn_pos ffg_not_confirmed_pos ffg_selectable") ;
                 dojo.addClass(posDivId,cssPos ) ;
                 this.animateMovePosition(posDivId);
-                dojo.query("#ffg_truck_line_"+player_id+"_"+posId).forEach((a) => { dojo.removeClass(a,"ffg_hidden"); a.classList.remove("ffg_hidden"); }  ); //Dojo cannot modify class in svg?
+                this.drawTruckLine(player_id, posId);
                 
                 if( k== position){
                     let truckIconDivId = posDivId + "_icon";
@@ -1066,6 +1066,10 @@ function (dojo, declare) {
                 dojo.addClass(a,"ffg_hidden"); 
                 a.classList.add("ffg_hidden"); 
             });
+            dojo.query(".ffg_truck_route").forEach((a) => {
+                dojo.addClass(a,"ffg_hidden"); 
+                a.classList.add("ffg_hidden"); 
+            });
             
             //Show not_confirmed ones
             dojo.query(".ffg_truck_pos.ffg_not_confirmed_pos").forEach((i) => { 
@@ -1087,8 +1091,24 @@ function (dojo, declare) {
                 dojo.removeClass(a,"ffg_hidden"); 
                 a.classList.remove("ffg_hidden"); 
             });
+            dojo.query("#ffg_truck_route_"+player_id+"_"+posId).forEach((a) => {
+                dojo.removeClass(a,"ffg_hidden"); 
+                a.classList.remove("ffg_hidden"); 
+            });
         },
-        
+        /**
+        Opposite of drawTruckLine()
+        */
+        undrawTruckLine: function(player_id, posId){
+            dojo.query("#ffg_truck_line_"+player_id+"_"+posId).forEach((a) => {
+                dojo.addClass(a,"ffg_hidden"); 
+                a.classList.add("ffg_hidden"); 
+            });
+            dojo.query("#ffg_truck_route_"+player_id+"_"+posId).forEach((a) => {
+                dojo.addClass(a,"ffg_hidden"); 
+                a.classList.add("ffg_hidden"); 
+            });
+        },
         unselectCard : function()
         {
             debug( "unselectCard ... ");
@@ -2148,10 +2168,7 @@ function (dojo, declare) {
                     
                 //Clean lines between positions
                 let posId = i.getAttribute("data_truck")+ "_"+i.getAttribute("data_position");
-                dojo.query("#ffg_truck_line_"+this.player_id+"_"+posId).forEach((a) => {
-                    dojo.addClass(a,"ffg_hidden"); 
-                    a.classList.add("ffg_hidden"); 
-                    });
+                this.undrawTruckLine(this.player_id, posId);
                 });
             
             dojo.query(".ffg_truck[data_player='"+this.player_id+"']:not([data_confirmed_state='"+this.constants.STATE_MOVE_DELIVERED_CONFIRMED+"']:not([data_confirmed_state='"+this.constants.STATE_MOVE_DELIVERED_TO_CONFIRM+"'])").forEach( (e) => { 

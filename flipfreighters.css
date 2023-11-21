@@ -1293,13 +1293,25 @@
 .ffg_display_truck_route_yes .ffg_truck_lines{
     visibility: visible;
 }
+/* USER PREF Lines style  */
+.ffg_display_truck_route_straight .ffg_svg_accurate_route{
+    display: none;
+}
+.ffg_display_truck_route_accurate .ffg_svg_straight_route{
+    display: none;
+}
 #popin_showBoardDialogId_contents .ffg_truck_lines{
     position: absolute;
     top: 34px;
 }
-.ffg_truck_line{
+.ffg_truck_line, .ffg_truck_route{
     stroke: black;
     stroke-width: 12;
+    stroke-linejoin: round;
+    fill: none;
+}
+.ffg_truck_line{
+    stroke-linecap: round;
 }
 /* ---------------------------- ----------------------------   ---------------------------- */
 /* List of spaces to display trucks score on end of each line : they are listed by color order, not the same order of trucks around the board... */
