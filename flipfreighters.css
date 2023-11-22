@@ -1266,13 +1266,13 @@
 .ffg_truck_shape{
     position: absolute;
     background-image: url('img/trucks_shapes.png');
-    mask: url('img/trucks_shapes.png');
+    /*mask: url('img/trucks_shapes.png');*/
     background-repeat: no-repeat;
     background-size: 212%;
-    mask-size: 212%;
-    -webkit-mask-size: 212%;
-    background-blend-mode: multiply;
-    background-color: black;
+    /*mask-size: 212%;*/
+    /*-webkit-mask-size: 212%;*/
+    /*background-blend-mode: multiply;*/
+    /*background-color: black;*/
     /*Hidden until we know the color */
     visibility: hidden;
 }
@@ -1280,13 +1280,13 @@
 .ffg_truck[data_id='truck1'] .ffg_truck_shape,
 .ffg_truck[data_id='truck2'] .ffg_truck_shape{
     background-position-x: 0px;
-    mask-position-x: 0px;
-    -webkit-mask-position-x: 0px;
+    /*mask-position-x: 0px;
+    -webkit-mask-position-x: 0px;*/
     width: 151px;
     height: 130px;
     background-size: 536%;
-    mask-size: 536%;
-    -webkit-mask-size: 536%;
+    /*mask-size: 536%;
+    -webkit-mask-size: 536%;*/
 }
 .ffg_truck[data_id='truck1'] .ffg_truck_shape{
     left: 790px;
@@ -1300,8 +1300,8 @@
 .ffg_truck[data_id='truck4'] .ffg_truck_shape,
 .ffg_truck[data_id='truck5'] .ffg_truck_shape{
     background-position-x: -152px;
-    mask-position-x: -152px;
-    -webkit-mask-position-x: -152px;
+    /*mask-position-x: -152px;
+    -webkit-mask-position-x: -152px;*/
     left: 29px;
     width: 380px;
     height: 110px;
@@ -1320,13 +1320,15 @@
 .ffg_truck[data_id='truck8'] .ffg_truck_shape,
 .ffg_truck[data_id='truck9'] .ffg_truck_shape{
     background-position-x: -537px;
+    /* Disabled for many browsers
     mask-position-x: -537px;
     -webkit-mask-position-x: -537px;
+    */
     width: 271px;
     height: 90px;
     background-size: 298%;
-    mask-size: 298%;
-    -webkit-mask-size: 298%;
+    /*mask-size: 298%;
+    -webkit-mask-size: 298%;*/
 }
 .ffg_truck[data_id='truck6'] .ffg_truck_shape{
     top: 785px;
@@ -1348,22 +1350,31 @@
 .ffg_truck[data_not_confirmed_state="1"] .ffg_truck_shape{
     /* STATE_MOVE_TO_CONFIRM */
     animation: ffg_blinker 1s linear infinite;
+    /* MASK disabled
     background-color: black;
+    */
     visibility: visible;
 }
 .ffg_truck[data_confirmed_state="2"] .ffg_truck_shape{
     /* STATE_MOVE_CONFIRMED */
+    /* MASK disabled
     background-color: black;
+    */
     visibility: visible;
 }
 .ffg_truck[data_not_confirmed_state="3"] .ffg_truck_shape{
     /* STATE_MOVE_DELIVERED_TO_CONFIRM */
-    animation: ffg_blinker_to_green 1s linear infinite;
+    /*animation: ffg_blinker_to_green 1s linear infinite;*/
+    animation: ffg_blinker 1s linear infinite;
+    background-position-y: -132px; /* GREEN SHAPE in sprite*/
     visibility: visible;
 }
 .ffg_truck[data_confirmed_state="4"] .ffg_truck_shape{
     /* STATE_MOVE_DELIVERED_CONFIRMED */
+    /* MASK disabled
     background-color: darkgreen;
+    */
+    background-position-y: -132px; /* GREEN SHAPE in sprite*/
     visibility: visible;
 }
 html:not(.ffg_truck_shape_multi_anim) .ffg_truck_shape{
