@@ -93,6 +93,7 @@
                 
                 <!-- BEGIN ffg_player_truck_positions -->
                     <div id="ffg_truck_{PLAYER_ID}_{TRUCK_ID}" class="ffg_truck" data_id="{TRUCK_ID}"  data_player="{PLAYER_ID}"  data_confirmed_state="{CONFIRMED_STATE}" data_confirmed_position="{CONFIRMED_POSITION}" data_not_confirmed_state="{NOT_CONFIRMED_STATE}" data_not_confirmed_position="{NOT_CONFIRMED_POSITION}" data_score="{SCORE}">
+                        <div id="ffg_shape_{PLAYER_ID}_{TRUCK_ID}" class="ffg_truck_shape"></div>
                     
                         <!-- BEGIN ffg_player_truck_position -->
                         <div id="ffg_truck_pos_{PLAYER_ID}_{TRUCK_ID}_{INDEX}" class="ffg_truck_pos {CLASSES}" data_position="{INDEX}" data_player="{PLAYER_ID}" data_truck="{TRUCK_ID}">

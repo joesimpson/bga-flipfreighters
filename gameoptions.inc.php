@@ -92,6 +92,16 @@ $game_preferences = array(
     ),
     
     //Leave space for future others prefs, because this one seems to be the most useless
+    119 => array(
+            'name' => totranslate('Truck color'),
+            'needReload' => true, // after user changes this preference game interface would auto-reload
+            'values' => array(
+                    1 => array( 'name' => totranslate( 'Disabled' ), 'cssPref' => 'ffg_truck_shape_disabled' ),
+                    2 => array( 'name' => totranslate( 'Depends on position' ), 'cssPref' => 'ffg_truck_shape_multicolors' ),
+                    3 => array( 'name' => totranslate( 'Depends on position + Animation' ), 'cssPref' => 'ffg_truck_shape_multi_anim' ),
+            ),
+            'default' => 2
+    ),
     120 => array(
             'name' => totranslate('Display mini truck icons'),
             'needReload' => true, // after user changes this preference game interface would auto-reload
