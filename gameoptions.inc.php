@@ -72,20 +72,12 @@ $game_preferences = array(
             'needReload' => true, // after user changes this preference game interface would auto-reload
             'values' => array(
                     1 => array( 'name' => totranslate( 'Disabled' ), 'cssPref' => 'ffg_display_truck_route_no' ),
-                    2 => array( 'name' => totranslate( 'Enabled' ), 'cssPref' => 'ffg_display_truck_route_yes' )
+                    2 => array( 'name' => totranslate( 'Accurate' ), 'cssPref' => 'ffg_display_truck_route_accurate' ),
+                    3 => array( 'name' => totranslate( 'Straight lines' ), 'cssPref' => 'ffg_display_truck_route_straight' ),
             ),
             'default' => 2
     ),
-    103 => array(
-            'name' => totranslate('Route style'),
-            'needReload' => true, // after user changes this preference game interface would auto-reload
-            'values' => array(
-                    1 => array( 'name' => totranslate( 'Accurate' ), 'cssPref' => 'ffg_display_truck_route_accurate' ),
-                    2 => array( 'name' => totranslate( 'Straight lines' ), 'cssPref' => 'ffg_display_truck_route_straight' )
-            ),
-            'default' => 1
-    ),
-    104 => array(
+    106 => array(
             'name' => totranslate('Route colors'),
             'needReload' => true, // after user changes this preference game interface would auto-reload
             'values' => array(

@@ -1313,14 +1313,10 @@
 
 /* ---------------------------- ----------------------------   ---------------------------- */
 /* Black lines on board to link truck positions*/
-/* USER PREF On/Off */
+/* USER PREFerence Line style  */
 .ffg_display_truck_route_no .ffg_truck_lines{
     visibility: hidden;
 }
-.ffg_display_truck_route_yes .ffg_truck_lines{
-    visibility: visible;
-}
-/* USER PREF Lines style  */
 .ffg_display_truck_route_straight .ffg_svg_accurate_route{
     display: none;
 }
