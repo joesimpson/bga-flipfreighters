@@ -458,10 +458,13 @@ class FlipFreighters extends Table
     /**
     return true if at least one of the cargos is loaded with a number < $card_value
     */
-    function hasInferiorValueLoaded($cargos, $card_value){
+    function hasInferiorValueLoaded($cargos, $card_value, $readPrivateInfos = true){
         
         foreach( $cargos as $cargo )
         {
+            if(!$readPrivateInfos && $cargo['state'] == STATE_LOAD_TO_CONFIRM){
+                continue;
+            }
             if(isset ($cargo['amount'] ) && $cargo['amount'] < $card_value){
                return true;
             }
@@ -471,10 +474,13 @@ class FlipFreighters extends Table
     /**
     return true if at least one of the cargos is loaded with a number > $card_value
     */
-    function hasSuperiorValueLoaded($cargos, $card_value){
+    function hasSuperiorValueLoaded($cargos, $card_value, $readPrivateInfos = true){
     
         foreach( $cargos as $cargo )
         {
+            if(!$readPrivateInfos && $cargo['state'] == STATE_LOAD_TO_CONFIRM){
+                continue;
+            }
             if(isset ($cargo['amount'] ) && $cargo['amount'] > $card_value){
                return true;
             }
@@ -657,6 +663,57 @@ class FlipFreighters extends Table
             }
         }
         return true;
+    }
+    
+    /**
+    return TRUE if it is not possible to LOAD in this container because of truck rules
+    */
+    function isImpossibleLoad($container, $cargos, $readPrivateInfos = true)
+    { 
+        //IF Container is not empty don't bother
+        if( array_key_exists('amount',$container) && $container['amount']>0 ) {
+            return false;
+        }
+        
+        $truck_id = $container['truck_id'];
+        $material = $this->trucks_types[$truck_id];
+        $containers = $material['containers'];
+        $containers_suit_filter = $material['containers_suit_filter'];
+        $cargo_value_filter = $material['cargo_value_filter'];
+        
+        $cargo_index = $container['cargo_index']; //From 0 
+        $target_value = $containers[$cargo_index];
+        
+        if(CARGO_TYPE_ORDERED_VALUES == $cargo_value_filter ){ // Truck 1-6
+            if($this->hasInferiorValueLoaded($cargos, $target_value, $readPrivateInfos)){ 
+                //GAME RULE : You may skip numbers but you may never fill in numbers that were skipped.
+                return true;
+            }
+        }
+        else if(CARGO_TYPE_REVERSE_ORDERED_VALUES == $cargo_value_filter ){ // Truck 6-1
+            if($this->hasSuperiorValueLoaded($cargos, $target_value, $readPrivateInfos)){ 
+                //GAME RULE : You may skip numbers but you may never fill in numbers that were skipped.
+                return true;
+            }
+        }
+        return false;
+    }
+    /**
+    return the list of containers where it is not possible to LOAD because of truck rules
+    */
+    function getImpossibleLoads($trucks_cargos, $readPrivateInfos = true){
+        $impossibles = array();
+        
+        //Loop over each container 
+        foreach( $trucks_cargos as $truck_id => $cargos )
+        {
+            foreach( $cargos as $container_id => $container )
+            {
+                $isImpossible = $this->isImpossibleLoad($container,$cargos, $readPrivateInfos);
+                if( $isImpossible) $impossibles[] = $container_id;
+            }
+        }
+        return $impossibles;
     }
     
     function getPossibleMovesWithCard($card,$playerBoard)
@@ -1002,6 +1059,8 @@ class FlipFreighters extends Table
         foreach( $dayCards as $dayCard){
             $possibleCards[$dayCard['id']] = $this->getPlayerPossibleCardArray($dayCard,$playerBoard);
         }
+        //Add information about impossible for all cards in this array:
+        $possibleCards["LOAD_KO"] = $this->getImpossibleLoads($playerBoard['trucks_cargos'],true);
         return $possibleCards;
     }
     
@@ -1842,6 +1901,7 @@ class FlipFreighters extends Table
         $listUnconfirmedTurnActions = $this->listUnconfirmedTurnActions();
         $usedOvertimeHours = array();
         $turnDeliveries = array();
+        $impossibleLoads = array();
         
         foreach($players as $player_id => $player){ 
             $turnDeliveries[$player_id] = 0; 
@@ -1890,7 +1950,15 @@ class FlipFreighters extends Table
                 'nb' => $score,
                 'newScore' => $newPlayerScore,
             ) );
+            
+            $playerBoard = $this->getPlayerBoard($player_id);
+            $trucks_cargos = $playerBoard['trucks_cargos'];
+            $impossibleLoads[$player_id] = $this->getImpossibleLoads($trucks_cargos,false);
         }
+        
+        self::notifyAllPlayers( "endTurnImpossibleLoads", '', array( 
+            'LOAD_KO' => $impossibleLoads,
+        ) );
         
         // this sql is almost the same as the one in getAllDatas
         $sql = "SELECT player_id id, player_score score, player_score_aux score_aux FROM player ";
@@ -1902,7 +1970,6 @@ class FlipFreighters extends Table
             }
             $availableOvertime = $this->getPlayerAvailableOvertimeHours($player_id);
             $playersData[$player_id]['availableOvertime'] = $availableOvertime;
-            
         }
         self::notifyAllPlayers( "endTurnPlayerDatas", '', array( 
             'players' => $playersData,

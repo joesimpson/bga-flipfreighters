@@ -85,7 +85,7 @@
             <div id="ffg_board_trucks_wrapper">
                 <!-- BEGIN ffg_player_trucks_cargo -->
             
-                    <div id="ffg_container_{PLAYER_ID}_{CONTAINER_ID}" class="ffg_container" data_id="{CONTAINER_ID}"  data_player="{PLAYER_ID}" data_truck="{TRUCK_ID}" data_amount="{AMOUNT}" data_state="{STATE}" data_card="{CARD_ID}" data_overtime="{SPENT_OVERTIME}">
+                    <div id="ffg_container_{PLAYER_ID}_{CONTAINER_ID}" class="ffg_container {CLASSES}" data_id="{CONTAINER_ID}"  data_player="{PLAYER_ID}" data_truck="{TRUCK_ID}" data_amount="{AMOUNT}" data_state="{STATE}" data_card="{CARD_ID}" data_overtime="{SPENT_OVERTIME}">
                         <span class="ffg_container_number">{AMOUNT}</span> 
                     </div>
                     

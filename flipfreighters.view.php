@@ -115,6 +115,7 @@ class view_flipfreighters_flipfreighters extends game_view
                     $card_id = $truck_cargo['card_id'];
                     $card_overtime = $truck_cargo['overtime'];
                     
+                    $classes ="";
                     $state = $truck_cargo['state'];
                     $amount = $truck_cargo['amount'];
                     if($is_current_player && array_key_exists($card_id,$cardsWithOvertime) ){
@@ -131,6 +132,8 @@ class view_flipfreighters_flipfreighters extends game_view
                         $card_id = null;
                         $card_overtime = null;
                     }
+                    $isImpossible = $this->game->isImpossibleLoad($truck_cargo,$truck_cargos,$is_current_player);
+                    if($isImpossible) $classes .=" ffg_impossible_load";
                     
                     $this->page->insert_block( "ffg_player_trucks_cargo", array( 
                                                         "PLAYER_ID" => $player_id,
@@ -139,6 +142,7 @@ class view_flipfreighters_flipfreighters extends game_view
                                                         "AMOUNT" => $amount,
                                                         "STATE" => $state,
                                                         "CARD_ID" => $card_id,
+                                                        "CLASSES" => $classes,
                                                         "SPENT_OVERTIME" => $card_overtime,
                                                          ) );
                 }

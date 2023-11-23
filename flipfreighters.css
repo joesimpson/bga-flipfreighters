@@ -872,6 +872,11 @@
     text-shadow: 1px 1px 1px black;
 }
 
+.ffg_impossible_load .ffg_container_number:before{
+    content:"X";
+    color: red;
+}
+
 .ffg_cargo_amount .ffg_container_number{
     font-style: italic;
     font-weight: initial;

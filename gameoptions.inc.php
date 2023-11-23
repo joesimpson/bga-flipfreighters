@@ -98,7 +98,7 @@ $game_preferences = array(
             'values' => array(
                     1 => array( 'name' => totranslate( 'Disabled' ), 'cssPref' => 'ffg_truck_shape_disabled' ),
                     2 => array( 'name' => totranslate( 'Depends on position' ), 'cssPref' => 'ffg_truck_shape_multicolors' ),
-                    3 => array( 'name' => totranslate( 'Depends on position + Animation' ), 'cssPref' => 'ffg_truck_shape_multi_anim' ),
+                    3 => array( 'name' => totranslate( 'Depends on position + Blink' ), 'cssPref' => 'ffg_truck_shape_multi_anim' ),
             ),
             'default' => 2
     ),

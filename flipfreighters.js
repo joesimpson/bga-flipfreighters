@@ -44,6 +44,7 @@ function (dojo, declare) {
       
             this.dayCards = [];
             this.possibleCards = [];
+            this.impossibleLoads = new Map();
             this.selectedCard = null;
             this.selectedAmount = null;//Not always the card value, with overtime hours
             this.selectedCargoContainer = null;
@@ -926,6 +927,25 @@ function (dojo, declare) {
             dojo.query(".ffg_show_board").connect( 'onclick', this, 'onClickShowBoard' );
             
         },
+        displayImpossibleLoads: function(player_id)
+        {            
+            debug( "displayImpossibleLoads ... " ,player_id,this.impossibleLoads);
+            
+            //dojo.query(".ffg_container").removeClass("ffg_impossible_load") ;
+            if(this.impossibleLoads == undefined) {
+                return ;
+            }
+            let containersToDisplay = this.impossibleLoads.get(parseInt(player_id));
+            //this.impossibleLoads.forEach( (value, key, map ) => {
+                dojo.query(`#ffg_board_player_${player_id} .ffg_container`).removeClass("ffg_impossible_load") ;
+                //let containersToDisplay = value;
+                for(let i in containersToDisplay){
+                    let container_id = containersToDisplay[i];
+                    let containerDivId = "ffg_container_"+player_id+"_"+container_id;
+                    dojo.addClass(containerDivId,"ffg_impossible_load") ;
+                }
+            //} );
+        },
         displayPossibleLoads: function( card_id )
         {            
             debug( "displayPossibleLoads ... " ,card_id, this.possibleCards);
@@ -1156,6 +1176,9 @@ function (dojo, declare) {
             debug( "existPossibleCard()", this.possibleCards);
             
             for(let i in this.possibleCards){
+                if(i == 'LOAD_KO') {
+                    continue;
+                }
                 if(this.isPossibleCard(i)) return true;
             }
             
@@ -1180,11 +1203,22 @@ function (dojo, declare) {
             dojo.query(".ffg_card").removeClass("ffg_selectable");
             
             for(let card_id in this.possibleCards){
+                if(card_id == 'LOAD_KO') {//Index for KOs
+                    this.updateImpossibleLoads(this.player_id,this.possibleCards[card_id]);
+                    continue;
+                }
                 if(this.isPossibleCard(card_id)){
                     dojo.query(".ffg_card[data_id='"+card_id+"']").addClass("ffg_selectable");
                 }
             }
         },
+        updateImpossibleLoads: function(player_id,datas)
+        {
+            debug( "updateImpossibleLoads()",player_id,datas);
+            this.impossibleLoads.set( parseInt(player_id),datas);
+            this.displayImpossibleLoads(player_id);
+        },
+        
         updateCargoAmountList: function(div_id,container_id,amount){
             debug( "updateCargoAmountList()", div_id,container_id,amount);
             
@@ -2039,6 +2073,7 @@ function (dojo, declare) {
             
             dojo.subscribe( 'endTurnActions', this, "notif_endTurnActions" );
             dojo.subscribe( 'endTurnScore', this, "notif_endTurnScore" );
+            dojo.subscribe( 'endTurnImpossibleLoads', this, "notif_endTurnImpossibleLoads" );
             dojo.subscribe( 'endTurnPlayerDatas', this, "notif_endTurnPlayerDatas" );
             dojo.subscribe( 'newWeekScore', this, "notif_newWeekScore" );
             
@@ -2241,6 +2276,15 @@ function (dojo, declare) {
             this.updatePlayerScore(notif.args.player_id,notif.args.newScore );
         },
         
+        notif_endTurnImpossibleLoads: function( notif )
+        {
+            debug( 'notif_endTurnImpossibleLoads',notif );
+            
+            for( let player_id in notif.args.LOAD_KO )
+            {
+                this.updateImpossibleLoads(player_id,notif.args.LOAD_KO[player_id]);
+            }
+        },
         notif_endTurnPlayerDatas: function( notif )
         {
             debug( 'notif_endTurnPlayerDatas',notif );
