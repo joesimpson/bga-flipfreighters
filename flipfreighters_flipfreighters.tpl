@@ -26,7 +26,7 @@
         <option value="100" label="100"></option>
     </datalist>
 </div>
-    
+
 <div id="ffg_game_zone">
 
     <div id="ffg_cards_container" class="whiteblock">
@@ -59,7 +59,7 @@
         </div>
         </div>
     </div>
-
+    
     <!-- LIST of amounts to select by for JOKER : -->
     <div id="ffg_cargo_amount_list" class="ffg_hidden">
         <div id="ffg_arrow" class="ffg_arrow"><i class="fa fa-arrow-up"></i></div>

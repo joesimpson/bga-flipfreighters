@@ -419,7 +419,7 @@ function (dojo, declare) {
             dojo.style('ffg_cards_sticky', 'width', `${newCardsWidth}px`);
             dojo.style('ffg_cards_container', 'width', `${newCardsWidth}px`);
             
-            this.resizeCargoAmountList(sheetScale);
+            this.resizeCargoAmountList();
         },
         
         setScoreSheetZoom(a){
@@ -1221,24 +1221,25 @@ function (dojo, declare) {
             this.displayImpossibleLoads(player_id);
         },
         
-        resizeCargoAmountList: function(scale){
-            debug( "resizeCargoAmountList()",scale );
+        resizeCargoAmountList: function(nbLoad = parseInt(this.selectedAmount)){
+            debug( "resizeCargoAmountList()",nbLoad );
+            let divAmountList = document.getElementById(`ffg_cargo_amount_list`);
+            divAmountList.classList.remove("ffg_reverse_direction");
             //Resize mini popin for joker selection : (when displayed)
-            if( !dojo.hasClass("ffg_cargo_amount_list","ffg_hidden") && this.selectedCargoContainer != undefined){
-                let div_id = `ffg_container_${this.player_id}_${this.selectedCargoContainer}` ;
-                let cargo_to_fill = dojo.query("#"+div_id)[0] ;
-                let box = cargo_to_fill.getBoundingClientRect();
-                let boardBox =  dojo.query(`#ffg_board_player_${this.player_id}`)[0].getBoundingClientRect( ) ;
-                let divAmountList = dojo.query("#ffg_cargo_amount_list")[0];
-                //let newLeft = box.l + boardBox.left;
-                let newLeft = box.left ;
-                //let newTop = box.t + boardBox.top;
-                let newTop = box.top - boardBox.top;
-                debug( "resizeCargoAmountList() : newMargin ",newLeft,newTop );
-                dojo.setMarginBox(divAmountList, {  
-                    l: newLeft, 
-                    t: newTop,  
-                    } ); 
+            if( !dojo.hasClass(divAmountList.id,"ffg_hidden") && this.selectedCargoContainer != undefined){
+                let cargo_to_fill = document.getElementById(`ffg_container_${this.player_id}_${this.selectedCargoContainer}`) ;
+                let cargoBox = cargo_to_fill.getBoundingClientRect();
+                //we expect nbLoad spaces + 1 arrow + 1 close icon
+                this.placeOnObjectPos("ffg_cargo_amount_list",cargo_to_fill.id,cargoBox.width * (nbLoad+2)/2 ,cargoBox.height * 1.5);
+                
+                let gamecontainer = $('ffg_game_container');
+                let box = gamecontainer.getBoundingClientRect();
+                let width = divAmountList.getBoundingClientRect().width;
+                let right = divAmountList.getBoundingClientRect().right;
+                if(right >= box.right) { //If this is gonna be too far on the right
+                    divAmountList.classList.add("ffg_reverse_direction");
+                    this.placeOnObjectPos("ffg_cargo_amount_list",cargo_to_fill.id, 0 - width*0.8 /2, cargoBox.height * 1.5);
+                }
             }
         },
         updateCargoAmountList: function(div_id,container_id,amount){
@@ -1246,7 +1247,7 @@ function (dojo, declare) {
             
             dojo.query("#ffg_cargo_amount_list").removeClass("ffg_hidden");
             dojo.query("#"+div_id).addClass("ffg_cargo_to_fill");
-            this.resizeCargoAmountList();
+            this.resizeCargoAmountList(1); // expect only 1 space for spinner and wait response
             
             dojo.query("#ffg_cargo_amount_loading").removeClass("ffg_no_display");
             dojo.query(".ffg_cargo_amount").removeClass("ffg_selectable").addClass("ffg_no_display");
@@ -1268,7 +1269,7 @@ function (dojo, declare) {
             }
             else {
                 //For PERFORMANCE, don't call server for 1/2 trucks that we know allow all numbers
-                let allPossibleLoads = Array.from({length: this.constants.MAX_LOAD}, (_, i) => i + 1) ;
+                let allPossibleLoads = Array.from({length: this.selectedAmount}, (_, i) => i + 1) ;
                 let fakeNotif = {'name' : 'MOCK', 'args':{'possibles': allPossibleLoads  }};
                 this.notif_possibleLoads(fakeNotif);
             }
@@ -2123,7 +2124,8 @@ function (dojo, declare) {
                 dojo.query("#ffg_cargo_amount_list_"+value).addClass("ffg_selectable");
                 dojo.query("#ffg_button_amount_"+value).removeClass("disabled").addClass("ffg_selectable");
             }
-            
+            let visiblecount = dojo.query("#ffg_cargo_amount_list .ffg_cargo_amount.ffg_selectable:not(.ffg_no_display)").length ;
+            this.resizeCargoAmountList(visiblecount);
         },  
 
         notif_possibleCards: function( notif )

@@ -655,24 +655,36 @@
     position: absolute;
     z-index: 4;
     display: flex;
-    flex-flow: row wrap;
-    margin-top: calc(var(--ffg_container_width) * (1 + 1.6 * var(--ffg_board_display_scale)));
-    margin-bottom: 10px; /* from whiteblock */
+    flex-flow: row;
+    /*margin-top: calc(var(--ffg_container_width) * (1 + 1.6 * var(--ffg_board_display_scale)));*/
     padding: 10px; /* from whiteblock */
     background-color: white;
     border-radius: 15%;
     outline: 2px solid black;
-    
-    min-width: calc(var(--ffg_container_width) * 5);
+    /* compute container size with margins */
+    min-width: calc( (var(--ffg_container_width) + 20 ) * 5);
+    width: calc( (var(--ffg_container_width) + 20 ) * 5);
+    max-width: calc( (var(--ffg_container_width) + 20 ) * 7);
     transform: scale(var(--ffg_board_display_scale));
     transform-origin: top left;
+}
+#ffg_cargo_amount_list.ffg_reverse_direction{
+    flex-direction: row-reverse;
+}
+#ffg_cargo_amount_list.ffg_reverse_direction .ffg_cargo_amount{
+    margin-left: 10px;
 }
 .ffg_cargo_amount, #ffg_arrow, #ffg_cargo_amount_loading{
     width: var(--ffg_container_width);
     height: var(--ffg_container_width);
     outline: 4px dotted black;
     margin-right: 10px;
+    margin-left: 10px;
     margin-bottom: 10px;
+}
+.ffg_cargo_amount:not(.ffg_selectable){
+    /** trying to avoid width problem and placement of parent */
+    display: none;
 }
 .ffg_cargo_amount:not(.ffg_selectable) .ffg_container_number{
     visibility: hidden;
