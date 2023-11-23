@@ -149,7 +149,7 @@ function (dojo, declare) {
             dojo.query(".ffg_current_player .ffg_truck_pos").connect( 'onclick', this, 'onSelectTruckPos' );
             
             dojo.query("#ffg_close_amount_list").connect( 'onclick', this, 'onCloseCargoAmountSelection' );
-            dojo.query(".ffg_current_player .ffg_cargo_amount").connect( 'onclick', this, 'onSelectCargoAmount' );
+            dojo.query(".ffg_cargo_amount").connect( 'onclick', this, 'onSelectCargoAmount' );
 
             dojo.query(".ffg_current_player .ffg_overtime").connect( 'onclick', this, 'onSelectOvertimeHour' );
             
@@ -418,6 +418,8 @@ function (dojo, declare) {
             dojo.style('ffg_cards_sticky', 'height', `${cardsHeight * cardsScale}px`);
             dojo.style('ffg_cards_sticky', 'width', `${newCardsWidth}px`);
             dojo.style('ffg_cards_container', 'width', `${newCardsWidth}px`);
+            
+            this.resizeCargoAmountList(sheetScale);
         },
         
         setScoreSheetZoom(a){
@@ -1219,13 +1221,32 @@ function (dojo, declare) {
             this.displayImpossibleLoads(player_id);
         },
         
+        resizeCargoAmountList: function(scale){
+            debug( "resizeCargoAmountList()",scale );
+            //Resize mini popin for joker selection : (when displayed)
+            if( !dojo.hasClass("ffg_cargo_amount_list","ffg_hidden") && this.selectedCargoContainer != undefined){
+                let div_id = `ffg_container_${this.player_id}_${this.selectedCargoContainer}` ;
+                let cargo_to_fill = dojo.query("#"+div_id)[0] ;
+                let box = cargo_to_fill.getBoundingClientRect();
+                let boardBox =  dojo.query(`#ffg_board_player_${this.player_id}`)[0].getBoundingClientRect( ) ;
+                let divAmountList = dojo.query("#ffg_cargo_amount_list")[0];
+                //let newLeft = box.l + boardBox.left;
+                let newLeft = box.left ;
+                //let newTop = box.t + boardBox.top;
+                let newTop = box.top - boardBox.top;
+                debug( "resizeCargoAmountList() : newMargin ",newLeft,newTop );
+                dojo.setMarginBox(divAmountList, {  
+                    l: newLeft, 
+                    t: newTop,  
+                    } ); 
+            }
+        },
         updateCargoAmountList: function(div_id,container_id,amount){
             debug( "updateCargoAmountList()", div_id,container_id,amount);
             
             dojo.query("#ffg_cargo_amount_list").removeClass("ffg_hidden");
             dojo.query("#"+div_id).addClass("ffg_cargo_to_fill");
-            let divAmountList = dojo.query("#ffg_cargo_amount_list")[0];
-            dojo.setMarginBox(divAmountList, {  l: dojo.getMarginBox(dojo.query( "#"+div_id)[0]  ).l, t: dojo.getMarginBox(dojo.query("#"+div_id)[0]  ).t  } ); 
+            this.resizeCargoAmountList();
             
             dojo.query("#ffg_cargo_amount_loading").removeClass("ffg_no_display");
             dojo.query(".ffg_cargo_amount").removeClass("ffg_selectable").addClass("ffg_no_display");

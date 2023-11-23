@@ -59,8 +59,21 @@
         </div>
         </div>
     </div>
+
+    <!-- LIST of amounts to select by for JOKER : -->
+    <div id="ffg_cargo_amount_list" class="ffg_hidden">
+        <div id="ffg_arrow" class="ffg_arrow"><i class="fa fa-arrow-up"></i></div>
+        <div id="ffg_cargo_amount_loading" class=""><i class="fa fa-spinner fa-spin"></i> </div>
+        <!-- BEGIN ffg_cargo_amount_list -->
+            <div id="ffg_cargo_amount_list_{AMOUNT}" class="ffg_cargo_amount {CLASSES}" data_amount="{AMOUNT}">
+                <span class="ffg_container_number">{AMOUNT}</span> 
+            </div>
+        <!-- END ffg_cargo_amount_list -->
+        <div id="ffg_close_amount_list" class=""><i class="fa fa-close"></i></div>
+    </div>
     
 <div id="ffg_all_players_board_wrap" class="">
+    
     <!-- BEGIN ffg_playerBoard -->
      
     <div id="ffg_board_player_container_{PLAYER_ID}" class="ffg_board_container {PLAYER_CLASS}" data_player_id="{PLAYER_ID}">
@@ -69,18 +82,6 @@
             <span class="ffg_board_title"><h1>
                 <span style="color:#{PLAYER_COLOR}; outline-color:#{PLAYER_COLOR};"><img id="ffg_player_avatar_{PLAYER_ID}" class="emblem ffg_player_avatar" src="" alt="">{PLAYER_NAME}</span>
             </h1></span>
-            
-            <!-- LIST of amounts to select by for JOKER : TODO JSA Could be outside of players loop  -->
-            <div id="ffg_cargo_amount_list" class="whiteblock ffg_hidden">
-                <div id="ffg_arrow" class="ffg_arrow"><i class="fa fa-arrow-up"></i></div>
-                <div id="ffg_cargo_amount_loading" class=""><i class="fa fa-spinner fa-spin"></i> </div>
-                <!-- BEGIN ffg_cargo_amount_list -->
-                    <div id="ffg_cargo_amount_list_{AMOUNT}" class="ffg_cargo_amount {CLASSES}" data_amount="{AMOUNT}">
-                        <span class="ffg_container_number">{AMOUNT}</span> 
-                    </div>
-                <!-- END ffg_cargo_amount_list -->
-                <div id="ffg_close_amount_list" class=""><i class="fa fa-close"></i></div>
-            </div>
             
             <div id="ffg_board_trucks_wrapper">
                 <!-- BEGIN ffg_player_trucks_cargo -->
