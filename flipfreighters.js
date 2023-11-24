@@ -130,7 +130,7 @@ function (dojo, declare) {
             
             this.addTooltip( "ffg_cardsSliderSize", _("Layout : Modify cards ratio"), '' );
             this.addTooltip( "ffg_playerBoardSliderSize", _("Layout : Modify boards size"), '' ); 
-            this.addTooltip( "ffg_move_mode_switch", _("Moving action speed : auto-confirm when moving one truck OR enable multiple trucks selection"), '' );
+            //this.addTooltip( "ffg_move_mode_switch", _("Moving action speed : auto-confirm when moving one truck OR enable multiple trucks selection"), '' );
             
             this.updateDiscardPile(this.gamedatas.discard_pile);
             this.addTooltip( "ffg_discard_pile_wrapper", _("Discard pile"), '' );
