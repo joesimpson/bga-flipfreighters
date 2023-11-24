@@ -78,7 +78,7 @@ $game_preferences = array(
             'default' => 2
     ),
     106 => array(
-            'name' => totranslate('Route colors'),
+            'name' => totranslate('Route color'),
             'needReload' => true, // after user changes this preference game interface would auto-reload
             'values' => array(
                     1 => array( 'name' => totranslate( 'Depends on position' ), 'cssPref' => 'ffg_display_truck_route_mutlicolors' ),
