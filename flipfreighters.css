@@ -382,6 +382,7 @@
 #ffg_cards_container{
     position: relative;
     align-self: flex-start;
+    margin-top: 20px;
     
     /*transform: scale(var(--ffg_cards_display_scale));*/
 }

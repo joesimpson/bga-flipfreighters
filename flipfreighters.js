@@ -330,9 +330,11 @@ function (dojo, declare) {
         onScreenWidthChange(){
             debug("onScreenWidthChange...");
             //TODO JSA ? User SETTING if(this.display_mode == HORIZONTAL)
+            if(this.getDefaultMode() === HORIZONTAL){
                 this.resizeHorizontal();
-            //else
-            //    this.resizeVertical();
+            } else {
+                this.resizeVertical();
+            }
         },
         ///////////////////////////////////////////////////
         //// Utility methods
@@ -396,19 +398,28 @@ function (dojo, declare) {
         getConfig: function(value, default_value){
             return localStorage.getItem(value) == null? default_value : localStorage.getItem(value);
         },
+        
         /** Copied from Welcome (WTO): */
-        resizeHorizontal: function(){
-            debug( "resizeHorizontal ... " );
+        getDefaultMode: function(){
+            const vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
+            const vh = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0);
+            return vw > 1.1*vh? HORIZONTAL : VERTICAL;
+        },
+        /** Copied from Welcome (WTO): */
+        resizeHorizontal: function( widthToLeave = 0){
+            debug( "resizeHorizontal ... ",widthToLeave );
             let gamecontainer = $('ffg_game_container');
             let box = gamecontainer.getBoundingClientRect();
-            let sheetWidth = 1400;
+            let sheetWidth = 1400 + 20 + 20 + widthToLeave; //margin 20 + outline 10 on both sides, + 100 to be safe ?
             let sheetZoom = this._scoreSheetZoom / 100;
-            let sheetRatio =  (100 - this._cardsRatio) / 100;
+            let sheetRatio =  (100 - this._cardsRatio - 2 ) / 100;//2% empty to be safe ?
             let newSheetWidth = sheetZoom*sheetRatio*box['width'];
             let sheetScale = newSheetWidth / sheetWidth;
             document.querySelector(":root").style.setProperty("--ffg_board_display_scale",sheetScale) ;
+            debug( "resizeHorizontal ... sheetZoom,sheetRatio, sheetScale, newSheetWidth : ",sheetZoom,sheetRatio , sheetScale, newSheetWidth );
+            //dojo.style('ffg_all_players_board_wrap', 'width', `${newSheetWidth}px`);
             
-            let cardsWidth = 130;
+            let cardsWidth = 130 + 10;//margin-left 10 on .ffg_card
             let cardsHeight = 963;
             let cardsRatio = this._cardsRatio / 100;
             let newCardsWidth = cardsRatio*box['width'];
@@ -421,6 +432,11 @@ function (dojo, declare) {
             dojo.style('ffg_cards_container', 'width', `${newCardsWidth}px`);
             
             this.resizeCargoAmountList();
+        },
+        resizeVertical: function(){
+            debug( "resizeVertical ... " );
+            //No special vertical layout for now, but leave more width space emptyfor better visibility on small width screens
+            this.resizeHorizontal(100);
         },
         
         setScoreSheetZoom(a){
