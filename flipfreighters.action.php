@@ -116,6 +116,46 @@
         self::ajaxResponse( );
     }
     
+    public function moveMultiTrucks()
+    {
+        self::setAjaxMode();  
+        self::checkVersion();    
+
+        // Retrieve arguments
+        // Note: these arguments correspond to what has been sent through the javascript "ajaxcall" method
+        $cardId = self::getArg( "cardId", AT_posint, true );
+        $amount = self::getArg( "amount", AT_posint, true );
+        // ---------- ----------  array of TRUCKS'ids  --------------------
+        $truck_ids_raw = self::getArg( "truckId", AT_alphanum, true );
+        $truck_ids_raw = trim($truck_ids_raw);
+        if( $truck_ids_raw == '' )
+            $truckIdArray = array();
+        else
+            $truckIdArray = explode( ' ', $truck_ids_raw );
+        // ---------- ----------  array of POSITIONs  --------------------
+        $positions_raw = self::getArg( "position", AT_numberlist, true );
+        // Removing last ';' if exists
+        if( substr( $positions_raw, -1 ) == ';' )
+            $positions_raw = substr( $positions_raw, 0, -1 );
+        if( $positions_raw == '' )
+            $positionArray = array();
+        else
+            $positionArray = explode( ';', $positions_raw );
+        // ---------- ----------  array of isDelivery  --------------------
+        $isDelivery_raw = self::getArg( "isDelivery", AT_alphanum, true );
+        $isDelivery_raw = trim($isDelivery_raw);
+        if( $isDelivery_raw == '' )
+            $isDeliveryArray = array();
+        else
+            $isDeliveryArray = explode( ' ', $isDelivery_raw );
+
+
+        // Then, call the appropriate method in your game logic 
+        $this->game->moveMultiTrucks($cardId,$amount, $truckIdArray, $positionArray, $isDeliveryArray );
+
+        self::ajaxResponse( );
+    }
+    
     public function endTurn()
     {
         self::setAjaxMode();  

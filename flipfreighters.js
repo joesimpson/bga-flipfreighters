@@ -49,6 +49,7 @@ function (dojo, declare) {
             this.selectedAmount = null;//Not always the card value, with overtime hours
             this.selectedCargoContainer = null;
             this.selectedSuit = null;
+            this.selectedMoves = {};
             this.material = [];
             
             this.constants = [];
@@ -124,7 +125,9 @@ function (dojo, declare) {
             
             this.updateCardsUsage();
             
-            dojo.query(".ffg_card").forEach(this.updateOvertimeHourOnCard);
+            dojo.query(".ffg_card").forEach((i) => { 
+                this.updateOvertimeHourOnCard(i);
+            });
             
             this.initTooltips(this.material.tooltips);
             
@@ -241,6 +244,7 @@ function (dojo, declare) {
                 //Preserve value in case we use overtime during turn and want to cancel
                 this.possibleCardsBeforeOvertime = dojo.clone(this.possibleCards);
                 this.updatePossibleCards();
+                this.cleanMultiMoveSelection();
                 break;
                 
             case 'endTurn':
@@ -311,6 +315,8 @@ function (dojo, declare) {
                         dojo.query("#ffg_button_amount_"+k).removeClass("ffg_selectable").addClass("ffg_no_display disabled");
                     }
                     
+                    this.addActionButton( 'ffg_button_stopmoving', _('Stop moving'), 'onStopMoving' ); 
+                    $("ffg_button_stopmoving").classList.add("disabled");
                     this.addActionButton( 'ffg_button_endturn', _('End turn'), 'onEndTurn' ); 
                     this.addActionButton( 'ffg_button_cancelturn', _('Restart turn'), 'onCancelTurn',null, false, 'red' );
                     break;
@@ -387,6 +393,9 @@ function (dojo, declare) {
         },
         /** Update title in BGA status bar without waiting for status change*/
         setMainTitle: function(text) {
+            //First reset in order to avoid going from one fake message to another and not being able to recover the original message :
+            this.resetMainTitle();
+            if($('pagemaintitletext').innerHTML == text) return;
             this.previouspagemaintitletext = $('pagemaintitletext').innerHTML ;
             $('pagemaintitletext').innerHTML = text;
         },
@@ -823,7 +832,10 @@ function (dojo, declare) {
             div.setAttribute("data_value",value);
             let amount = value;
             div.setAttribute("data_amount",value);
-            dojo.addClass(divId,"ffg_selectable") ;
+            if(usedPower == 0 ){
+                //We cannot play the same card for a later move
+                dojo.addClass(divId,"ffg_selectable") ;
+            }
             
             this.resetDayCard(row,card_id, color, value, usedPower );
             
@@ -1178,12 +1190,189 @@ function (dojo, declare) {
             this.selectedSuit = null;
             this.selectedSuitCost = null;
             this.selectedCargoContainer = null;
+            this.cleanMultiMoveSelection();
             dojo.query(".ffg_card").removeClass("ffg_selected") ;
             dojo.query(".ffg_card_wrapper").removeClass("ffg_selected") ;
             dojo.query(".ffg_container").removeClass("ffg_selectable") ;
             dojo.query(".ffg_truck_pos").removeClass("ffg_selectable") ;
             dojo.query(".ffg_cargo_amount").removeClass("ffg_selectable");
             this.closeCargoAmountList();
+        },
+        disableCard : function( cardId)
+        {
+            debug( "disableCard ... ",cardId);
+            let cardRow = this.getCardRowFromId(cardId);
+            $("ffg_card_"+cardRow).classList.remove("ffg_selectable");
+        },
+        
+        /**
+        Delete temporary elements which come from this player choosing where to move
+        */
+        cleanMultiMoveSelection: function()
+        {
+            debug( "cleanMultiMoveSelection ... ");
+            this.selectedMoves = {};
+            this.selectedMoves.usedOvertime = 0;
+            this.selectedMoves.cardUsage = 0;
+            dojo.query(".ffg_truck_pos[data_player='"+this.player_id+"']").forEach((i) => {
+                dojo.removeClass(i,"ffg_selected_move ffg_selected_delivery ffg_selection_disabled");
+                });
+                
+            if($("ffg_button_stopmoving") !=null ){
+                $("ffg_button_stopmoving").classList.add("disabled");
+            }
+            this.resetMainTitle();
+        },
+        cleanMultiMoveSelectionOnTruck: function(truckId, closeIfEmpty = false)
+        {
+            debug( "cleanMultiMoveSelectionOnTruck ... ",truckId, closeIfEmpty);
+            dojo.query("#ffg_truck_"+this.player_id+"_"+truckId+" .ffg_selected_move").forEach((i) => {
+                dojo.removeClass(i,"ffg_selected_move ffg_selected_delivery");
+                });
+               
+            //remove from selectedMoves in order to keep only 1 element by truck
+            let index = this.selectedMoves.truckId.indexOf(truckId);
+            if (index > -1) {
+                this.selectedMoves.truckId.splice(index, 1);
+                this.selectedMoves.position.splice(index, 1);
+                this.selectedMoves.isDelivery.splice(index, 1);
+                let moveLength = this.selectedMoves.moveLength.splice(index, 1)[0];
+                this.increasePossibleMovesForOtherTrucks(moveLength,truckId);
+            }
+            if(closeIfEmpty && this.selectedMoves.truckId.length==0 ){
+                this.cleanMultiMoveSelection();
+            }
+        },
+        /**
+        Save in memory + UI
+        */
+        saveSelectedMove: function(div, cardId, truckId,position,isDelivery )
+        {
+            debug( 'saveSelectedMove',div,cardId, truckId,position,isDelivery );
+            
+            this.selectedMoves.cardId = cardId;
+            if(this.selectedMoves.truckId ==undefined) this.selectedMoves.truckId = [];
+            if(this.selectedMoves.position ==undefined) this.selectedMoves.position = [];
+            if(this.selectedMoves.isDelivery ==undefined) this.selectedMoves.isDelivery = [];
+            if(this.selectedMoves.moveLength ==undefined) this.selectedMoves.moveLength = [];
+            //Unselect other moves on same line if already done
+            this.cleanMultiMoveSelectionOnTruck(truckId,false);
+            
+            //count from last other card move
+            let previousPosition = this.getTruckCurrentPosition(this.player_id,truckId);
+            let moveLength = parseInt(position);
+            if( !isNaN(previousPosition)) {
+                moveLength = moveLength - previousPosition;
+            }
+            this.selectedMoves.moveLength.push( moveLength );
+            this.selectedMoves.truckId.push( truckId );
+            this.selectedMoves.position.push( position);
+            this.selectedMoves.isDelivery.push( isDelivery);
+            
+            div.classList.add("ffg_selected_move");
+            if(isDelivery) div.classList.add("ffg_selected_delivery");
+            $("ffg_button_stopmoving").classList.remove("disabled");
+            this.decreasePossibleMovesForOtherTrucks(moveLength,truckId);
+            
+            this.setMainTitle(_('Keep moving or stop when ready'));
+        },
+        getTruckSelectedMovePosition: function(truckId)
+        {
+            debug( "getTruckSelectedMovePosition()", truckId);
+            let index = this.selectedMoves.truckId.indexOf(truckId);
+            if (index > -1) {
+                return this.selectedMoves.position[index];
+            }
+            return 0;
+        },
+        getTruckSelectedMoveLength: function(truckId)
+        {
+            debug( "getTruckSelectedMoveLength()", truckId);
+            let index = this.selectedMoves.truckId.indexOf(truckId);
+            if (index > -1) {
+                return this.selectedMoves.moveLength[index];
+            }
+            return 0;
+        },
+        
+        decreasePossibleMovesForOtherTrucks: function(moveLength, truckId)
+        {
+            debug( "decreasePossibleMovesForOtherTrucks()", moveLength, truckId);
+            
+            let cardUsage = this.selectedMoves.moveLength.reduce((a,b)=>a+b);
+            //let currentSelectedMoveLength = this.getTruckSelectedMoveLength(truckId);
+            dojo.query(`.ffg_truck[data_player="${this.player_id}"]`).forEach((i) => {
+                let otherTruckId = i.getAttribute("data_id");
+                if( truckId != otherTruckId) {
+                    //let fromPosition = this.getTruckCurrentPosition(this.player_id,otherTruckId);
+                    /*for (let k=fromPosition+1 ; k<fromPosition +1 + moveLength; k++ ){
+                        let posDiv = $(`ffg_truck_pos_${this.player_id}_${otherTruckId}_${k}`);
+                        if(posDiv != null){
+                            posDiv.classList.add("ffg_selection_disabled");
+                        }
+                    }*/
+                    
+                    let currentTruckPosition = this.getTruckCurrentPosition(this.player_id,otherTruckId);
+                    let currentSelectedPosition = this.getTruckSelectedMovePosition(otherTruckId);
+                    let currentSelectedMoveLength = this.getTruckSelectedMoveLength(otherTruckId);
+                    let selectablePositions = dojo.query(`#${i.id} .ffg_truck_pos:not(.ffg_selected_move):not(.ffg_selection_disabled).ffg_selectable[data_truck="${otherTruckId}"]`) ;
+                    selectablePositions.forEach( (pos) => {
+                    //if(selectablePositions.length > this.selectedAmount - moveLength){
+                        //for(let k=this.selectedAmount - moveLength; k<this.selectedAmount && k<selectablePositions.length; k++ ) {
+                        //let k= this.selectedAmount - moveLength;
+                        let p = pos.getAttribute("data_position");
+                        if(p>currentSelectedPosition && p>currentTruckPosition + parseInt( this.selectedAmount - cardUsage + currentSelectedMoveLength ) ) {
+                            debug( "decreasePossibleMovesForOtherTrucks() for position", otherTruckId,pos);
+                            pos.classList.add("ffg_selection_disabled");
+                            //k++;
+                        }
+                        //for(let k=0 ; k<moveLength; k++ ) {
+                        //    let farestSelectablePos = dojo.query(`#${i.id} .ffg_truck_pos:not(.ffg_selected_move):not(.ffg_selection_disabled).ffg_selectable[data_truck="${otherTruckId}"]`).lastItem;
+                        //    if(farestSelectablePos != null){
+                        //        debug( "decreasePossibleMovesForOtherTrucks() for position", farestSelectablePos);
+                        //        farestSelectablePos.classList.add("ffg_selection_disabled");
+                        //    }
+                        //}
+                    //}
+                    });
+                }
+            });
+            
+        },
+        
+        increasePossibleMovesForOtherTrucks: function(moveLength, truckId)
+        {
+            debug( "increasePossibleMovesForOtherTrucks()", moveLength, truckId);
+            
+            dojo.query(`.ffg_truck[data_player="${this.player_id}"]`).forEach((i) => {
+                let otherTruckId = i.getAttribute("data_id");
+                if( truckId != otherTruckId) {
+                    let notselectablePositions = dojo.query(`#${i.id} .ffg_truck_pos:not(.ffg_selected_move).ffg_selection_disabled.ffg_selectable[data_truck="${otherTruckId}"]`) ;
+                    let quantity = Math.min(notselectablePositions.length,moveLength);
+                    if(quantity > 0){
+                        for(let k=quantity-1; k>=0; k--) {//from farest to nearest pos on the line
+                            let pos = notselectablePositions[k];
+                            debug( "increasePossibleMovesForOtherTrucks() for position", pos);
+                            pos.classList.remove("ffg_selection_disabled");
+                        }
+                    }
+                }
+            });
+            
+        },
+        getTruckCurrentPosition: function(player_id,truckId)
+        {
+            debug( "getTruckCurrentPosition()", player_id,truckId);
+            let truckDiv = $(`ffg_truck_${player_id}_${truckId}`);
+            let confirmed_position = parseInt(truckDiv.getAttribute("data_confirmed_position") );
+            let not_confirmed_position = parseInt(truckDiv.getAttribute("data_not_confirmed_position") );
+            if( !isNaN(not_confirmed_position)) {
+                return not_confirmed_position;
+            }
+            if( !isNaN(confirmed_position)) {
+                return confirmed_position;
+            }
+            return 0;
         },
 
         /**
@@ -1209,6 +1398,8 @@ function (dojo, declare) {
             debug( "isPossibleCard()", cardIndex);
          
             let pcard = this.possibleCards[cardIndex];
+            let cardRow = this.getCardRowFromId(cardIndex);
+            if(this.dayCards[cardRow].usedPower > 0) return false;//Cannot move 2 different times anymore
             if( pcard["LOAD"].length > 0 ) return true;
             if( pcard["MOVE"].length > 0 ) return true; 
         
@@ -1370,10 +1561,10 @@ function (dojo, declare) {
                     amount = card_value + overtime;
             }*/
             cardDiv.setAttribute("data_amount", amount);
-            this.updateOvertimeHourOnCard(cardDiv);
+            this.updateOvertimeHourOnCard(cardDiv, overtime);
         },
-        updateOvertimeHourOnCard: function(cardDiv){
-            debug( "updateOvertimeHourOnCard()",cardDiv);
+        updateOvertimeHourOnCard: function(cardDiv, forceOvertimeValue = null){
+            debug( "updateOvertimeHourOnCard()",cardDiv,forceOvertimeValue);
             let cardModifier =  dojo.query("#"+cardDiv.id+" .ffg_cardModifier")[0];
             let amount = parseInt(cardDiv.getAttribute("data_amount") ) ;
             let card_value = parseInt(cardDiv.getAttribute("data_value") ) ;
@@ -1391,6 +1582,10 @@ function (dojo, declare) {
             else {
                 innerHTML = "";
                 addClass = "ffg_empty_value";
+            }
+            if(forceOvertimeValue != null){
+                dojo.removeClass(cardModifier,"ffg_empty_value ffg_negative_value ffg_positive_value");
+                cardModifier.setAttribute("data_value",forceOvertimeValue) ;
             }
             cardModifier.innerHTML = innerHTML +delta;
             dojo.addClass(cardModifier,addClass);
@@ -1720,6 +1915,7 @@ function (dojo, declare) {
             this.selectedSuit = data_suit;
             this.selectedSuitCost = (suit_reset !=data_suit && suit_reset != undefined ) ? 1 : null;//suit_reset undefined for Joker
             this.displayOvertimeHoursOnCard();
+            this.cleanMultiMoveSelection();
             
             this.displayPossibleLoads( card_id);
             this.displayPossibleMoves( card_id);
@@ -1742,7 +1938,7 @@ function (dojo, declare) {
             }
             
             this.increaseOvertimeHoursOnCard(evt.currentTarget,1);
-            
+            this.cleanMultiMoveSelection();
         },
         onClickCardMinus: function( evt )
         {
@@ -1766,6 +1962,7 @@ function (dojo, declare) {
             }
             
             this.increaseOvertimeHoursOnCard(evt.currentTarget,-1);
+            this.cleanMultiMoveSelection();
             
         },
         
@@ -1912,9 +2109,10 @@ function (dojo, declare) {
             // Preventing default browser reaction
             dojo.stopEvent( evt );
             
-            let div_id = evt.currentTarget.id;
-            let position = evt.currentTarget.getAttribute("data_position") ;
-            let truck_id = evt.currentTarget.getAttribute("data_truck") ;
+            let div = evt.currentTarget;
+            let div_id = div.id;
+            let position = div.getAttribute("data_position") ;
+            let truck_id = div.getAttribute("data_truck") ;
             let cardId = this.selectedCard;
             let isDelivery = false;
             let truck_material = this.material.trucks_types[truck_id];
@@ -1925,6 +2123,18 @@ function (dojo, declare) {
                 // This is not a possible action => the click does nothing
                 return ;
             }
+            if( dojo.hasClass( div_id, 'ffg_selected_move' ) ) {
+                //Reclick means unselect
+                this.cleanMultiMoveSelectionOnTruck(truck_id,true);
+                return ;
+            }
+            if( dojo.hasClass( div_id, 'ffg_selection_disabled' ) ) {
+                //Temporary disabled because of other selections
+                return ;
+            }
+            
+            //Close joker selection if opened
+            this.closeCargoAmountList();
             
             if(truck_material.path_size.lastItem == position ){
                 //LAST POSITION iS ALWAYS DELIVERED
@@ -1938,12 +2148,42 @@ function (dojo, declare) {
                     if (choice==1) isDelivery = false;
                     if (choice==2) return; // cancel operation, do not call server action
                     
-                    this.ajaxcallwrapper("moveTruck", {'cardId': cardId, 'truckId': truck_id, 'position': position,'isDelivery': isDelivery,});
+                    //Obsolete : save move for moveMultiTrucks
+                    //this.ajaxcallwrapper("moveTruck", {'cardId': cardId, 'truckId': truck_id, 'position': position,'isDelivery': isDelivery,});
+                    this.saveSelectedMove(div, cardId, truck_id,position,isDelivery );
                 });
                 return; //(multipleChoiceDialog is async function)
             }
             
-            this.ajaxcallwrapper("moveTruck", {'cardId': cardId, 'truckId': truck_id, 'position': position,'isDelivery': isDelivery,});
+            this.saveSelectedMove(div,cardId, truck_id,position,isDelivery );
+            //Obsolete : save move for moveMultiTrucks
+            //this.ajaxcallwrapper("moveTruck", {'cardId': cardId, 'truckId': truck_id, 'position': position,'isDelivery': isDelivery,});
+        },
+        
+        onStopMoving: function( evt )
+        {
+            debug( 'onStopMoving',evt );
+            // Preventing default browser reaction
+            dojo.stopEvent( evt );
+            
+            let cardId = this.selectedCard;
+            let amount = this.selectedAmount;
+            let truckIds = this.selectedMoves.truckId.toString().replaceAll(","," ");
+            let positions = this.selectedMoves.position.toString().replaceAll(",",";");
+            let isDelivery = this.selectedMoves.isDelivery.toString().replaceAll(","," ");
+            
+            //These values are to store REAL computation from server response :
+            this.selectedMoves.usedOvertime = 0;
+            this.selectedMoves.cardUsage = 0;
+            
+            //Example : this.ajaxcallwrapper("moveMultiTrucks", {'cardId': 12, 'amount': 3,'truckId': 'truck2 truck3', 'position': "1;3;" ,'isDelivery': "false false",});
+            this.ajaxcallwrapper("moveMultiTrucks", { 
+                'cardId': cardId, 
+                'amount': amount, 
+                'truckId': truckIds, 
+                'position': positions,
+                'isDelivery': isDelivery,
+                });
         },
         
         onSelectOvertimeHour: function( evt )
@@ -2107,6 +2347,7 @@ function (dojo, declare) {
             dojo.subscribe( 'possibleLoads', this, "notif_possibleLoads" );
             dojo.subscribe( 'loadTruck', this, "notif_loadTruck" );
             dojo.subscribe( 'moveTruck', this, "notif_moveTruck" );
+            dojo.subscribe( 'moveMultiTrucks', this, "notif_moveMultiTrucks" );
             dojo.subscribe( 'possibleCards', this, "notif_possibleCards" );
             dojo.subscribe( 'cancelTurnDatas', this, "notif_cancelTurnDatas" );
             
@@ -2214,21 +2455,36 @@ function (dojo, declare) {
             this.updatePlayerOvertimeHours(this.player_id,notif.args.availableOvertime);
             this.increasePlayerScore(this.player_id, 0 - notif.args.usedOvertime * this.constants.SCORE_BY_REMAINING_OVERTIME ) ;
             
+            this.selectedMoves.usedOvertime += notif.args.usedOvertime;
+            //this.selectedMoves.cardUsage += notif.args.cardUsage;
+            //In case we move a long path before a short path, keep the longest :
+            this.selectedMoves.cardUsage = Math.max(this.selectedMoves.cardUsage, notif.args.cardUsage );
+            
             let cardRow = this.getCardRowFromId(notif.args.card_id);
-            this.dayCards[cardRow].usedPower = notif.args.cardUsage;
+            this.dayCards[cardRow].usedPower = this.selectedMoves.cardUsage;
             this.updateCardUsage(cardRow);
             
-            if(notif.args.usedOvertime == 0){
+            if(this.selectedMoves.usedOvertime == 0){
                 //For example if we had a 6 +/-1 and we click on position 2, it doesn't cost anything
                 this.resetOvertimeHourOnCard($("ffg_card_"+cardRow), true);
             }
             else {
-                this.setOvertimeHourOnCard($("ffg_card_"+cardRow),notif.args.usedOvertime, notif.args.cardUsage);
+                this.setOvertimeHourOnCard($("ffg_card_"+cardRow),this.selectedMoves.usedOvertime, this.selectedMoves.cardUsage);
             }
+            
+            //Don't unselect card because we will receive several of this notif
+            //this.unselectCard(); 
+            
+        },
+        
+        notif_moveMultiTrucks: function( notif )
+        {
+            debug( 'notif_moveMultiTrucks',notif );
             
             //unselect card
             this.unselectCard();
-            
+            //Will be useless when updatePossibleCards is correct :
+            this.disableCard(notif.args.cardId);
         },
         
         notif_cancelTurnDatas: function( notif )
@@ -2269,6 +2525,9 @@ function (dojo, declare) {
                 let posId = i.getAttribute("data_truck")+ "_"+i.getAttribute("data_position");
                 this.undrawTruckLine(this.player_id, posId);
                 });
+                
+            //Clean truck positions selection
+            this.cleanMultiMoveSelection();
             
             dojo.query(".ffg_truck[data_player='"+this.player_id+"']:not([data_confirmed_state='"+this.constants.STATE_MOVE_DELIVERED_CONFIRMED+"']:not([data_confirmed_state='"+this.constants.STATE_MOVE_DELIVERED_TO_CONFIRM+"'])").forEach( (e) => { 
                 dojo.attr(e,"data_not_confirmed_state", ""); 

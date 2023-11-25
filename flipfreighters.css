@@ -545,7 +545,9 @@
 }
 
 .ffg_card_wrapper:not(.ffg_selected) .ffg_card_usage_wrapper{
+    /* Maybe it's better to display it at all times (when it is valued)
     display: none;
+    */
 }
 .ffg_card_usage_wrapper{
     font-size: 15px;
@@ -997,6 +999,7 @@
     /* Maybe this is prettier without any border in that case*/
     /* border: 5px solid yellowgreen; */
 }
+.ffg_selected_move::after,
 .ffg_not_confirmed_pos{
     background-color: black;
     /*outline: 5px dashed red;*/
@@ -1012,8 +1015,14 @@
     /*outline: 5px solid blue;*/
     cursor: pointer;
 }
-.ffg_not_drawn_pos.ffg_selectable::after {
+.ffg_not_drawn_pos.ffg_selectable:not(.ffg_selected_move)::after {
     border: 5px solid blue;
+}
+.ffg_not_drawn_pos.ffg_selectable.ffg_selection_disabled::after {
+    border: 5px dashed black;
+}
+.ffg_selected_move::after {
+    border: 5px solid #ff009b;
 }
 .notouch-device .ffg_not_drawn_pos.ffg_selectable:hover::after {
     scale: 1.1;
@@ -1022,6 +1031,15 @@
     z-index: 2;
 }
 
+.ffg_selected_move {
+    animation: ffg_blinker 1s ease-in-out infinite;
+}
+.ffg_selected_delivery::after {
+    background-color: darkgreen;
+}
+.ffg_selection_disabled{
+    cursor: not-allowed !important;
+}
 /* 
 ---------------------------- ----------------------------   ---------------------------- 
 ---------------------------- LIST OF ALL 61 Truck positions ---------------------------- 

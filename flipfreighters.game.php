@@ -513,10 +513,10 @@ class FlipFreighters extends Table
         return false;
     }
     
-    function cardAlreadyUsed($player_id,$card,$trucks_cargos){
+    function cardAlreadyUsed($player_id,$card,$trucks_cargos, $multiMoveAmount = 0){
         
         $card_id = $card["id"];
-        self::trace("cardAlreadyUsed($player_id,$card_id)...");
+        self::trace("cardAlreadyUsed($player_id,$card_id,$multiMoveAmount)...");
         //self::dump("cardAlreadyUsed($player_id,$card_id)...",$trucks_cargos);
         
         //LOOK FOR at least 1 cargo :
@@ -535,7 +535,7 @@ class FlipFreighters extends Table
         $power = $this->getCardUsedPowerForMoves($player_id, $card_id);
         self::trace("cardAlreadyUsed($player_id,$card_id)... used power =$power");
         $card_value = $card["type_arg"];
-        if($power >= $card_value ) {
+        if($power >= $card_value && $power >= $multiMoveAmount ) { 
             //NO remaining moves for this card
             return true;
         }
@@ -1020,7 +1020,8 @@ class FlipFreighters extends Table
     }
     
     function getCardUsedPowerForMoves($player_id, $card_id){
-        $sql = " SELECT `fmove_card_id`, SUM( `fmove_position_to`- `fmove_position_from` - `fmove_overtime_used` ) as `card_used_power`  FROM `freighter_move` where fmove_player_id = '$player_id' and `fmove_card_id` = $card_id group by `fmove_card_id` ";
+        // SUM( `fmove_position_to`- `fmove_position_from` - `fmove_overtime_used`) if we don't want to count overtime
+        $sql = " SELECT `fmove_card_id`, SUM( `fmove_position_to`- `fmove_position_from` ) as `card_used_power`  FROM `freighter_move` where fmove_player_id = '$player_id' and `fmove_card_id` = $card_id group by `fmove_card_id` ";
         
         $res = $this->getObjectFromDB($sql);
         
@@ -1042,7 +1043,7 @@ class FlipFreighters extends Table
     }
     
     function getCardUsedOvertimeForMoves($player_id, $card_id){
-        $sql = " SELECT `fmove_card_id` as card_id, SUM(`fmove_overtime_used`) as  `overtime_used`, SUM( `fmove_position_to`- `fmove_position_from` - `fmove_overtime_used` ) as `card_used_power` FROM `freighter_move` where fmove_player_id = '$player_id' and `fmove_card_id` = $card_id group by `fmove_card_id` ";
+        $sql = " SELECT `fmove_card_id` as card_id, SUM(`fmove_overtime_used`) as  `overtime_used`, SUM(  CAST( `fmove_position_to` AS SIGNED) - CAST( `fmove_position_from` AS SIGNED) ) as `card_used_power` FROM `freighter_move` where fmove_player_id = '$player_id' and `fmove_card_id` = $card_id group by `fmove_card_id` ";
         
         $res = $this->getObjectFromDB($sql);
         
@@ -1601,13 +1602,13 @@ class FlipFreighters extends Table
           
     }
     
-    function moveTruck($cardId, $truckId, $position, $isDelivery ){
+    function moveTruck($cardId, $truckId, $position, $isDelivery, $multiMoveAmount = null ){
         // Check that this is the player's turn and that it is a "possible action" at this game state (see states.inc.php)
         self::checkAction( 'moveTruck' ); 
         
         $player_id = self::getCurrentPlayerId();
         $player_name = self::getCurrentPlayerName();
-        self::trace("moveTruck($cardId, $truckId, $position,$isDelivery,$player_id,$player_name )");
+        self::trace("moveTruck($cardId, $truckId, $position,$isDelivery, $multiMoveAmount,$player_id,$player_name )");
         
         //ANTICHEAT CHECKS :
         if($cardId == null )
@@ -1629,13 +1630,14 @@ class FlipFreighters extends Table
         if($isDelivery && array_search($position,$path_size) ===FALSE)
             throw new BgaVisibleSystemException( ("You cannot deliver here")); // NOI18N 
         $trucks_cargos = $this->getTruckCargos($player_id);
-        if( $this->cardAlreadyUsed($player_id,$card, $trucks_cargos))  {
+        if($this->cardAlreadyUsed($player_id,$card, $trucks_cargos,$multiMoveAmount))  {
             throw new BgaVisibleSystemException( ("You already used that card")); // NOI18N 
         }
         $amount = $position - $fromPosition;
         $originalAvailableOvertime = $this->getPlayerAvailableOvertimeHoursPrivateState($player_id);
+        $cardUsedOvertime = $this->getCardUsedOvertimeForMoves($player_id, $cardId);
         $cardUsedPower = $this->getCardUsedPowerForMoves($player_id, $cardId);
-        $usedOvertime = max(0,$amount - ($card['type_arg'] -$cardUsedPower) );
+        $usedOvertime = max(0,$amount - ($card['type_arg'] - ($cardUsedPower - $cardUsedOvertime) ) );
         if($usedOvertime > $originalAvailableOvertime)
             throw new BgaVisibleSystemException( ("You don't have enough overtime hours to do that")); // NOI18N 
         
@@ -1643,6 +1645,7 @@ class FlipFreighters extends Table
         $truckState = $this->getCurrentTruckState($truckId,$player_id);
         $truckCargos = $trucks_cargos [$truckId];
         $cardMovePower = $card['type_arg'] + $usedOvertime;
+        if(isset($multiMoveAmount) ) $cardMovePower = $multiMoveAmount;
         self::trace("moveTruck($cardId, $truckId, $position,$isDelivery,$player_id,$player_name ) ... cardMovePower=$cardMovePower");
         $card['type_arg'] = $amount; //Don't save this in card, but allow to run rules on this value
         if($this->isPossibleMoveWithCard($card,$fromPosition,$truckState,$truckCargos,$truckId,$position,$cardMovePower,$cardUsedPower) == false ) {
@@ -1689,6 +1692,34 @@ class FlipFreighters extends Table
         
         //Should not be public but the framework prefers to get minimum 1 notifyAll per action ?...
         self::notifyAllPlayers("moveTruckPublic", '', '' );
+    }
+    
+    function moveMultiTrucks($cardId, $amount, $truckIdArray, $positionArray, $isDeliveryArray ){
+        self::checkAction( 'moveMultiTrucks' ); 
+        
+        $player_id = self::getCurrentPlayerId();
+        $player_name = self::getCurrentPlayerName();
+        self::trace("moveMultiTrucks($player_id,$player_name,$cardId, $amount )");
+        //self::dump("moveMultiTrucks()...",$truckIdArray);
+        //self::dump("moveMultiTrucks()...",$positionArray);
+        //self::dump("moveMultiTrucks()...",$isDeliveryArray);
+        
+        if(  count($truckIdArray) !=  count($positionArray) 
+            ||  count($isDeliveryArray) !=  count($positionArray) )
+            throw new BgaVisibleSystemException( ("Incoherent array arguments")); // NOI18N 
+        
+        for( $k =0; $k< count($truckIdArray); $k++ ){
+            $truckId = $truckIdArray[$k];
+            $position = $positionArray[$k];
+            $isDelivery = filter_var( $isDeliveryArray[$k], FILTER_VALIDATE_BOOLEAN);
+            
+            $this->moveTruck($cardId, $truckId, $position,$isDelivery, $amount );
+        }
+        
+        self::notifyPlayer($player_id,"moveMultiTrucks", '', array( 
+            'cardId' => $cardId,
+            'amount' => $amount,
+        ) );
     }
     
     function endTurn(){
