@@ -971,7 +971,13 @@
     /*outline: 5px solid blue;*/
     cursor: pointer;
 }
-.ffg_not_drawn_pos.ffg_selectable:not(.ffg_selected_move)::after {
+.ffg_not_confirmed_pos.ffg_selectable{
+    /** This element will be selectable during move action before sending to server*/
+    cursor: pointer;
+}
+.ffg_not_drawn_pos.ffg_selectable:not(.ffg_selected_move)::after
+,.ffg_not_confirmed_pos.ffg_selectable:not(.ffg_selected_move)::after
+{
     border: 5px solid blue;
 }
 .ffg_not_drawn_pos.ffg_selectable.ffg_selection_disabled::after {
@@ -980,6 +986,7 @@
 .ffg_selected_move::after {
     border: 5px solid #ff009b;
 }
+.notouch-device .ffg_truck_pos.ffg_temp_selection:hover::after,
 .notouch-device .ffg_not_drawn_pos.ffg_selectable:hover::after {
     scale: 1.1;
     border-style: solid;
@@ -995,6 +1002,9 @@
 }
 .ffg_selection_disabled{
     cursor: not-allowed !important;
+}
+.ffg_truck_pos.ffg_temp_selection{
+    background: repeating-linear-gradient( 45deg, #000 , #5867bb00 10px, #000 10px, #000 20px );
 }
 /* 
 ---------------------------- ----------------------------   ---------------------------- 
@@ -1533,11 +1543,17 @@ html:not(.ffg_truck_shape_multi_anim) .ffg_truck_shape{
 .ffg_truck_line{
     stroke-linecap: round;
 }
+.ffg_truck_line.ffg_temp_selection,
+.ffg_truck_route.ffg_temp_selection{
+    stroke-dasharray: 10;
+}
+
 /** USER PREF Line color */
 .ffg_display_truck_route_mutlicolors .ffg_truck_line,
 .ffg_display_truck_route_mutlicolors .ffg_truck_route{
     stroke: black;
 }
+
 .ffg_display_truck_route_mutlicolors .ffg_truck_line.ffg_delivery_done,
 .ffg_display_truck_route_mutlicolors .ffg_truck_route.ffg_delivery_done{
     stroke: darkgreen;

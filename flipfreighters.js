@@ -315,6 +315,7 @@ function (dojo, declare) {
                     }
                     
                     this.addActionButton( 'ffg_button_stopmoving', _('Stop moving'), 'onStopMoving' ); 
+                    $("ffg_button_stopmoving").classList.add("bgabutton_green");
                     $("ffg_button_stopmoving").classList.add("disabled");
                     this.addActionButton( 'ffg_button_endturn', _('End turn'), 'onEndTurn' ); 
                     this.addActionButton( 'ffg_button_cancelturn', _('Restart turn'), 'onCancelTurn',null, false, 'red' );
@@ -1092,7 +1093,7 @@ function (dojo, declare) {
                 let posId = truck_id+"_"+k;
                 //UPDATE div classes :
                 let posDivId = "ffg_truck_pos_"+player_id+"_"+posId;
-                dojo.removeClass(posDivId,"ffg_not_drawn_pos ffg_not_confirmed_pos ffg_selectable") ;
+                dojo.removeClass(posDivId,"ffg_not_drawn_pos ffg_not_confirmed_pos ffg_selectable ffg_temp_selection") ;
                 dojo.addClass(posDivId,cssPos ) ;
                 this.animateMovePosition(posDivId);
                 let state = ( confirmed_position < k ) ? not_confirmed_state : confirmed_state;
@@ -1149,8 +1150,8 @@ function (dojo, declare) {
                 this.drawTruckLine(player,posId,confirmed_state);
             });
         },
-        drawTruckLine: function(player_id, posId,state){
-            debug( "drawTruckLine ... ",player_id, posId,state);
+        drawTruckLine: function(player_id, posId,state, moreCss = undefined){
+            debug( "drawTruckLine ... ",player_id, posId,state,moreCss);
             
             let isDelivery = (state == this.constants.STATE_MOVE_DELIVERED_TO_CONFIRM || state == this.constants.STATE_MOVE_DELIVERED_CONFIRMED);
             let notConfirmed = (state == this.constants.STATE_MOVE_TO_CONFIRM || state == this.constants.STATE_MOVE_DELIVERED_TO_CONFIRM);
@@ -1160,11 +1161,15 @@ function (dojo, declare) {
                 a.classList.remove("ffg_hidden"); 
                 a.classList.remove("ffg_not_confirmed_move"); 
                 a.classList.remove("ffg_delivery_done"); 
+                a.classList.remove("ffg_temp_selection"); 
                 if(notConfirmed){
                     a.classList.add("ffg_not_confirmed_move"); 
                 }
                 if(isDelivery){
                     a.classList.add("ffg_delivery_done"); 
+                }
+                if(Array.isArray(moreCss) ){
+                    moreCss.forEach( (i) => { a.classList.add(i); });
                 }
             });
         },
@@ -1172,12 +1177,14 @@ function (dojo, declare) {
         Opposite of drawTruckLine()
         */
         undrawTruckLine: function(player_id, posId){
+            debug( "undrawTruckLine() ",player_id, posId);
             dojo.query("#ffg_truck_line_"+player_id+"_"+posId+", #ffg_truck_route_"+player_id+"_"+posId).forEach((a) => {
                 dojo.removeClass(a,"ffg_not_confirmed_move ffg_delivery_done"); 
                 dojo.addClass(a,"ffg_hidden"); 
                 a.classList.add("ffg_hidden"); 
                 a.classList.remove("ffg_not_confirmed_move"); 
                 a.classList.remove("ffg_delivery_done"); 
+                a.classList.remove("ffg_temp_selection"); 
             });
         },
         unselectCard : function()
@@ -1213,8 +1220,10 @@ function (dojo, declare) {
             this.selectedMoves = {};
             this.selectedMoves.usedOvertime = 0;
             this.selectedMoves.cardUsage = 0;
+            this.undrawSelectedMoves();
             dojo.query(".ffg_truck_pos[data_player='"+this.player_id+"']").forEach((i) => {
-                dojo.removeClass(i,"ffg_selected_move ffg_selected_delivery ffg_selection_disabled");
+                dojo.removeClass(i,"ffg_selected_move ffg_selected_delivery ffg_selection_disabled ffg_temp_selection");
+                this.removeTooltip(i.id);
                 });
                 
             if($("ffg_button_stopmoving") !=null ){
@@ -1225,8 +1234,9 @@ function (dojo, declare) {
         cleanMultiMoveSelectionOnTruck: function(truckId, closeIfEmpty = false)
         {
             debug( "cleanMultiMoveSelectionOnTruck ... ",truckId, closeIfEmpty);
-            dojo.query("#ffg_truck_"+this.player_id+"_"+truckId+" .ffg_selected_move").forEach((i) => {
-                dojo.removeClass(i,"ffg_selected_move ffg_selected_delivery");
+            this.undrawSelectedMoves(truckId);
+            dojo.query("#ffg_truck_"+this.player_id+"_"+truckId+" .ffg_temp_selection").forEach((i) => {
+                dojo.removeClass(i,"ffg_selected_move ffg_selected_delivery ffg_temp_selection");
                 });
                
             //remove from selectedMoves in order to keep only 1 element by truck
@@ -1273,7 +1283,8 @@ function (dojo, declare) {
             $("ffg_button_stopmoving").classList.remove("disabled");
             this.decreasePossibleMovesForOtherTrucks(moveLength,truckId);
             
-            this.setMainTitle(_('Keep moving or stop when ready'));
+            this.setMainTitle(_('Keep moving or stop your trucks when ready'));
+            this.drawSelectedMoves();
         },
         getTruckSelectedMovePosition: function(truckId)
         {
@@ -1311,6 +1322,7 @@ function (dojo, declare) {
                         if(p>currentSelectedPosition && p>currentTruckPosition + parseInt( this.selectedAmount - cardUsage + currentSelectedMoveLength ) ) {
                             debug( "decreasePossibleMovesForOtherTrucks() for position", otherTruckId,pos);
                             pos.classList.add("ffg_selection_disabled");
+                            this.addTooltip(pos.id,_("You can move here if you move another truck backward") , '' );
                         }
                     });
                 }
@@ -1331,11 +1343,69 @@ function (dojo, declare) {
                             let pos = notselectablePositions[k];
                             debug( "increasePossibleMovesForOtherTrucks() for position", pos);
                             pos.classList.remove("ffg_selection_disabled");
+                            this.removeTooltip(pos);
                         }
                     }
                 }
             });
             
+        },
+        /**
+        Draw lines corresponding to the temporary player selection, before it is sent to server (and drawn on response)
+        */
+        drawSelectedMoves: function()
+        {
+            debug( "drawSelectedMoves()");
+            let player_id = this.player_id;
+            let cssPos = "ffg_not_confirmed_pos ffg_temp_selection";
+            
+            if(this.selectedMoves.truckId.length>0 ){
+                for (let i=0 ; i< this.selectedMoves.truckId.length; i++ ){
+                    let truckId = this.selectedMoves.truckId[i];
+                    let position = this.selectedMoves.position[i];
+                    let isDelivery = this.selectedMoves.isDelivery[i];
+                    
+                    let fromPosition = this.getTruckCurrentPosition(player_id,truckId);
+            
+                    //CODE similar with the end of the updateMove() function
+                    for (let k=fromPosition+1 ; k<= position; k++ ){
+                        let posId = truckId+"_"+k;
+                        let posDivId = "ffg_truck_pos_"+player_id+"_"+posId;
+                        dojo.removeClass(posDivId,"ffg_not_drawn_pos") ;
+                        dojo.addClass(posDivId,cssPos ) ;
+                        //this.animateMovePosition(posDivId);
+                        let state = (isDelivery ? this.constants.STATE_MOVE_DELIVERED_TO_CONFIRM : this.constants.STATE_MOVE_TO_CONFIRM);
+                        
+                        this.drawTruckLine(player_id, posId,state, ["ffg_temp_selection"]);
+                        
+                        if( k== position){
+                            let truckIconDivId = posDivId + "_icon";
+                            dojo.removeClass(truckIconDivId,"ffg_hidden" ) ;
+                        }
+                    }
+                }
+            }
+        },
+        undrawSelectedMoves: function(truckId= undefined)
+        {
+            debug( "undrawSelectedMoves()",truckId);
+            let player_id = this.player_id;
+            let truckPositions = dojo.query(`.ffg_truck[data_player="${player_id}"] .ffg_truck_pos.ffg_temp_selection`);
+            let truckIcons = dojo.query(`.ffg_truck[data_player="${player_id} .ffg_temp_selection .ffg_icon_truck_pos`);
+            
+            if(truckId != undefined) {
+                truckPositions = dojo.query(`#ffg_truck_${player_id}_${truckId} .ffg_truck_pos.ffg_temp_selection`);
+                truckIcons = dojo.query(`#ffg_truck_${player_id}_${truckId} .ffg_temp_selection .ffg_icon_truck_pos`);
+            }
+            truckPositions.forEach((i) => {
+                dojo.addClass(i,"ffg_not_drawn_pos"); 
+                dojo.removeClass(i,"ffg_not_confirmed_pos");
+                let posId = i.getAttribute("data_truck")+ "_"+i.getAttribute("data_position");
+                this.undrawTruckLine(player_id, posId);
+            });
+            truckIcons.forEach((i) => { 
+                dojo.addClass(i,"ffg_hidden"); 
+            });
         },
         getTruckCurrentPosition: function(player_id,truckId)
         {
