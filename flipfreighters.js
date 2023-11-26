@@ -2286,7 +2286,13 @@ function (dojo, declare) {
             dojo.stopEvent( evt );
             
             if(this.existPossibleCard()){
-                this.confirmationDialog(_("You still have cards to play, are you sure to end your turn ?"), () => {
+                let confirmMessage = _("You still have cards to play, are you sure to end your turn ?");
+                if( $("ffg_button_stopmoving").classList.contains("disabled") == false ){
+                    //if button to confirm is active
+                    confirmMessage = _("You didn't confirm your moving action, are you sure to end your turn ?");
+                }
+                
+                this.confirmationDialog(confirmMessage, () => {
                     this.ajaxcallwrapper("endTurn", { });
                 });
                 return;
