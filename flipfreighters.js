@@ -84,6 +84,10 @@ function (dojo, declare) {
         {
             debug( "Starting game setup",gamedatas );
             
+            if (this.prefs[119].value == 1 ){//ffg_truck_shape_disabled
+                this.dontPreloadImage( 'trucks_shapes.png' );
+            }
+            
             this.constants  = gamedatas.constants;
             this.currentRound = gamedatas.round_number;
             this.currentTurn = gamedatas.turn_number;

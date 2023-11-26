@@ -1334,10 +1334,11 @@
 /* ---------------------------- ----------------------------   ---------------------------- */
 /* Truck SHAPES on board ->  User preference */ 
 
-.ffg_truck_shape_disabled .ffg_truck_shape{
+html.ffg_truck_shape_disabled .ffg_truck_shape{
     display: none;
+    background-image: none;
 }
-.ffg_truck_shape{
+html:not(.ffg_truck_shape_disabled) .ffg_truck_shape{
     position: absolute;
     background-image: url('img/trucks_shapes.png');
     /*mask: url('img/trucks_shapes.png');*/
