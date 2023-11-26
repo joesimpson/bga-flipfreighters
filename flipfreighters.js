@@ -44,6 +44,7 @@ function (dojo, declare) {
       
             this.dayCards = [];
             this.possibleCards = [];
+            this.possibleCardsBeforeOvertime = [];
             this.impossibleLoads = new Map();
             this.selectedCard = null;
             this.selectedAmount = null;//Not always the card value, with overtime hours
@@ -251,6 +252,7 @@ function (dojo, declare) {
                 break;
                 
             case 'endTurn':
+                gameui.unselectCard();
                 for(let row in this.dayCards){
                     let card = dojo.clone(this.dayCards[row] );
                     card.location = this.constants.DECK_LOCATION_DISCARD_AFTER_DAY;
