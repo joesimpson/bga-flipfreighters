@@ -16,17 +16,6 @@
         <div id="ffg_user_settings">
             <i aria-hidden="true" id="ffg_icon_settings" class="fa6 fa6-gear fa6-light fa6-solid"></i>
             <input type="range" min="5" max="30" value="10" class="ffg_slider" id="ffg_cardsSliderSize" list="ffg_slider_values">
-            <div id="ffg_move_mode_switch" class="ffg_no_display">
-                <i aria-hidden="true" id="ffg_icon_move_single" class="fa6 fa6-truck "></i>
-                <input type="checkbox" class="checkbox" id="ffg_move_mode_chk">
-                <label class="label" for="ffg_move_mode_chk">
-                    <div class="ffg_ball"> </div>
-                </label>
-                <div id="ffg_move_multiple">
-                    <i aria-hidden="true" id="ffg_icon_move_multiple1" class="fa6 fa6-truck-moving "> </i>
-                    <i aria-hidden="true" id="ffg_icon_move_multiple2" class="fa6 fa6-truck-moving " ></i>
-                </div>
-            </div>
             <input type="range" min="5" max="100" value="60" class="ffg_slider" id="ffg_playerBoardSliderSize" list="ffg_slider_values">
             <datalist id="ffg_slider_values">
                 <option value="5" label="5"></option>

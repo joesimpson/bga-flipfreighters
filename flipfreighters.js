@@ -133,7 +133,6 @@ function (dojo, declare) {
             
             this.addTooltip( "ffg_cardsSliderSize", _("Layout : Modify cards ratio"), '' );
             this.addTooltip( "ffg_playerBoardSliderSize", _("Layout : Modify boards size"), '' ); 
-            //this.addTooltip( "ffg_move_mode_switch", _("Moving action speed : auto-confirm when moving one truck OR enable multiple trucks selection"), '' );
             
             this.updateDiscardPile(this.gamedatas.discard_pile);
             this.addTooltip( "ffg_discard_pile_wrapper", _("Discard pile"), '' );
@@ -1300,44 +1299,22 @@ function (dojo, declare) {
             debug( "decreasePossibleMovesForOtherTrucks()", moveLength, truckId);
             
             let cardUsage = this.selectedMoves.moveLength.reduce((a,b)=>a+b);
-            //let currentSelectedMoveLength = this.getTruckSelectedMoveLength(truckId);
             dojo.query(`.ffg_truck[data_player="${this.player_id}"]`).forEach((i) => {
                 let otherTruckId = i.getAttribute("data_id");
                 if( truckId != otherTruckId) {
-                    //let fromPosition = this.getTruckCurrentPosition(this.player_id,otherTruckId);
-                    /*for (let k=fromPosition+1 ; k<fromPosition +1 + moveLength; k++ ){
-                        let posDiv = $(`ffg_truck_pos_${this.player_id}_${otherTruckId}_${k}`);
-                        if(posDiv != null){
-                            posDiv.classList.add("ffg_selection_disabled");
-                        }
-                    }*/
-                    
                     let currentTruckPosition = this.getTruckCurrentPosition(this.player_id,otherTruckId);
                     let currentSelectedPosition = this.getTruckSelectedMovePosition(otherTruckId);
                     let currentSelectedMoveLength = this.getTruckSelectedMoveLength(otherTruckId);
                     let selectablePositions = dojo.query(`#${i.id} .ffg_truck_pos:not(.ffg_selected_move):not(.ffg_selection_disabled).ffg_selectable[data_truck="${otherTruckId}"]`) ;
                     selectablePositions.forEach( (pos) => {
-                    //if(selectablePositions.length > this.selectedAmount - moveLength){
-                        //for(let k=this.selectedAmount - moveLength; k<this.selectedAmount && k<selectablePositions.length; k++ ) {
-                        //let k= this.selectedAmount - moveLength;
                         let p = pos.getAttribute("data_position");
                         if(p>currentSelectedPosition && p>currentTruckPosition + parseInt( this.selectedAmount - cardUsage + currentSelectedMoveLength ) ) {
                             debug( "decreasePossibleMovesForOtherTrucks() for position", otherTruckId,pos);
                             pos.classList.add("ffg_selection_disabled");
-                            //k++;
                         }
-                        //for(let k=0 ; k<moveLength; k++ ) {
-                        //    let farestSelectablePos = dojo.query(`#${i.id} .ffg_truck_pos:not(.ffg_selected_move):not(.ffg_selection_disabled).ffg_selectable[data_truck="${otherTruckId}"]`).lastItem;
-                        //    if(farestSelectablePos != null){
-                        //        debug( "decreasePossibleMovesForOtherTrucks() for position", farestSelectablePos);
-                        //        farestSelectablePos.classList.add("ffg_selection_disabled");
-                        //    }
-                        //}
-                    //}
                     });
                 }
             });
-            
         },
         
         increasePossibleMovesForOtherTrucks: function(moveLength, truckId)
