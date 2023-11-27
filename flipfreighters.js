@@ -1462,8 +1462,10 @@ function (dojo, declare) {
             //Information about cards used during this turn by this player
             let cardAlreadyUsedArray = this.possibleCards['cardAlreadyUsed'];
             let availableOvertime = this.gamedatas.players[this.player_id].availableOvertime > 0;
-            if(this.overtimeSuitVariant && availableOvertime && ! cardAlreadyUsedArray.includes(card_id)) {
-                //Enable card also when not possible to play because it could be possible to play after +1/-1 or change suit, but it costs overtime
+            //IF player delivered all trucks, nothing can be done, even with overtime
+            let nothingTodo = (this.gamedatas.players[this.player_id].score_aux ==  Object.keys(this.material.trucks_types).length);
+            if(!nothingTodo && this.overtimeSuitVariant && availableOvertime && ! cardAlreadyUsedArray.includes(card_id)) {
+                //Enable card also when not possible to play because it could be possible to play after change suit, but it costs overtime
                 return true;
             }
         
