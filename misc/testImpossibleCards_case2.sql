@@ -1,6 +1,7 @@
 -- TEST GUI : 1 PLAYER - when there are already moved trucks, verify possible positions -> this currently leads to 3 disabled cards in the river, and we may need to improve the code to make them suit modifiable...
 -- MOves are not cancelable and didnt use the day cards, so "Restart turn" wont make cards enabled again
--- CASE 1 : we need to change cards suit in order to play
+-- CASE 2 : we need to change cards value in order to play
+-- => after test it is GOOOOOOOOOOOO:  if a "6" is loaded in the truck, this truck may be moved by any card, so all cards are selectable
 
 SELECT  @player_id :=player_id  FROM `player` where player_no = 1 ;
 
@@ -37,6 +38,8 @@ INSERT INTO `freighter_cargo` (`cargo_player_id`, `cargo_key`, `cargo_amount`, `
 INSERT INTO `freighter_cargo` (`cargo_player_id`, `cargo_key`, `cargo_amount`, `cargo_state`, `cargo_card_id`, `cargo_overtime_used`) VALUES (@player_id, 'truck6_1', 1, 2, @card_max+1, 0) ;
 INSERT INTO `freighter_cargo` (`cargo_player_id`, `cargo_key`, `cargo_amount`, `cargo_state`, `cargo_card_id`, `cargo_overtime_used`) VALUES (@player_id, 'truck7_1', 1, 2, @card_max+1, 0) ;
 INSERT INTO `freighter_cargo` (`cargo_player_id`, `cargo_key`, `cargo_amount`, `cargo_state`, `cargo_card_id`, `cargo_overtime_used`) VALUES (@player_id, 'truck8_1', 1, 2, @card_max+1, 0) ;
+INSERT INTO `freighter_cargo` (`cargo_player_id`, `cargo_key`, `cargo_amount`, `cargo_state`, `cargo_card_id`, `cargo_overtime_used`) VALUES (@player_id, 'truck9_1', 1, 2, @card_max+1, 0) ;
+
 /* ---------------------------- ----------------------------   ---------------------------- */
 /* ---------------------------- ----------------------------   ---------------------------- */
 -- CLEAN ALL MOVES IN GAME :
@@ -48,9 +51,6 @@ DELETE FROM freighter_move;
 INSERT INTO freighter_move VALUES (@player_id, "truck1", 0, 2, 2,  @card_max+1,0);
 INSERT INTO freighter_move VALUES (@player_id, "truck1", 2, 3, 2,  @card_max+1,0);
 INSERT INTO freighter_move VALUES (@player_id, "truck1", 3, 5, 4,  @card_max+1,0);
-
-INSERT INTO freighter_move VALUES (@player_id, "truck2", 0, 5, 4,  @card_max +2,0);
-
 INSERT INTO freighter_move VALUES (@player_id, "truck3", 0, 4, 2,  @card_max+3,0);
 INSERT INTO freighter_move VALUES (@player_id, "truck3", 4, 7, 4,  @card_max+3,0);
 
@@ -65,5 +65,8 @@ INSERT INTO freighter_move VALUES (@player_id, "truck7", 2, 5, 4, @card_max +5,0
 
 INSERT INTO freighter_move VALUES (@player_id, "truck8", 0, 3, 2, @card_max +6,0);
 INSERT INTO freighter_move VALUES (@player_id, "truck8", 3, 5, 4, @card_max +6,0);
+
+INSERT INTO freighter_move VALUES (@player_id, "truck9", 0, 8, 4,  @card_max +2,0);
+
 
 /* ---------------------------- ----------------------------   ---------------------------- */

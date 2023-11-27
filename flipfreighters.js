@@ -1440,21 +1440,32 @@ function (dojo, declare) {
                 if(i == 'LOAD_KO') {
                     continue;
                 }
+                if(i == 'cardAlreadyUsed') {
+                    continue;
+                }
                 if(this.isPossibleCard(i)) return true;
             }
             
             return false;
         },
         
-        isPossibleCard: function(cardIndex)
+        isPossibleCard: function(card_id)
         {
-            debug( "isPossibleCard()", cardIndex);
+            debug( "isPossibleCard()", card_id);
          
-            let pcard = this.possibleCards[cardIndex];
-            let cardRow = this.getCardRowFromId(cardIndex);
+            let pcard = this.possibleCards[card_id];
+            let cardRow = this.getCardRowFromId(card_id);
             if(this.dayCards[cardRow].usedPower > 0) return false;//Cannot move 2 different times anymore
             if( pcard["LOAD"].length > 0 ) return true;
             if( pcard["MOVE"].length > 0 ) return true; 
+            
+            //Information about cards used during this turn by this player
+            let cardAlreadyUsedArray = this.possibleCards['cardAlreadyUsed'];
+            let availableOvertime = this.gamedatas.players[this.player_id].availableOvertime > 0;
+            if(this.overtimeSuitVariant && availableOvertime && ! cardAlreadyUsedArray.includes(card_id)) {
+                //Enable card also when not possible to play because it could be possible to play after +1/-1 or change suit, but it costs overtime
+                return true;
+            }
         
             return false;
         },
@@ -1468,6 +1479,9 @@ function (dojo, declare) {
             for(let card_id in this.possibleCards){
                 if(card_id == 'LOAD_KO') {//Index for KOs
                     this.updateImpossibleLoads(this.player_id,this.possibleCards[card_id]);
+                    continue;
+                }
+                if(card_id == 'cardAlreadyUsed') {
                     continue;
                 }
                 if(this.isPossibleCard(card_id)){

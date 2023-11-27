@@ -372,7 +372,7 @@
     position: relative;
     float: left;
     margin-left: 10px;
-    cursor: help;
+    cursor: pointer;
 }
 #ffg_discard_pile{
     margin: 10px 0;
@@ -386,7 +386,7 @@
 }
 .ffg_card:not(.ffg_selectable){
     opacity: 0.5 !important;
-    cursor: default;
+    cursor: not-allowed;
 }
 .notouch-device .ffg_card.ffg_selectable:hover {
     scale: 1.15;

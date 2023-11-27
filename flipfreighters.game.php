@@ -1056,12 +1056,18 @@ class FlipFreighters extends Table
     function getPlayerPossibleCards($player_id ){
         $dayCards = $this->getCurrentDayCards();
         $possibleCards = array();
+        $possibleCards["cardAlreadyUsed"] = array();
         $playerBoard = $this->getPlayerBoard($player_id);
+        $trucks_cargos = $playerBoard['trucks_cargos'];
         foreach( $dayCards as $dayCard){
             $possibleCards[$dayCard['id']] = $this->getPlayerPossibleCardArray($dayCard,$playerBoard);
+            //Check if card already used
+            if($this->cardAlreadyUsed($player_id,$dayCard,$trucks_cargos,true)){
+                $possibleCards["cardAlreadyUsed"][] = $dayCard['id'] ;
+            }
         }
         //Add information about impossible for all cards in this array:
-        $possibleCards["LOAD_KO"] = $this->getImpossibleLoads($playerBoard['trucks_cargos'],true);
+        $possibleCards["LOAD_KO"] = $this->getImpossibleLoads($trucks_cargos,true);
         return $possibleCards;
     }
     
