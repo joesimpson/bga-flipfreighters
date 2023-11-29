@@ -785,8 +785,8 @@ function (dojo, declare) {
         resetDayCardOriginSuit: function(row,card_id, color){
             debug( "resetDayCardOriginSuit ... " ,row,card_id, color);
             
+            dojo.query("#ffg_card_wrapper_"+row+" .ffg_button_card_suit_reset").forEach( (i) => { dojo.removeClass(i,"ffg_button_card_suit_reset"); this.removeTooltip(i.id);  } ); 
             if(this.overtimeSuitVariant){
-                dojo.query("#ffg_card_wrapper_"+row+" .ffg_button_card_suit_reset").forEach( (i) => { dojo.removeClass(i,"ffg_button_card_suit_reset"); this.removeTooltip(i.id);  } ); 
                 
                 //hide suit modifiers IF JOKER (+ the same through init view)
                 if(color ==  this.constants.JOKER_TYPE) {
@@ -1982,7 +1982,7 @@ function (dojo, declare) {
             this.selectedCard = card_id;
             this.selectedAmount = data_amount;
             this.selectedSuit = data_suit;
-            this.selectedSuitCost = (suit_reset !=data_suit && suit_reset != undefined ) ? 1 : null;//suit_reset undefined for Joker
+            this.selectedSuitCost = (this.overtimeSuitVariant && suit_reset !=data_suit && suit_reset != undefined ) ? 1 : null;//suit_reset undefined for Joker
             this.displayOvertimeHoursOnCard();
             this.cleanMultiMoveSelection();
             
