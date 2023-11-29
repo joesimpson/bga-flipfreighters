@@ -73,6 +73,9 @@
     display: none !important;
 }
 
+html.ffg_font_designer #ffg_game_container{
+    font-family: 'Fugaz One';
+}
 #ffg_game_zone{
     text-align: center;
     display: flex;
@@ -221,6 +224,9 @@
 ----------------------------  SHOW BOARD DIALOG             ---------------------------- 
 ---------------------------- ----------------------------   ---------------------------- 
 */
+html.ffg_font_designer #popin_showBoardDialogId{
+    font-family: 'Fugaz One';
+}
 #popin_showBoardDialogId_title {
     padding: 3px 90px;
     text-align: center;
@@ -264,6 +270,9 @@
 }
 #popin_showScoreDialogId {
     border: 5px solid #6c2c12;
+}
+html.ffg_font_designer #popin_showScoreDialogId{
+    font-family: 'Fugaz One';
 }
 #popin_showBoardDialogId_title {
     padding: 3px 90px;
@@ -540,6 +549,9 @@
 }
 #popin_showDiscardPileDialogId .standard_popin_title{
     text-align: center;
+}
+html.ffg_font_designer #popin_showDiscardPileDialogId .standard_popin_title{
+    font-family: 'Fugaz One';
 }
 .ffg_modal_pile_content table tbody tr td{
     border-right: 1px solid rgba(0,0,0,.2);
@@ -1531,6 +1543,9 @@ html:not(.ffg_truck_shape_multi_anim) .ffg_truck_shape{
 .ffg_display_truck_route_accurate .ffg_svg_straight_route{
     display: none;
 }
+html.ffg_font_designer #ffg_game_zone .ffg_truck_lines{
+    margin-top: -10px;
+}
 #popin_showBoardDialogId_contents .ffg_truck_lines{
     position: absolute;
     top: 34px;
@@ -1732,8 +1747,10 @@ html:not(.ffg_truck_shape_multi_anim) .ffg_truck_shape{
     justify-content: right;
     */
     justify-content: flex-end;
-    font-style: italic;
     color: #6b2912;
+}
+html.ffg_font_simple .ffg_total_score>.ffg_score_number{
+    font-style: italic;
 }
 .notouch-device .ffg_total_score:hover{
     cursor: help;
@@ -1866,7 +1883,17 @@ html:not(.ffg_truck_shape_multi_anim) .ffg_truck_shape{
 .notouch-device .ffg_board_overtime_wrapper:hover{
     outline: 4px solid green;
 }
-
+.ffg_board_overtime_label{
+    text-align: center;
+    /*padding: 0 15px;*/
+    max-width: 245px;
+    color: #642508;
+    font-size: 28px;
+    margin-top: 4px;
+    font-family: 'Fugaz One';
+    /* not displayed until fixed */
+    display: none;
+}
 .ffg_overtime{
     position: absolute;
     width: 30px;
@@ -2024,6 +2051,24 @@ html:not(.ffg_truck_shape_multi_anim) .ffg_truck_shape{
     transform-style: flat;
     -webkit-transform-style: flat;
 }
+
+
+/* ---------------------------- ----------------------------   ---------------------------- */
+/* ---------------------------- FONTS                          ---------------------------- */
+/* ---------------------------- ----------------------------   ---------------------------- */
+
+/* for User pref ffg_font_designer */
+@font-face {
+    font-family: 'Fugaz One';
+    font-style: normal;
+    font-weight: normal;
+    src: 
+        local('Fugaz One'), 
+        local('Fugaz One-Regular'), 
+        url(https://fonts.gstatic.com/s/fugazone/v19/rax_HiWKp9EAITukFsl8Axhf.woff2) format('woff2');
+}
+
+
 
 
 

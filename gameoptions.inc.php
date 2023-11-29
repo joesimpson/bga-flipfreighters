@@ -67,6 +67,16 @@ $game_preferences = array(
             'default' => 1
     ),
     
+    102 => array(
+            'name' => totranslate('Font style'),
+            'needReload' => true, // after user changes this preference game interface would auto-reload
+            'values' => array(
+                    1 => array( 'name' => totranslate( 'Designer choice' ), 'cssPref' => 'ffg_font_designer' ),
+                    2 => array( 'name' => totranslate( 'Simple' ), 'cssPref' => 'ffg_font_simple' )
+            ),
+            'default' => 1
+    ),
+    
     105 => array(
             'name' => totranslate('Display route taken by trucks'),
             'needReload' => true, // after user changes this preference game interface would auto-reload
