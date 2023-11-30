@@ -11,5 +11,9 @@ This board game is designed by Wayne D Koenig, published by Koenig Kreations.
 
 Other artists : Lorenzo Uccheddu.
 
+# Font
+'Fugaz One' is licensed under the SIL Open Font License (OFL) : 
+https://www.1001freefonts.com/fr/fugaz-one.font and  https://fonts.google.com/specimen/Fugaz+One/about?query=LatinoType
+
 # BGG
 Link : https://boardgamegeek.com/boardgame/356554/flip-freighters

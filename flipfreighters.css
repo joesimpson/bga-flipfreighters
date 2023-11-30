@@ -1570,7 +1570,7 @@ html:not(.ffg_truck_shape_multi_anim) .ffg_truck_shape{
     display: none;
 }
 html.ffg_font_designer #ffg_game_zone .ffg_truck_lines{
-    margin-top: -10px;
+    margin-top: -8px;
 }
 #popin_showBoardDialogId_contents .ffg_truck_lines{
     position: absolute;
@@ -2196,11 +2196,12 @@ html:not(.ffg_lang_translated_adjusted) .ffg_board_week_label_adjusted{
 /* for User pref ffg_font_designer */
 @font-face {
     font-family: 'Fugaz One';
-    font-style: italic;
-    font-weight: bold;
+    font-style: normal;
+    font-weight: normal;
     src: 
-        local('Fugaz One'), 
-        local('Fugaz One-Regular'), 
+        /* local('Fugaz One'), Some font exists with same name but different , can we rely on local ? */
+        url(img/font/FugazOne-Regular.ttf) format("ttf"),
+        url(img/font/fugazOne.woff2) format("woff2"),
         url(https://fonts.gstatic.com/s/fugazone/v19/rax_HiWKp9EAITukFsl8Axhf.woff2) format('woff2');
 }
 
