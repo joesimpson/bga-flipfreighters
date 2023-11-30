@@ -56,6 +56,7 @@
   --ffg_card_display_width: 120px;
   --ffg_card_display_height: 180px;
   
+  --ffg_board_display_img: url('img/board.jpg');
   --ffg_board_display_img_width: 2112px;
   --ffg_board_display_width: 1400px;
   --ffg_board_display_height: 1080px;
@@ -76,6 +77,11 @@
 html.ffg_font_designer #ffg_game_container{
     font-family: 'Fugaz One';
 }
+html.ffg_lang_translated,
+html.ffg_lang_translated_adjusted{
+    --ffg_board_display_img: url('img/board_translatable.jpg');
+}
+
 #ffg_game_zone{
     text-align: center;
     display: flex;
@@ -292,7 +298,7 @@ html.ffg_font_designer #popin_showScoreDialogId{
 #ffg_overview_week1 div,
 #ffg_overview_week2 div,
 #ffg_overview_week3 div{
-    background-image: url('img/board.jpg');
+    background-image: var(--ffg_board_display_img);
     background-position-y: -653px;
     background-position-x: -25px;
     width: 66px;
@@ -554,8 +560,8 @@ html.ffg_font_designer #popin_showDiscardPileDialogId .standard_popin_title{
     font-family: 'Fugaz One';
 }
 .ffg_modal_pile_content table tbody tr td{
-    border-right: 1px solid rgba(0,0,0,.2);
-    font-family: Caveat;
+    border: 1px solid rgba(0,0,0,.2);
+    font-family: 'Fugaz One';
     font-size: x-large;
     padding: 5px 8px;
     text-align: center;
@@ -592,7 +598,7 @@ html.ffg_font_designer #popin_showDiscardPileDialogId .standard_popin_title{
 */
 
 .ffg_board{
-    background-image: url('img/board.jpg');
+    background-image: var(--ffg_board_display_img);
     background-size: 100%;
     background-repeat: no-repeat;
     width: var(--ffg_board_display_width);
@@ -926,6 +932,10 @@ html.ffg_font_designer #popin_showDiscardPileDialogId .standard_popin_title{
     color: black;
     text-shadow: 1px 1px 1px black;
 }
+html.ffg_font_designer .ffg_container_number{
+    text-shadow: 1px 1px 1px white;
+}
+
 
 .ffg_impossible_load .ffg_container_number:before{
     content:"X";
@@ -1671,6 +1681,11 @@ html.ffg_font_designer #ffg_game_zone .ffg_truck_lines{
     text-align: center;
     color: black;
 }
+/*
+html.ffg_font_designer .ffg_score_number{
+    font-weight: normal;
+}
+*/
 /* List of spaces to display trucks score on right of the board : they are listed by color order, not the same order of trucks around the board... */
 .ffg_truck_score_right{
     width: 55px;
@@ -1876,24 +1891,85 @@ html.ffg_font_simple .ffg_total_score>.ffg_score_number{
     width: 420px;
     height: 45px;
     position: absolute;
-    z-index: 1;
+    z-index: 2;
     left: 10px;
     top: 931px;
 }
 .notouch-device .ffg_board_overtime_wrapper:hover{
     outline: 4px solid green;
 }
-.ffg_board_overtime_label{
+.ffg_board_overtime_label_simple, .ffg_board_overtime_label_adjusted{
+    cursor: inherit;
     text-align: center;
     /*padding: 0 15px;*/
     max-width: 245px;
+    height: 50px;
     color: #642508;
+    fill: #642508;
     font-size: 28px;
     margin-top: 4px;
     font-family: 'Fugaz One';
-    /* not displayed until fixed */
+    /* not displayed until needed */
+    visibility: hidden;
+}
+.ffg_board_overtime_label_adjusted{
+    margin-left: -5px;
+    padding-top: 5px;
+}
+.ffg_board_overtime_label_adjusted>svg,
+.ffg_board_overtime_unused_label_adjusted>svg{
+    height: 100%;
+    width: 100%;
+}
+html.ffg_lang_translated .ffg_board_overtime_label_simple{
+    visibility: visible;
+}
+html.ffg_lang_translated_adjusted .ffg_board_overtime_label_adjusted{
+    visibility: visible;
+}
+html:not(.ffg_lang_translated_adjusted) .ffg_board_overtime_label_adjusted{
     display: none;
 }
+html:not(.ffg_lang_translated) .ffg_board_overtime_label_simple{
+    display: none;
+}
+
+.ffg_board_overtime_unused_label{
+    cursor: default;
+    width: 100px;
+    height: 45px;
+    position: absolute;
+    z-index: 1;
+    left: 297px;
+    top: 893px;
+    color: #642508;
+    fill: #642508;
+}
+
+.ffg_board_overtime_unused_label .ffg_label_simple_1,
+.ffg_board_overtime_unused_label .ffg_label_simple_2{
+    width: 169px;
+    text-align: center;
+    left: -45px;
+    position: relative;
+    cursor: inherit;
+}
+.ffg_board_overtime_unused_label .ffg_label_simple_2{
+    margin-top: -10px;
+}
+.ffg_board_overtime_unused_label .ffg_label_simple_1,
+.ffg_label_adjusted .ffg_label_adjusted_1{
+    line-height: 30px;
+    font-size: 30px;
+}
+html:not(.ffg_lang_translated) .ffg_label_simple_1,
+html:not(.ffg_lang_translated) .ffg_label_simple_2{
+    display: none;
+}
+html:not(.ffg_lang_translated_adjusted) .ffg_label_adjusted{
+    display: none;
+}
+
 .ffg_overtime{
     position: absolute;
     width: 30px;
@@ -1943,7 +2019,7 @@ html.ffg_font_simple .ffg_total_score>.ffg_score_number{
 }
 .notouch-device .ffg_overtime.ffg_selectable:hover{
     /*outline: 3px solid green;*/
-    background-image: url('img/board.jpg');
+    background-image: var(--ffg_board_display_img);
     background-size: calc(var(--ffg_board_display_width) / var(--ffg_board_display_img_width) );
     background-position-y: -1415px;
     background-position-x: -379px;
@@ -2021,6 +2097,46 @@ html.ffg_font_simple .ffg_total_score>.ffg_score_number{
 }
 
 /* ---------------------------- ----------------------------   ---------------------------- */
+.ffg_board_currency_label_simple{
+    position: absolute;
+    z-index: 1;
+    left: 27px;
+    top: 975px;
+    cursor: default;
+    text-align: center;
+    max-width: 82px;
+    height: 85px;
+    color: #642508;
+    fill: #642508;
+    font-family: 'Fugaz One';
+    line-height: 85px;
+    font-size: 85px;
+}
+
+.ffg_board_week_label{
+    width: 66px;
+    height: 28px;
+    position: absolute;
+    z-index: 1;
+    left: -80px;
+    top: -13px;
+    color: #ffe695;
+    fill: #ffe695;
+    font-size: 20px;
+    line-height: 20px;
+}
+.ffg_board_week_label_adjusted{
+    height: 100%;
+    width: 100%;
+}
+html:not(.ffg_lang_translated) .ffg_board_week_label_simple{
+    display: none;
+}
+html:not(.ffg_lang_translated_adjusted) .ffg_board_week_label_adjusted{
+    display: none;
+}
+
+/* ---------------------------- ----------------------------   ---------------------------- */
 
 /** In this game, only one multipleChoice_dialog is used with YES/NO */
 .multiplechoice_btn#choice_btn_0 {
@@ -2060,8 +2176,8 @@ html.ffg_font_simple .ffg_total_score>.ffg_score_number{
 /* for User pref ffg_font_designer */
 @font-face {
     font-family: 'Fugaz One';
-    font-style: normal;
-    font-weight: normal;
+    font-style: italic;
+    font-weight: bold;
     src: 
         local('Fugaz One'), 
         local('Fugaz One-Regular'), 

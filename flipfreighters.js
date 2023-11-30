@@ -85,6 +85,35 @@ function (dojo, declare) {
         {
             debug( "Starting game setup",gamedatas );
             
+            if (this.prefs[103].value == 1 ){
+                //ffg_lang_original
+                this.dontPreloadImage( 'board.jpg' );
+            }
+            else {
+                //ffg_lang_translated, ffg_lang_translated_adjusted
+                this.dontPreloadImage( 'board_translatable.jpg' );
+                
+                let OVERTIME_HOURS_LABEL = dojo.query(".ffg_board_overtime_label_simple>span")[0].innerHTML ;
+                let LABEL_2000_DOLLARS = dojo.query(".ffg_board_overtime_unused_label .ffg_label_simple_1>span")[0].innerHTML ;
+                let PER_UNUSED_LABEL = dojo.query(".ffg_board_overtime_unused_label .ffg_label_simple_2>span")[0].innerHTML ;
+                let WEEK_LABEL = dojo.query(".ffg_board_week_label_simple>span")[0].innerHTML ;
+                
+                if (this.prefs[103].value == 2 ){//.ffg_lang_translated_adjusted
+                    //BGA translation framework generates a span that I don't want to be in <svg><text> to make it fine, so let's copy the same string present in a simple div
+                    dojo.query(".ffg_board_overtime_label_adjusted_text").forEach( (i) => { 
+                        i.innerHTML = OVERTIME_HOURS_LABEL ;
+                    });
+                    dojo.query(".ffg_board_overtime_unused_label .ffg_label_adjusted_1").forEach( (i) => { 
+                        i.innerHTML = LABEL_2000_DOLLARS ;
+                    });
+                    dojo.query(".ffg_board_overtime_unused_label .ffg_label_adjusted_2").forEach( (i) => { 
+                        i.innerHTML = PER_UNUSED_LABEL ;
+                    });
+                    dojo.query(".ffg_board_week_label_adjusted_text").forEach( (i) => { 
+                        i.innerHTML = WEEK_LABEL ;
+                    });
+                }
+            }
             if (this.prefs[119].value == 1 ){//ffg_truck_shape_disabled
                 this.dontPreloadImage( 'trucks_shapes.png' );
             }
@@ -196,6 +225,8 @@ function (dojo, declare) {
                 };         
 
             })(gameui.adaptStatusBar);
+            
+            //this.lang = _('$locale'); // en, fr, etc. 
             
             debug( "Ending game setup" );
         },

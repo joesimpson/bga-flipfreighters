@@ -51,6 +51,10 @@ class view_flipfreighters_flipfreighters extends game_view
         
         $this->tpl['CARD_USAGE_LABEL'] = self::_("Used moves :");
         $this->tpl['OVERTIME_HOURS_LABEL'] = self::_("Overtime Hours");
+        $this->tpl['LABEL_2000_DOLLARS'] = self::_("$2000");
+        $this->tpl['PER_UNUSED_LABEL'] = self::_("per unused");
+        $this->tpl['WEEK_LABEL'] = self::_("Week");
+        $this->tpl['CURRENCY_LABEL'] = self::_("$");
         
         $cards = $this->game->getCurrentDayCards();
         $cardsWithOvertime = array();

@@ -76,6 +76,16 @@ $game_preferences = array(
             ),
             'default' => 1
     ),
+    103 => array(
+            'name' => totranslate('Board text language'),
+            'needReload' => true, // after user changes this preference game interface would auto-reload
+            'values' => array(
+                    1 => array( 'name' => totranslate( 'Designer choice' ), 'cssPref' => 'ffg_lang_original' ),
+                    2 => array( 'name' => totranslate( 'Translated + adjusted to space' ), 'cssPref' => 'ffg_lang_translated_adjusted' ),
+                    3 => array( 'name' => totranslate( 'Translated' ), 'cssPref' => 'ffg_lang_translated' ),
+            ),
+            'default' => 2
+    ),
     
     105 => array(
             'name' => totranslate('Display route taken by trucks'),

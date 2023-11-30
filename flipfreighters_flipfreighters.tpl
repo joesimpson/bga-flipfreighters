@@ -122,6 +122,12 @@
             <div id="ffg_board_weeks_wrapper">
                 <!-- BEGIN ffg_week_score -->
                 <div id="ffg_week_score_{WK_PLAYER_ID}_{ROUND}" class="ffg_week_score" data_player="{PLAYER_ID}" data_round="{ROUND}">
+                    <div class="ffg_board_week{ROUND}_label ffg_board_week_label">
+                        <div class="ffg_board_week_label_simple">{WEEK_LABEL}</div>
+                        <svg class="ffg_board_week_label_adjusted">
+                            <text class="ffg_board_week_label_adjusted_text" lengthAdjust="spacingAndGlyphs" x="0" y="22" textLength="65"></text>
+                        </svg>
+                    </div>
                     <span class="ffg_score_number"></span>
                 </div>
                 <!-- END ffg_week_score -->
@@ -132,7 +138,12 @@
             </div>
             
             <div id="ffg_board_overtime_wrapper_{PLAYER_ID}" class="ffg_board_overtime_wrapper">
-                <div class="ffg_board_overtime_label">{OVERTIME_HOURS_LABEL}</div>
+                <div class="ffg_board_overtime_label_simple">{OVERTIME_HOURS_LABEL}</div>
+                <div class="ffg_board_overtime_label_adjusted">
+                    <svg>
+                        <text class="ffg_board_overtime_label_adjusted_text" x="0" y="25" textLength="245" lengthAdjust="spacingAndGlyphs"></text>
+                    </svg>
+                </div>
                 
                 <!-- BEGIN ffg_overtime_hour -->
                 <div id="ffg_overtime_{PLAYER_ID}_{INDEX}" class="ffg_overtime ffg_empty_value" data_player="{PLAYER_ID}" data_index="{INDEX}">
@@ -288,6 +299,16 @@
                 <path id="ffg_truck_route_{PLAYER_ID}_truck9_7" class="ffg_truck_route" d="M1178.025634765625,617.2237548828125C1179.7721557617188,612.3335164388021,1186.7582397460938,592.7725626627604,1188.5047607421875,587.88232421875" ></path>
                 <path id="ffg_truck_route_{PLAYER_ID}_truck9_8" class="ffg_truck_route" d="M1194.792236328125,562.7325439453125C1195.1415405273438,559.5888264973959,1197.2373657226562,550.8562927246094,1196.8880615234375,543.8702392578125C1196.5387573242188,536.8841857910156,1193.39501953125,524.6585591634115,1192.6964111328125,520.8162231445312" ></path>
             </svg>
+        
+            <div class="ffg_board_overtime_unused_label">
+                <div class="ffg_label_simple_1">{LABEL_2000_DOLLARS}</div>
+                <div class="ffg_label_simple_2">{PER_UNUSED_LABEL}</div>
+                <svg class="ffg_label_adjusted">
+                    <text class="ffg_label_adjusted_1" x="2" y="25" lengthAdjust="spacingAndGlyphs" textLength="90"><!-- TODO COPY {2000_DOLLARS_LABEL} in JS to avoid a span --></text>
+                    <text class="ffg_label_adjusted_2" x="0" y="40" lengthAdjust="spacingAndGlyphs" textLength="100"><!-- TODO COPY {PER_UNUSED_LABEL} in JS to avoid a span --></text>
+                </svg>
+            </div>
+            <div class="ffg_board_currency_label_simple">{CURRENCY_LABEL}</div>
         </div>
     </div>
     <!-- END ffg_playerBoard -->
