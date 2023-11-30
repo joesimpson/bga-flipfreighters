@@ -84,6 +84,11 @@ function (dojo, declare) {
         setup: function( gamedatas )
         {
             debug( "Starting game setup",gamedatas );
+        
+            this.OVERTIME_HOURS_LABEL = _("Overtime Hours") ;
+            this.LABEL_2000_DOLLARS = _("$2000");
+            this.PER_UNUSED_LABEL = _("per unused");
+            this.WEEK_LABEL = _("Week");
             
             if (this.prefs[103].value == 1 ){
                 //ffg_lang_original
@@ -93,24 +98,19 @@ function (dojo, declare) {
                 //ffg_lang_translated, ffg_lang_translated_adjusted
                 this.dontPreloadImage( 'board_translatable.jpg' );
                 
-                let OVERTIME_HOURS_LABEL = dojo.query(".ffg_board_overtime_label_simple>span")[0].innerHTML ;
-                let LABEL_2000_DOLLARS = dojo.query(".ffg_board_overtime_unused_label .ffg_label_simple_1>span")[0].innerHTML ;
-                let PER_UNUSED_LABEL = dojo.query(".ffg_board_overtime_unused_label .ffg_label_simple_2>span")[0].innerHTML ;
-                let WEEK_LABEL = dojo.query(".ffg_board_week_label_simple>span")[0].innerHTML ;
-                
                 if (this.prefs[103].value == 2 ){//.ffg_lang_translated_adjusted
                     //BGA translation framework generates a span that I don't want to be in <svg><text> to make it fine, so let's copy the same string present in a simple div
                     dojo.query(".ffg_board_overtime_label_adjusted_text").forEach( (i) => { 
-                        i.innerHTML = OVERTIME_HOURS_LABEL ;
+                        i.innerHTML = this.OVERTIME_HOURS_LABEL ;
                     });
                     dojo.query(".ffg_board_overtime_unused_label .ffg_label_adjusted_1").forEach( (i) => { 
-                        i.innerHTML = LABEL_2000_DOLLARS ;
+                        i.innerHTML = this.LABEL_2000_DOLLARS ;
                     });
                     dojo.query(".ffg_board_overtime_unused_label .ffg_label_adjusted_2").forEach( (i) => { 
-                        i.innerHTML = PER_UNUSED_LABEL ;
+                        i.innerHTML = this.PER_UNUSED_LABEL ;
                     });
                     dojo.query(".ffg_board_week_label_adjusted_text").forEach( (i) => { 
-                        i.innerHTML = WEEK_LABEL ;
+                        i.innerHTML = this.WEEK_LABEL ;
                     });
                 }
             }
@@ -603,6 +603,18 @@ function (dojo, declare) {
             // Create the HTML of my dialog. 
             let html = this.format_block( 'jstpl_showScore', { } );  
             this.showScoreDialog.setContent( html ); // Must be set before calling show() so that the size of the content is defined before positioning the dialog
+            
+            for(let k=1; k<= this.constants.NB_ROUNDS;k++){
+                let data = {
+                    'WEEK_LABEL' : this.WEEK_LABEL,
+                    'ROUND' : k,
+                };
+                dojo.place(this.format_block('jstpl_weekLabel', data), `ffg_overview_week${k}_content`);
+            }
+            
+            dojo.query("#popin_showScoreDialogId .ffg_board_week_label_adjusted_text").forEach( (i) => { 
+                i.innerHTML = this.WEEK_LABEL ;
+            });
             
             for(let playerId in this.gamedatas.players){
                 let player = this.gamedatas.players[playerId];

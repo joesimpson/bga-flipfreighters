@@ -308,7 +308,11 @@ html.ffg_font_designer #popin_showScoreDialogId{
     width: 66px;
     height: 67px;
     background-size: 2000%;
+    left: 0;
+    top: 0;
+    position: relative;
 }
+
 html.ffg_lang_translated #ffg_overview_week1 div,
 html.ffg_lang_translated #ffg_overview_week2 div,
 html.ffg_lang_translated #ffg_overview_week3 div,
@@ -316,6 +320,9 @@ html.ffg_lang_translated_adjusted #ffg_overview_week1 div,
 html.ffg_lang_translated_adjusted #ffg_overview_week2 div,
 html.ffg_lang_translated_adjusted #ffg_overview_week3 div{
     background-image: url('img/board_translatable.jpg');
+    left: 0;
+    top: 0;
+    position: relative;
 }
 
 #ffg_overview_week2 div{
@@ -2144,6 +2151,7 @@ html.ffg_lang_translated_adjusted .notouch-device .ffg_overtime.ffg_selectable:h
     fill: #ffe695;
     font-size: 20px;
     line-height: 20px;
+    text-align: center;
 }
 .ffg_board_week_label_adjusted{
     height: 100%;

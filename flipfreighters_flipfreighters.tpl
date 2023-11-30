@@ -347,9 +347,9 @@ var jstpl_showScore = `<div id="ffg_showScoreDialogContent">
             <tr>
               <th id="ffg_overview_user"><i class="fa fa-user"></i></th>
               <th id="ffg_overview_deliveredtrucks"><i class="fa fa-truck fa-flip-horizontal"></i></th>
-              <th id="ffg_overview_week1"><div></div></th>
-              <th id="ffg_overview_week2"><div></div></th>
-              <th id="ffg_overview_week3"><div></div></th>
+              <th id="ffg_overview_week1"><div id="ffg_overview_week1_content"></div></th>
+              <th id="ffg_overview_week2"><div id="ffg_overview_week2_content"></div></th>
+              <th id="ffg_overview_week3"><div id="ffg_overview_week3_content"></div></th>
               <th id="ffg_overview_overtime"><i class="fa fa-clock-o"></i></th>
               <th id="ffg_overview_total"><i class="fa fa-star"></i></th>
             </tr>
@@ -357,6 +357,13 @@ var jstpl_showScore = `<div id="ffg_showScoreDialogContent">
           <tbody id="ffg_overview_body"></tbody>
         </table>
     </div>`;
+    
+var jstpl_weekLabel = `<div class="ffg_board_week{ROUND}_label ffg_board_week_label">
+    <div class="ffg_board_week_label_simple">{WEEK_LABEL}</div>
+    <svg class="ffg_board_week_label_adjusted">
+        <text class="ffg_board_week_label_adjusted_text" lengthAdjust="spacingAndGlyphs" x="0" y="22" textLength="65"></text>
+    </svg>
+</div>`;
     
 var jstpl_showScoreRow = `<tr id="ffg_scorerow_\${player_id}" class="\${trclasses}">
         <td class="ffg_player_col"><span class="playername" style="color:#\${player_color};">\${player_name}</span></td>
