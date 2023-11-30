@@ -1049,7 +1049,11 @@ html.ffg_font_designer .ffg_container_number{
     cursor: not-allowed !important;
 }
 .ffg_truck_pos.ffg_temp_selection{
-    background: repeating-linear-gradient( 45deg, #000 , #5867bb00 10px, #000 10px, #000 20px );
+    background: repeating-linear-gradient( 45deg, #000 , #5867bb00 5px, #000 5px, #000 5px );
+}
+.ffg_truck[data_confirmed_state="4"] .ffg_truck_pos.ffg_confirmed_pos{
+    /* STATE_MOVE_DELIVERED_CONFIRMED */
+    background-color: darkgreen;
 }
 /* 
 ---------------------------- ----------------------------   ---------------------------- 
