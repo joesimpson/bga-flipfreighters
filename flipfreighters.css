@@ -56,7 +56,9 @@
   --ffg_card_display_width: 120px;
   --ffg_card_display_height: 180px;
   
+  /* DON't work on Safari :(
   --ffg_board_display_img: url('img/board.jpg');
+   */
   --ffg_board_display_img_width: 2112px;
   --ffg_board_display_width: 1400px;
   --ffg_board_display_height: 1080px;
@@ -77,10 +79,12 @@
 html.ffg_font_designer #ffg_game_container{
     font-family: 'Fugaz One';
 }
+/*
 html.ffg_lang_translated,
 html.ffg_lang_translated_adjusted{
     --ffg_board_display_img: url('img/board_translatable.jpg');
 }
+*/
 
 #ffg_game_zone{
     text-align: center;
@@ -298,12 +302,20 @@ html.ffg_font_designer #popin_showScoreDialogId{
 #ffg_overview_week1 div,
 #ffg_overview_week2 div,
 #ffg_overview_week3 div{
-    background-image: var(--ffg_board_display_img);
+    background-image: url('img/board.jpg');
     background-position-y: -653px;
     background-position-x: -25px;
     width: 66px;
     height: 67px;
     background-size: 2000%;
+}
+html.ffg_lang_translated #ffg_overview_week1 div,
+html.ffg_lang_translated #ffg_overview_week2 div,
+html.ffg_lang_translated #ffg_overview_week3 div,
+html.ffg_lang_translated_adjusted #ffg_overview_week1 div,
+html.ffg_lang_translated_adjusted #ffg_overview_week2 div,
+html.ffg_lang_translated_adjusted #ffg_overview_week3 div{
+    background-image: url('img/board_translatable.jpg');
 }
 
 #ffg_overview_week2 div{
@@ -598,7 +610,7 @@ html.ffg_font_designer #popin_showDiscardPileDialogId .standard_popin_title{
 */
 
 .ffg_board{
-    background-image: var(--ffg_board_display_img);
+    background-image: url('img/board.jpg');
     background-size: 100%;
     background-repeat: no-repeat;
     width: var(--ffg_board_display_width);
@@ -608,6 +620,10 @@ html.ffg_font_designer #popin_showDiscardPileDialogId .standard_popin_title{
     margin-left: 20px;
     margin-top: 10px;
     position: relative;
+}
+html.ffg_lang_translated .ffg_board,
+html.ffg_lang_translated_adjusted .ffg_board{
+    background-image: url('img/board_translatable.jpg');
 }
 .ffg_board_container{
     transform: scale(var(--ffg_board_display_scale));
@@ -2019,7 +2035,7 @@ html:not(.ffg_lang_translated_adjusted) .ffg_label_adjusted{
 }
 .notouch-device .ffg_overtime.ffg_selectable:hover{
     /*outline: 3px solid green;*/
-    background-image: var(--ffg_board_display_img);
+    background-image: url('img/board.jpg');
     background-size: calc(var(--ffg_board_display_width) / var(--ffg_board_display_img_width) );
     background-position-y: -1415px;
     background-position-x: -379px;
@@ -2028,6 +2044,10 @@ html:not(.ffg_lang_translated_adjusted) .ffg_label_adjusted{
     top: 932px;
     z-index: 2;
 } 
+html.ffg_lang_translated .notouch-device .ffg_overtime.ffg_selectable:hover,
+html.ffg_lang_translated_adjusted .notouch-device .ffg_overtime.ffg_selectable:hover{
+    background-image: url('img/board_translatable.jpg');
+}
 .ffg_overtime.ffg_positive_value::after{
     border: 3px solid green;
 }
