@@ -575,12 +575,11 @@ html.ffg_lang_translated_adjusted #ffg_overview_week3 div{
 #popin_showDiscardPileDialogId .standard_popin_title{
     text-align: center;
 }
-html.ffg_font_designer #popin_showDiscardPileDialogId .standard_popin_title{
+html.ffg_font_designer #popin_showDiscardPileDialogId{
     font-family: 'Fugaz One';
 }
 .ffg_modal_pile_content table tbody tr td{
     border: 1px solid rgba(0,0,0,.2);
-    font-family: 'Fugaz One';
     font-size: x-large;
     padding: 5px 8px;
     text-align: center;
@@ -1935,7 +1934,6 @@ html.ffg_font_simple .ffg_total_score>.ffg_score_number{
     fill: #642508;
     font-size: 28px;
     margin-top: 4px;
-    font-family: 'Fugaz One';
     /* not displayed until needed */
     visibility: hidden;
 }
@@ -1980,8 +1978,9 @@ html:not(.ffg_lang_translated) .ffg_board_overtime_label_simple{
     left: -45px;
     position: relative;
     cursor: inherit;
+    margin-top: -5px;
 }
-.ffg_board_overtime_unused_label .ffg_label_simple_2{
+html.ffg_font_designer .ffg_board_overtime_unused_label .ffg_label_simple_2{
     margin-top: -10px;
 }
 .ffg_board_overtime_unused_label .ffg_label_simple_1,
