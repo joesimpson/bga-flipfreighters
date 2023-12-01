@@ -719,7 +719,7 @@ function (dojo, declare) {
                 let dataDiscard = {
                     'suit' : cardType,
                     'COLOR' : typeDatas.color,
-                    'name' : typeDatas.name,
+                    'name' : _(typeDatas.name),
                 };
                 dojo.place(this.format_block('jstpl_discard_cards_row', dataDiscard), 'ffg_discard_overview_body');
                 dojo.place(this.format_block('jstpl_deck_cards_row', dataDiscard), 'ffg_deck_overview_body');
