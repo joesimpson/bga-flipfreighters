@@ -1530,7 +1530,7 @@ html:not(.ffg_truck_shape_multi_anim) .ffg_truck_shape{
 }
 .ffg_icon_truck_pos, .ffg_tooltipIconTruck_option2{
     color: black;
-    text-shadow: 1px 0px 1px white, 0px 1px 1px white,-1px 0px 1px white,0px -1px 1px white;
+    text-shadow: white 2px 0px 2px, white 0px 2px 2px, white -2px 0px 2px, white 0px -2px 2px;
 }
 .ffg_truck[data_confirmed_state="4"] .ffg_icon_truck_pos, .ffg_tooltipIconTruck_option3{
     /* DELIVERED */
