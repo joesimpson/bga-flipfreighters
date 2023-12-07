@@ -1426,8 +1426,9 @@ function (dojo, declare) {
                         
                         this.drawTruckLine(player_id, posId,state, ["ffg_temp_selection"]);
                         
+                        let truckIconDivId = posDivId + "_icon";
+                        dojo.addClass(truckIconDivId,"ffg_hidden" ) ;
                         if( k== position){
-                            let truckIconDivId = posDivId + "_icon";
                             dojo.removeClass(truckIconDivId,"ffg_hidden" ) ;
                         }
                     }
