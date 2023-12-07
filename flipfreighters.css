@@ -1060,9 +1060,24 @@ html.ffg_font_simple .ffg_cargo_amount .ffg_container_number{
 .ffg_truck_pos.ffg_temp_selection{
     background: repeating-linear-gradient( 45deg, #000 , #5867bb00 5px, #000 5px, #000 5px );
 }
-.ffg_truck[data_confirmed_state="4"] .ffg_truck_pos.ffg_confirmed_pos{
+html.ffg_display_truck_route_mutlicolors .ffg_truck[data_confirmed_state="4"] .ffg_truck_pos.ffg_confirmed_pos{
     /* STATE_MOVE_DELIVERED_CONFIRMED */
     background-color: darkgreen;
+}
+html.ffg_display_truck_route_black .ffg_truck_pos:not(.ffg_not_drawn_pos){
+    background-color: black;
+}
+html.ffg_display_truck_route_blue .ffg_truck_pos:not(.ffg_not_drawn_pos){
+    background-color: darkblue;
+}
+html.ffg_display_truck_route_gray .ffg_truck_pos:not(.ffg_not_drawn_pos){
+    background-color: darkgray;
+}
+html.ffg_display_truck_route_turquoise .ffg_truck_pos:not(.ffg_not_drawn_pos){
+    background-color: darkturquoise;
+}
+html.ffg_display_truck_route_violet .ffg_truck_pos:not(.ffg_not_drawn_pos){
+    background-color: darkviolet;
 }
 /* 
 ---------------------------- ----------------------------   ---------------------------- 
