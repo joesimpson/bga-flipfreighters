@@ -363,6 +363,11 @@ html.ffg_lang_translated_adjusted #ffg_overview_week3 div{
     /** tested to be visible for "achromatopsia color blindness" */
     background-color: #ffc200;
 }
+#ffg_showScoreDialogContent table tbody tr.ffg_highlight .ffg_player_col>.playername[style*='color:#ffa500'],
+#ffg_showScoreDialogContent table tbody tr.ffg_highlight .ffg_player_col>.playername[style*='color:#f07f16']{
+    /* when orange player is highlighted*/
+    text-shadow: 1px 0 1px #000, 0 1px 1px #000, -1px 0 1px #000, 0 -1px 1px #000;
+}
 /* 
 ---------------------------- ----------------------------   ---------------------------- 
 ----------------------------  LEFT ZONE  : CARDS            ---------------------------- 
