@@ -113,8 +113,16 @@ class view_flipfreighters_flipfreighters extends game_view
         
             //$this->game->dump("VIEW trucks_cargos", $trucks_cargos);
             
-            foreach( $trucks_cargos as $truck_id => $truck_cargos )
+            $trucks_positions = $player_board['trucks_positions'];
+            $trucks_scores = $player_board['trucks_scores'];
+            //$this->game->dump("VIEW trucks_positions", $trucks_positions);
+            foreach( $trucks_positions as $trucks_position )
             {
+                
+                $this->page->reset_subblocks( 'ffg_player_trucks_cargo' ); 
+            
+                $truck_id = $trucks_position['truck_id'];
+                $truck_cargos = $trucks_cargos[$truck_id];
                 foreach( $truck_cargos as $truck_cargo )
                 {
                     $card_id = $truck_cargo['card_id'];
@@ -151,15 +159,7 @@ class view_flipfreighters_flipfreighters extends game_view
                                                         "SPENT_OVERTIME" => $card_overtime,
                                                          ) );
                 }
-            }
-            
-            $trucks_positions = $player_board['trucks_positions'];
-            $trucks_scores = $player_board['trucks_scores'];
-            //$this->game->dump("VIEW trucks_positions", $trucks_positions);
-            foreach( $trucks_positions as $trucks_position )
-            {
                 
-                $truck_id = $trucks_position['truck_id'];
                 $truckScore = $trucks_scores[$truck_id];
                 
                 $confirmed_pos = $trucks_position['confirmed_position'] ;
