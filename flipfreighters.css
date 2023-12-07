@@ -494,6 +494,11 @@ html.ffg_lang_translated_adjusted #ffg_overview_week3>div{
     flex-flow: row;
     justify-content: space-evenly;
 }
+.notouch-device .ffg_button_card_plus.ffg_selectable:hover,
+.notouch-device .ffg_button_card_minus.ffg_selectable:hover {
+    cursor: pointer;
+    scale: 1.15
+}
 
 .ffg_icon_card_suit,
 .ffg_button_card_suit_modifier {
