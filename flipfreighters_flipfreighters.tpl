@@ -38,8 +38,8 @@
         <!-- BEGIN ffg_cards -->
         <div id="ffg_card_wrapper_{INDEX}" class="ffg_card_wrapper">
             <div class="ffg_card_buttons_wrapper">
-                <a href="#" id="ffg_button_card_plus_{INDEX}" class="ffg_button_card_plus bgabutton bgabutton_green ffg_selectable" onclick="return false;"><span>+1</span></a>
-                <a href="#" id="ffg_button_card_minus_{INDEX}" class="ffg_button_card_minus bgabutton bgabutton_red ffg_selectable" onclick="return false;"><span>-1</span></a>
+                <a href="#" id="ffg_button_card_plus_{INDEX}" class="ffg_button_card_plus bgabutton bgabutton_green ffg_selectable" onclick="return false;"><span><span class="ffg_button_symbol">+</span>1</span></a>
+                <a href="#" id="ffg_button_card_minus_{INDEX}" class="ffg_button_card_minus bgabutton bgabutton_red ffg_selectable" onclick="return false;"><span><span class="ffg_button_symbol">-</span>1</span></a>
             </div>
             <div class="ffg_card_usage_wrapper ffg_no_display">{CARD_USAGE_LABEL}<span id="ffg_card_usage_{INDEX}" class="ffg_card_usage">0</span>
             </div>
