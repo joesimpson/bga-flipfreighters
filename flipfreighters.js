@@ -150,7 +150,7 @@ function (dojo, declare) {
             
             if(!this.isSpectator){
                 //Display current player board first :
-                dojo.place("ffg_board_player_container_"+this.player_id, "ffg_all_players_board_wrap","first");
+                dojo.place("ffg_board_player_container_wrapper_"+this.player_id, "ffg_all_players_board_wrap","first");
             }
             
             this.material = gamedatas.material;
@@ -458,12 +458,25 @@ function (dojo, declare) {
             let box = gamecontainer.getBoundingClientRect();
             let sheetWidth = 1400 + 20 + 20 + widthToLeave; //margin 20 + outline 10 on both sides, + 100 to be safe ?
             let sheetZoom = this._scoreSheetZoom / 100;
-            let sheetRatio =  (100 - this._cardsRatio - 2 ) / 100;//2% empty to be safe ?
+            let sheetRatio =  (100 - this._cardsRatio ) / 100;
             let newSheetWidth = sheetZoom*sheetRatio*box['width'];
             let sheetScale = newSheetWidth / sheetWidth;
+            let widthHeightRatio = 1080/1400;
+            let newSheetHeight = sheetScale * 1080 ; //--ffg_board_display_height
             document.querySelector(":root").style.setProperty("--ffg_board_display_scale",sheetScale) ;
-            debug( "resizeHorizontal ... sheetZoom,sheetRatio, sheetScale, newSheetWidth : ",sheetZoom,sheetRatio , sheetScale, newSheetWidth );
-            //dojo.style('ffg_all_players_board_wrap', 'width', `${newSheetWidth}px`);
+            dojo.query(".ffg_board_player_container_wrapper").forEach( i => {
+                dojo.style(i.id, "width", `${newSheetWidth}px`);
+                dojo.style(i.id, "height", `${newSheetHeight}px`);
+                });
+            dojo.style("ffg_all_players_board_wrap", "width", `${newSheetWidth}px`);
+            let nbDisplayedSheets = Object.keys(this.gamedatas.players).length;
+            if( dojo.query("html")[0].classList.contains("ffg_display_all_no") ){
+                nbDisplayedSheets = 1;
+            }
+            let sumSheetHeight = (newSheetWidth * widthHeightRatio +20*sheetScale ) * nbDisplayedSheets ; //height + margin top 20
+            dojo.style("ffg_all_players_board_wrap", "height", `${sumSheetHeight}px`);
+            
+            debug( "resizeHorizontal ... sheetZoom,sheetRatio, sheetScale, newSheetWidth, newSheetHeight,sumSheetHeight : ",sheetZoom,sheetRatio , sheetScale, newSheetWidth, newSheetHeight,sumSheetHeight );
             
             let cardsWidth = 130 + 10;//margin-left 10 on .ffg_card
             let cardsHeight = 963;
@@ -674,7 +687,7 @@ function (dojo, declare) {
                         dojo.removeClass(i,"ffg_selectable"); 
                         dojo.addClass(i,"ffg_selectable_for_others");
                     }
-                    if(i.id == "modal_ffg_board_player_container_"+selectedPlayerId){
+                    if(i.id == "modal_ffg_board_player_container_wrapper_"+selectedPlayerId){
                         //THE ONE TO DISPLAY
                         dojo.addClass(i,"ffg_selectedPlayerId");
                     }
@@ -2420,7 +2433,7 @@ function (dojo, declare) {
             this.selectedPlayerId = this.getNextPlayerId(this.selectedPlayerId, "left");
             
             dojo.query("#modal_ffg_all_players_board_wrap *").removeClass("ffg_selectedPlayerId"); 
-            dojo.addClass("modal_ffg_board_player_container_"+this.selectedPlayerId,"ffg_selectedPlayerId");
+            dojo.addClass("modal_ffg_board_player_container_wrapper_"+this.selectedPlayerId,"ffg_selectedPlayerId");
         },
         
         onClickSlideShowRight: function( evt )
@@ -2435,7 +2448,7 @@ function (dojo, declare) {
             this.selectedPlayerId = this.getNextPlayerId(this.selectedPlayerId, "right");
             
             dojo.query("#modal_ffg_all_players_board_wrap *").removeClass("ffg_selectedPlayerId"); 
-            dojo.addClass("modal_ffg_board_player_container_"+this.selectedPlayerId,"ffg_selectedPlayerId");
+            dojo.addClass("modal_ffg_board_player_container_wrapper_"+this.selectedPlayerId,"ffg_selectedPlayerId");
         },
         
         onClickDiscardPile: function( evt )

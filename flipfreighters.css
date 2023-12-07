@@ -242,7 +242,12 @@ html.ffg_font_designer #popin_showBoardDialogId{
     text-align: center;
 }
 
-#modal_ffg_all_players_board_wrap .ffg_board_container:not(.ffg_selectedPlayerId) {
+#modal_ffg_all_players_board_wrap{
+    /* override sizing cloned from the original wrapper */
+    width:  720px !important;
+    height:  550px !important;
+}
+#modal_ffg_all_players_board_wrap .ffg_board_player_container_wrapper:not(.ffg_selectedPlayerId) {
     display: none;
 }
 /** Modal player boards should not change size when the "real" boards change their size */
@@ -650,7 +655,7 @@ html.ffg_font_designer #popin_showDiscardPileDialogId{
     border-radius: 20px;
     margin-left: 20px;
     margin-top: 10px;
-    position: relative;
+    position: absolute;
 }
 html.ffg_lang_translated .ffg_board,
 html.ffg_lang_translated_adjusted .ffg_board{
@@ -659,11 +664,10 @@ html.ffg_lang_translated_adjusted .ffg_board{
 .ffg_board_container{
     transform: scale(var(--ffg_board_display_scale));
     transform-origin: top left;
-    width: calc(var(--ffg_board_display_width) * var(--ffg_board_display_scale)  );
-    height: calc(var(--ffg_board_display_height) * var(--ffg_board_display_scale)  );
+}
+.ffg_board_player_container_wrapper{
     margin-top: 20px;
 }
-
 /** USER PREF */
 .ffg_display_all_no #ffg_all_players_board_wrap .ffg_other_player{
     display: none;
@@ -671,6 +675,8 @@ html.ffg_lang_translated_adjusted .ffg_board{
 
 #ffg_all_players_board_wrap{
     align-self: flex-start;
+    display: flex;
+    flex-direction: column;
 }
 
 /** Board Player NAMES*/

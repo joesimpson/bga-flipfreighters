@@ -78,15 +78,17 @@
 <div id="ffg_all_players_board_wrap" class="">
     
     <!-- BEGIN ffg_playerBoard -->
-     
+    <div id="ffg_board_player_container_wrapper_{PLAYER_ID}" class="ffg_board_player_container_wrapper {PLAYER_CLASS}">
+    
     <div id="ffg_board_player_container_{PLAYER_ID}" class="ffg_board_container {PLAYER_CLASS}" data_player_id="{PLAYER_ID}">
+    
         <div id="ffg_board_player_{PLAYER_ID}" class="ffg_board" style="outline-color: #{PLAYER_COLOR};">
             
             <span class="ffg_board_title"><h1>
                 <span style="color:#{PLAYER_COLOR}; outline-color:#{PLAYER_COLOR};"><img id="ffg_player_avatar_{PLAYER_ID}" class="emblem ffg_player_avatar" src="" alt="">{PLAYER_NAME}</span>
             </h1></span>
             
-            <div id="ffg_board_trucks_wrapper">
+            <div id="ffg_board_trucks_wrapper_{PLAYER_ID}">
                 <!-- BEGIN ffg_player_trucks_cargo -->
             
                     <div id="ffg_container_{PLAYER_ID}_{CONTAINER_ID}" class="ffg_container {CLASSES}" data_id="{CONTAINER_ID}"  data_player="{PLAYER_ID}" data_truck="{TRUCK_ID}" data_amount="{AMOUNT}" data_state="{STATE}" data_card="{CARD_ID}" data_overtime="{SPENT_OVERTIME}">
@@ -119,7 +121,7 @@
                 <!-- END ffg_player_truck_positions -->
             </div>
             
-            <div id="ffg_board_weeks_wrapper">
+            <div id="ffg_board_weeks_wrapper_{PLAYER_ID}">
                 <!-- BEGIN ffg_week_score -->
                 <div id="ffg_week_score_{WK_PLAYER_ID}_{ROUND}" class="ffg_week_score" data_player="{PLAYER_ID}" data_round="{ROUND}">
                     <div class="ffg_board_week{ROUND}_label ffg_board_week_label">
@@ -310,6 +312,7 @@
             </div>
             <div class="ffg_board_currency_label_simple">{CURRENCY_LABEL}</div>
         </div>
+    </div>
     </div>
     <!-- END ffg_playerBoard -->
 </div>
