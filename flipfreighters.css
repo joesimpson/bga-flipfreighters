@@ -965,8 +965,10 @@ html.ffg_font_designer .ffg_container_number{
 }
 
 .ffg_cargo_amount .ffg_container_number{
-    font-style: italic;
     font-weight: initial;
+}
+html.ffg_font_simple .ffg_cargo_amount .ffg_container_number{
+    font-style: italic;
 }
 
 .ffg_container[data_amount="10"] .ffg_container_number,
