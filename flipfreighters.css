@@ -545,6 +545,9 @@ html.ffg_lang_translated_adjusted #ffg_overview_week3 div{
 .ffg_card_usage{
     margin: 0 5px;
     font-size: 20px;
+}
+
+html.ffg_font_simple .ffg_card_usage{
     font-weight: bold;
 }
 
@@ -2107,8 +2110,6 @@ html.ffg_lang_translated_adjusted .notouch-device .ffg_overtime.ffg_selectable:h
 }
 .ffg_cardModifier{
     font-size: 80px;
-    font-style: italic;
-    font-weight: bold;
     align-items: center;
     display: flex;
     justify-content: center;
@@ -2126,6 +2127,10 @@ html.ffg_lang_translated_adjusted .notouch-device .ffg_overtime.ffg_selectable:h
 }
 .ffg_cardModifier.ffg_negative_value{
     color: red;
+}
+html.ffg_font_simple .ffg_cardModifier{
+    font-style: italic;
+    font-weight: bold;
 }
 
 /* ---------------------------- ----------------------------   ---------------------------- */
