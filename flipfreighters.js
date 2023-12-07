@@ -477,7 +477,8 @@ function (dojo, declare) {
             dojo.style('ffg_cards_sticky', 'width', `${newCardsWidth}px`);
             dojo.style('ffg_cards_container', 'width', `${newCardsWidth}px`);
             
-            this.resizeCargoAmountList();
+            let visiblecount = dojo.query("#ffg_cargo_amount_list .ffg_cargo_amount.ffg_selectable:not(.ffg_no_display)").length ;
+            this.resizeCargoAmountList(visiblecount); 
         },
         resizeVertical: function(){
             debug( "resizeVertical ... " );
@@ -1550,12 +1551,15 @@ function (dojo, declare) {
                 let cargo_to_fill = document.getElementById(`ffg_container_${this.player_id}_${this.selectedCargoContainer}`) ;
                 let cargoBox = cargo_to_fill.getBoundingClientRect();
                 //we expect nbLoad spaces + 1 arrow + 1 close icon
-                this.placeOnObjectPos("ffg_cargo_amount_list",cargo_to_fill.id,cargoBox.width * (nbLoad+2)/2 ,cargoBox.height * 1.5);
+                //this.placeOnObjectPos("ffg_cargo_amount_list",cargo_to_fill.id,cargoBox.width * (nbLoad+2)/2 ,cargoBox.height * 1.5);
                 
                 let gamecontainer = $('ffg_game_container');
                 let box = gamecontainer.getBoundingClientRect();
                 let width = divAmountList.getBoundingClientRect().width;
                 let right = divAmountList.getBoundingClientRect().right;
+                
+                this.placeOnObjectPos("ffg_cargo_amount_list",cargo_to_fill.id,width/2 - cargoBox.width/2  ,cargoBox.height * 1.5); 
+                
                 if(right >= box.right) { //If this is gonna be too far on the right
                     divAmountList.classList.add("ffg_reverse_direction");
                     this.placeOnObjectPos("ffg_cargo_amount_list",cargo_to_fill.id, 0 - width*0.8 /2, cargoBox.height * 1.5);

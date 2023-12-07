@@ -716,6 +716,9 @@ html.ffg_lang_translated_adjusted .ffg_board{
     background-color: #0800ff29;
     cursor: pointer;
 }
+.ffg_cargo_amount.ffg_selectable{
+    outline: 2px solid blue;
+}
 .notouch-device .ffg_container.ffg_selectable:hover,
 .notouch-device .ffg_cargo_amount.ffg_selectable:hover {
     scale: 1.2;
