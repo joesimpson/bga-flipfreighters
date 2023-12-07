@@ -299,9 +299,9 @@ html.ffg_font_designer #popin_showScoreDialogId{
 #ffg_showScoreDialogContent table th>div{
     display: inline-block;
 }
-#ffg_overview_week1 div,
-#ffg_overview_week2 div,
-#ffg_overview_week3 div{
+#ffg_overview_week1>div,
+#ffg_overview_week2>div,
+#ffg_overview_week3>div{
     background-image: url('img/board.jpg');
     background-position-y: -653px;
     background-position-x: -25px;
@@ -312,14 +312,20 @@ html.ffg_font_designer #popin_showScoreDialogId{
     top: 0;
     position: relative;
 }
-
-html.ffg_lang_translated #ffg_overview_week1 div,
-html.ffg_lang_translated #ffg_overview_week2 div,
-html.ffg_lang_translated #ffg_overview_week3 div,
-html.ffg_lang_translated_adjusted #ffg_overview_week1 div,
-html.ffg_lang_translated_adjusted #ffg_overview_week2 div,
-html.ffg_lang_translated_adjusted #ffg_overview_week3 div{
+html.ffg_lang_translated #ffg_overview_week1>div,
+html.ffg_lang_translated #ffg_overview_week2>div,
+html.ffg_lang_translated #ffg_overview_week3>div,
+html.ffg_lang_translated_adjusted #ffg_overview_week1>div,
+html.ffg_lang_translated_adjusted #ffg_overview_week2>div,
+html.ffg_lang_translated_adjusted #ffg_overview_week3>div{
     background-image: url('img/board_translatable.jpg');
+    left: 0;
+    top: 0;
+    position: relative;
+}
+#ffg_overview_week1>div>div,
+#ffg_overview_week2>div>div,
+#ffg_overview_week3>div>div{
     left: 0;
     top: 0;
     position: relative;
@@ -1973,6 +1979,14 @@ html.ffg_font_simple .ffg_total_score>.ffg_score_number{
 }
 html.ffg_lang_translated .ffg_board_overtime_label_simple{
     visibility: visible;
+    text-shadow: #ffe695 2px 0 2px, #ffe695 0 2px 2px, #ffe695 -2px 0 2px, #ffe695 0 -2px 2px;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    height: 100%;
+    width: 100%;
+    line-height: 21px;
+    font-size: 21px;
 }
 html.ffg_lang_translated_adjusted .ffg_board_overtime_label_adjusted{
     visibility: visible;
@@ -2186,6 +2200,16 @@ html.ffg_font_simple .ffg_cardModifier{
 .ffg_board_week_label_adjusted{
     height: 100%;
     width: 100%;
+}
+.ffg_board_week_label_simple{
+    text-shadow: #642508 2px 0 2px, #642508 0 2px 2px, #642508 -2px 0 2px, #642508 0 -2px 2px;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    width: 100%;
+    height: 100%;
+    font-size: 14px;
+    line-height: 14px;
 }
 html:not(.ffg_lang_translated) .ffg_board_week_label_simple{
     display: none;
