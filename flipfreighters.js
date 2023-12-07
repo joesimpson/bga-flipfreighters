@@ -606,13 +606,12 @@ function (dojo, declare) {
             
             for(let k=1; k<= this.constants.NB_ROUNDS;k++){
                 let data = {
-                    'WEEK_LABEL' : this.WEEK_LABEL,
                     'ROUND' : k,
                 };
                 dojo.place(this.format_block('jstpl_weekLabel', data), `ffg_overview_week${k}_content`);
             }
             
-            dojo.query("#popin_showScoreDialogId .ffg_board_week_label_adjusted_text").forEach( (i) => { 
+            dojo.query("#popin_showScoreDialogId .ffg_board_week_label_adjusted_text, #popin_showScoreDialogId .ffg_board_week_label_simple").forEach( (i) => { 
                 i.innerHTML = this.WEEK_LABEL ;
             });
             

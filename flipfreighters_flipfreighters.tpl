@@ -359,7 +359,7 @@ var jstpl_showScore = `<div id="ffg_showScoreDialogContent">
     </div>`;
     
 var jstpl_weekLabel = `<div class="ffg_board_week{ROUND}_label ffg_board_week_label">
-    <div class="ffg_board_week_label_simple">{WEEK_LABEL}</div>
+    <div class="ffg_board_week_label_simple"></div>
     <svg class="ffg_board_week_label_adjusted">
         <text class="ffg_board_week_label_adjusted_text" lengthAdjust="spacingAndGlyphs" x="0" y="22" textLength="65"></text>
     </svg>
