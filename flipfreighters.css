@@ -2056,6 +2056,10 @@ html.ffg_font_designer .ffg_board_overtime_unused_label .ffg_label_simple_2{
     line-height: 20px;
     font-size: 20px;
 }
+.ffg_board_overtime_unused_label>.ffg_label_adjusted{
+    width: 100%;
+    height: 100%;
+}
 html:not(.ffg_lang_translated) .ffg_label_simple_1,
 html:not(.ffg_lang_translated) .ffg_label_simple_2{
     display: none;
