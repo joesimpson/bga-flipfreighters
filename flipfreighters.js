@@ -636,10 +636,12 @@ function (dojo, declare) {
             for(let playerId in this.gamedatas.players){
                 let player = this.gamedatas.players[playerId];
                 let classes = (this.selectedPlayerId == playerId ) ? "ffg_highlight" : "";
+                let avatarSrc = this.getPlayerAvatar(playerId);
                 let data = {
                     'player_id' : playerId,
                     'player_name' : player.name,
                     'player_color' : player.color,
+                    'player_avatar' : avatarSrc,
                     'score_week1' : player.score_week1,
                     'score_week2' : this.currentRound >=2 ? player.score_week2 : "-",
                     'score_week3' : this.currentRound >=3 ? player.score_week3 : "-",

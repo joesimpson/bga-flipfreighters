@@ -370,7 +370,7 @@ var jstpl_weekLabel = `<div class="ffg_board_week{ROUND}_label ffg_board_week_la
 </div>`;
     
 var jstpl_showScoreRow = `<tr id="ffg_scorerow_\${player_id}" class="\${trclasses}">
-        <td class="ffg_player_col"><span class="playername" style="color:#\${player_color};">\${player_name}</span></td>
+        <td class="ffg_player_col"><span class="playername" style="color:#\${player_color};"><img id="ffg_scorerow_avatar_\${player_id}" class="emblem ffg_player_avatar" src="\${player_avatar}" alt="">\${player_name}</span></td>
         <td class="ffg_delivered_col"><span>\${delivered}</span>/<span>9</span></td>
         <td>\${score_week1}</td>
         <td>\${score_week2}</td>
