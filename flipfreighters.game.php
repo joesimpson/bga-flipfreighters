@@ -1019,6 +1019,21 @@ class FlipFreighters extends Table
         return $state;
     }
     
+    /**
+    Return the number of moves not confirmed yet in current turn (day) for this player
+    */
+    function getNbCardsForMovesToConfirm($player_id){
+        $stateToConfirm1 = STATE_MOVE_TO_CONFIRM;
+        $stateToConfirm2 = STATE_MOVE_DELIVERED_TO_CONFIRM;
+        
+        $sql = "SELECT count(distinct fmove_card_id) 'nbCards', count(1) 'nbMoves' from freighter_move where fmove_player_id= '$player_id' AND fmove_state in ($stateToConfirm1, $stateToConfirm2) ";
+        
+        $res = $this->getObjectFromDB($sql);
+        if(isset($res)){
+            return $res["nbCards"];
+        }
+        return 0; 
+    }
     function getCardUsedPowerForMoves($player_id, $card_id){
         // SUM( `fmove_position_to`- `fmove_position_from` - `fmove_overtime_used`) if we don't want to count overtime
         $sql = " SELECT `fmove_card_id`, SUM( `fmove_position_to`- `fmove_position_from` ) as `card_used_power`  FROM `freighter_move` where fmove_player_id = '$player_id' and `fmove_card_id` = $card_id group by `fmove_card_id` ";
@@ -1147,6 +1162,12 @@ class FlipFreighters extends Table
     function confirmTurnActions($players, &$listUnconfirmedTurnActions,&$usedOvertimeHours,&$deliveries){
         self::trace( "confirmTurnActions()...");
 
+        //Update stat from BDD data before updates
+        foreach($players as $player_id => $player){            
+            $nb = $this->getNbCardsForMovesToConfirm($player_id);
+            if($nb>0) self::incStat( $nb, "stat_player_moving", $player_id );
+        }
+        
         $oldState = STATE_LOAD_TO_CONFIRM;
         $newState = $this->getConfirmedState($oldState);
         $this->DbQuery("UPDATE freighter_cargo SET cargo_state= $newState WHERE cargo_state = $oldState");
@@ -1182,7 +1203,8 @@ class FlipFreighters extends Table
                     
                     $player_id = $i;
                     //Beware : The same card used on multiples moves will be counted multiples times here :
-                    self::incStat( 1, "stat_player_moving", $player_id );
+                    //Still incorrect in version 20231208-0054, because multiples moves on the same truck will give only one turn in this loop (with the sql max) => add an other query before the update
+                    //self::incStat( 1, "stat_player_moving", $player_id );
                     self::incStat( $distance, "stat_total_distance", $player_id );
                     if($action["truckScore"] > 0){
                         $this->dbIncreasePlayerScoreAux($player_id,1);
