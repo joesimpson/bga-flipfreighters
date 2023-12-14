@@ -1346,7 +1346,9 @@ function (dojo, declare) {
             
             div.classList.add("ffg_selected_move");
             if(isDelivery) div.classList.add("ffg_selected_delivery");
-            $("ffg_button_stopmoving").classList.remove("disabled");
+            if($("ffg_button_stopmoving") !=null ){
+                $("ffg_button_stopmoving").classList.remove("disabled");
+            }
             this.decreasePossibleMovesForOtherTrucks(moveLength,truckId);
             
             this.setMainTitle(_('Keep moving or stop your trucks when ready'));
