@@ -388,11 +388,14 @@ function (dojo, declare) {
             script.
         
         */
- 
+        /**
+        Return false if action is not possible at that time
+        */
         ajaxcallwrapper: function(action, args, handler) {
             if (this.checkAction(action)) {
-                this.ajaxcallwrapperNoCheck(action, args, handler);
+                return this.ajaxcallwrapperNoCheck(action, args, handler);
             }
+            return false;
         },
         ajaxcallwrapperNoCheck: function(action, args, handler) {
             if (!args) {
@@ -419,6 +422,7 @@ function (dojo, declare) {
                     }
                 }
             );
+            return true;
         },
         
         /* @Override BGA standard error handling (for specific errors only) */
@@ -1817,7 +1821,10 @@ function (dojo, declare) {
             
             if(this.selectedAmount >0){
                 //CALL SERVER to refresh possible actions for this card ;
-                this.ajaxcallwrapper("getPossibleActionsForCard", {'cardId': card_id,'amount': this.selectedAmount, 'suit':this.selectedSuit, });
+                let callDone = this.ajaxcallwrapper("getPossibleActionsForCard", {'cardId': card_id,'amount': this.selectedAmount, 'suit':this.selectedSuit, });
+                if(!callDone) {
+                    this.resetButtonsSelection();
+                }
             }
             else {
                 this.possibleCards[card_id] = [];
@@ -2141,7 +2148,10 @@ function (dojo, declare) {
             }
             
             //CALL SERVER to refresh possible actions for this card ;
-            this.ajaxcallwrapper("getPossibleActionsForCard", {'cardId': card_id,'amount': this.selectedAmount, 'suit': this.selectedSuit,});
+            let callDone = this.ajaxcallwrapper("getPossibleActionsForCard", {'cardId': card_id,'amount': this.selectedAmount, 'suit': this.selectedSuit,});
+            if(!callDone) {
+                this.resetButtonsSelection();
+            }
         },
         
         /**
