@@ -149,6 +149,9 @@ function (dojo, declare) {
             // Set up your game interface here, according to "gamedatas"
             
             if(!this.isSpectator){
+                // Create a new div for buttons to avoid BGA auto clearing it
+                dojo.place("<div id='customActions' style='display:inline-block'></div>", $('generalactions'), 'after');
+          
                 //Display current player board first :
                 dojo.place("ffg_board_player_container_wrapper_"+this.player_id, "ffg_all_players_board_wrap","first");
             }
@@ -280,6 +283,7 @@ function (dojo, declare) {
                 this.possibleCardsBeforeOvertime = dojo.clone(this.possibleCards);
                 this.updatePossibleCards();
                 this.cleanMultiMoveSelection();
+                this.addCustomActionButtons();
                 break;
                 
             case 'endTurn':
@@ -324,7 +328,8 @@ function (dojo, declare) {
         onLeavingState: function( stateName )
         {
             debug( 'Leaving state: '+stateName );
-            
+            this.clearActionButtons();
+
             switch( stateName )
             {
             case 'dummmy':
@@ -337,23 +342,19 @@ function (dojo, declare) {
         //        
         onUpdateActionButtons: function( stateName, args )
         {
-            debug( 'onUpdateActionButtons: '+stateName );
-                      
+            debug( 'onUpdateActionButtons: '+stateName, args );
+
             if( this.isCurrentPlayerActive() )
             {            
                 switch( stateName )
                 {
 
                 case 'playerTurn':
-                    for(let k=1;k<= this.constants.MAX_LOAD;k++){
-                        this.addActionButton('ffg_button_amount_'+k, (k), 'onClickCargoAmount');
-                        //HIDE it until needed :
-                        dojo.query("#ffg_button_amount_"+k).removeClass("ffg_selectable").addClass("ffg_no_display disabled");
-                    }
-                    
-                    this.addActionButton( 'ffg_button_stopmoving', _('Confirm move(s)'), 'onStopMoving' ); 
-                    $("ffg_button_stopmoving").classList.add("bgabutton_green");
-                    $("ffg_button_stopmoving").classList.add("disabled");
+                     /* Not reliable in this game where every player can restart or end the turn at any time,
+                    which would call this function
+                    => call custom func addCustomActionButtons instead
+                    */
+                    //this.addCustomActionButtons();
                     this.addActionButton( 'ffg_button_endturn', _('End turn'), 'onEndTurn' ); 
                     this.addActionButton( 'ffg_button_cancelturn', _('Restart turn'), 'onCancelTurn',null, false, 'red' );
                     break;
@@ -363,11 +364,32 @@ function (dojo, declare) {
                 switch( stateName )
                 {
                 case 'playerTurn':
+                    this.clearActionButtons();
                     this.addActionButton( 'ffg_button_cancelturn', _('Restart turn'), 'onCancelTurn',null, false, 'red' );
                     break;
                 }
             }
-        },        
+        },
+        
+        /**
+         * Add needed action buttons for this game (only 1 active state exist, so no need to filter)
+         */
+        addCustomActionButtons: function()
+        {
+            debug( 'addCustomActionButtons() ' );
+            if (!this.isSpectator) {
+                this.clearActionButtons();
+                for(let k=1;k<= this.constants.MAX_LOAD;k++){
+                    this.addActionButton('ffg_button_amount_'+k, (k), 'onClickCargoAmount','customActions');
+                    //HIDE it until needed :
+                    dojo.query("#ffg_button_amount_"+k).removeClass("ffg_selectable").addClass("ffg_no_display disabled");
+                }
+                
+                this.addActionButton( 'ffg_button_stopmoving', _('Confirm move(s)'), 'onStopMoving','customActions' ); 
+                $("ffg_button_stopmoving").classList.add("bgabutton_green");
+                $("ffg_button_stopmoving").classList.add("disabled");
+            }
+        },   
 
         // To be overrided by games
         onScreenWidthChange(){
@@ -444,6 +466,11 @@ function (dojo, declare) {
             $('pagemaintitletext').innerHTML = this.previouspagemaintitletext;
         },
         
+        clearActionButtons: function() {
+            debug( "clearActionButtons()" );
+            dojo.empty('customActions');
+        },
+  
         /** Return User local config */
         getConfig: function(value, default_value){
             return localStorage.getItem(value) == null? default_value : localStorage.getItem(value);
@@ -2383,12 +2410,12 @@ function (dojo, declare) {
                 }
                 
                 this.confirmationDialog(confirmMessage, () => {
-                    this.ajaxcallwrapper("endTurn", { });
+                    this.ajaxcallwrapper("endTurn", { }, () => { this.clearActionButtons(); });
                 });
                 return;
             }
             
-            this.ajaxcallwrapper("endTurn", { });
+            this.ajaxcallwrapper("endTurn", { }, () => { this.clearActionButtons(); });
         },   
         
         onCancelTurn: function( evt )
@@ -2401,7 +2428,7 @@ function (dojo, declare) {
             this.unselectCard();
             
             this.confirmationDialog(_("Are you sure you want to cancel your whole turn ?"), () => {
-                this.ajaxcallwrapperNoCheck("cancelTurn", { });
+                this.ajaxcallwrapperNoCheck("cancelTurn", { }, () => { this.addCustomActionButtons(); });
             });
             return;
         },
