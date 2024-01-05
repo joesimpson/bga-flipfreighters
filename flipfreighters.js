@@ -351,7 +351,7 @@ function (dojo, declare) {
                         dojo.query("#ffg_button_amount_"+k).removeClass("ffg_selectable").addClass("ffg_no_display disabled");
                     }
                     
-                    this.addActionButton( 'ffg_button_stopmoving', _('Stop moving'), 'onStopMoving' ); 
+                    this.addActionButton( 'ffg_button_stopmoving', _('Confirm move(s)'), 'onStopMoving' ); 
                     $("ffg_button_stopmoving").classList.add("bgabutton_green");
                     $("ffg_button_stopmoving").classList.add("disabled");
                     this.addActionButton( 'ffg_button_endturn', _('End turn'), 'onEndTurn' ); 
