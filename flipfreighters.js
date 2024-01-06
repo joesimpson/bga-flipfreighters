@@ -63,6 +63,7 @@ function (dojo, declare) {
             this.counterDelivered={};
             this.overtimeSuitVariant = false;
             this.selectedSuitCost = null;
+            this.customMainTitle = null;
             
             this.counterDiscardDeckSize = new ebg.counter();
             this.counterDiscardDeckSize.create("ffg_discard_pile_size");
@@ -331,6 +332,7 @@ function (dojo, declare) {
             debug( 'Leaving state: '+stateName );
             this.clearActionButtons();
             this.clearRestartActionButtons();
+            this.customMainTitle = null;
 
             switch( stateName )
             {
@@ -356,6 +358,7 @@ function (dojo, declare) {
                     this.addCustomActionButtons(true);
                     this.clearRestartActionButtons();
                     this.addActionButton( 'ffg_button_cancelturn', _('Restart turn'), 'onCancelTurn','restartAction', false, 'red' );
+                    this.reuseCustomMainTitle();
                     break;
                 }
             }
@@ -457,20 +460,35 @@ function (dojo, declare) {
         },
         /** Update title in BGA status bar without waiting for status change*/
         setMainTitle: function(text) {
+            debug( "setMainTitle()", text );
             //IF NOT DONE During player turn, no need to display specific messages, because it will lead to "not your turn" and could lead to loose original title
             if(!this.isCurrentPlayerActive()) return;
 
             //First reset in order to avoid going from one fake message to another and not being able to recover the original message :
             this.resetMainTitle();
             if($('pagemaintitletext').innerHTML == text) return;
+            this.customMainTitle = text;
             this.previouspagemaintitletext = $('pagemaintitletext').innerHTML ;
             $('pagemaintitletext').innerHTML = text;
         },
         resetMainTitle: function() {
+            debug( "resetMainTitle()" );
             //IF NOT DONE During player turn, no need to display specific messages, because it will lead to "not your turn" and could lead to loose original title
             if(!this.isCurrentPlayerActive()) return;
 
-            $('pagemaintitletext').innerHTML = this.previouspagemaintitletext;
+            this.customMainTitle = null;
+            //$('pagemaintitletext').innerHTML = this.previouspagemaintitletext;
+            //Recall BGA framework
+            this.updatePageTitle();
+        },
+        /**
+         * Reuse previous custom main title, in case something happened and erased it
+         */
+        reuseCustomMainTitle: function() {
+            debug( "reuseCustomMainTitle()", this.customMainTitle);
+            if(this.customMainTitle != null){
+                this.setMainTitle(this.customMainTitle);
+            }
         },
         
         clearActionButtons: function() {
