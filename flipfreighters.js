@@ -1640,6 +1640,9 @@ function (dojo, declare) {
                 dojo.query("#ffg_cargo_amount_list_"+k).removeClass("ffg_no_display");
                 dojo.query("#ffg_button_amount_"+k).removeClass("ffg_no_display");
             }
+            
+            //Clean current multi moves selection if displayed (because it has its own custom title /button )
+            this.cleanMultiMoveSelection();
             //RECOMPUTE status bar length with buttons
             //gameui.adaptStatusBar();
             this.setMainTitle(_('Please select a possible load for this joker...'));
