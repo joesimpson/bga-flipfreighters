@@ -1709,7 +1709,9 @@ function (dojo, declare) {
                 this.possibleCards[card_id] = dojo.clone(this.possibleCardsBeforeOvertime [card_id]);
                 //Reset suit:
                 let row = cardDiv.id.split("_").lastItem;
-                cardDiv.setAttribute('data_suit',this.dayCards[row].type);
+                if(this.dayCards[row] != undefined) {
+                    cardDiv.setAttribute('data_suit',this.dayCards[row].type);
+                }
             }
             
             this.updateOvertimeHourOnCard(cardDiv);
