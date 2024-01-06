@@ -2444,6 +2444,9 @@ function (dojo, declare) {
                 }
                 
                 this.confirmationDialog(confirmMessage, () => {
+                    //Remove temporary datas about selection (like Joker selection, multi move selection)
+                    this.unselectCard();
+
                     this.ajaxcallwrapper("endTurn", { }, () => { debug("endTurn ajaxcall end"); } );
                     /* sometimes good, but leads to race conditions with enteringState :
                     this.ajaxcallwrapper("endTurn", { }, () => { debug("endTurn call end"); this.
@@ -2467,9 +2470,9 @@ function (dojo, declare) {
             // Preventing default browser reaction
             dojo.stopEvent( evt );
             
-            this.unselectCard();
-            
             this.confirmationDialog(_("Are you sure you want to cancel your whole turn ?"), () => {
+                this.unselectCard();
+                
                 this.ajaxcallwrapperNoCheck("cancelTurn", { }, () => {
                     debug("cancelTurn ajaxcall end");  
                     this.addCustomActionButtons(); 
