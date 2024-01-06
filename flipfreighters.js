@@ -151,6 +151,7 @@ function (dojo, declare) {
             if(!this.isSpectator){
                 // Create a new div for buttons to avoid BGA auto clearing it
                 dojo.place("<div id='customActions' style='display:inline-block'></div>", $('generalactions'), 'after');
+                dojo.place("<div id='restartAction' style='display:inline-block'></div>", $('customActions'), 'after');
           
                 //Display current player board first :
                 dojo.place("ffg_board_player_container_wrapper_"+this.player_id, "ffg_all_players_board_wrap","first");
@@ -259,6 +260,7 @@ function (dojo, declare) {
                 this.currentRound = args.args.round_number;
                 this.currentTurn = args.args.turn_number;
                 this.updateRoundLabel();
+                this.addCustomActionButtons();
                 for ( let i in args.args.newCards) {
                     let card = args.args.newCards[i];
                     let suit = card.type;
@@ -283,7 +285,6 @@ function (dojo, declare) {
                 this.possibleCardsBeforeOvertime = dojo.clone(this.possibleCards);
                 this.updatePossibleCards();
                 this.cleanMultiMoveSelection();
-                this.addCustomActionButtons();
                 break;
                 
             case 'endTurn':
@@ -329,6 +330,7 @@ function (dojo, declare) {
         {
             debug( 'Leaving state: '+stateName );
             this.clearActionButtons();
+            this.clearRestartActionButtons();
 
             switch( stateName )
             {
@@ -343,29 +345,17 @@ function (dojo, declare) {
         onUpdateActionButtons: function( stateName, args )
         {
             debug( 'onUpdateActionButtons: '+stateName, args );
-
-            if( this.isCurrentPlayerActive() )
-            {            
-                switch( stateName )
-                {
-
-                case 'playerTurn':
-                     /* Not reliable in this game where every player can restart or end the turn at any time,
-                    which would call this function
-                    => call custom func addCustomActionButtons instead
-                    */
-                    //this.addCustomActionButtons();
-                    this.addActionButton( 'ffg_button_endturn', _('End turn'), 'onEndTurn' ); 
-                    this.addActionButton( 'ffg_button_cancelturn', _('Restart turn'), 'onCancelTurn',null, false, 'red' );
-                    break;
-                }
-            }  
-            else if (!this.isSpectator) { // player is NOT active but not spectator either
+            /* Not reliable in this game where every player can restart or end the turn at any time,
+                which would call this function and create race conditions with others functions
+                => call custom func addCustomActionButtons instead
+            */
+            if (!this.isSpectator) {
                 switch( stateName )
                 {
                 case 'playerTurn':
-                    this.clearActionButtons();
-                    this.addActionButton( 'ffg_button_cancelturn', _('Restart turn'), 'onCancelTurn',null, false, 'red' );
+                    this.addCustomActionButtons(true);
+                    this.clearRestartActionButtons();
+                    this.addActionButton( 'ffg_button_cancelturn', _('Restart turn'), 'onCancelTurn','restartAction', false, 'red' );
                     break;
                 }
             }
@@ -373,11 +363,16 @@ function (dojo, declare) {
         
         /**
          * Add needed action buttons for this game (only 1 active state exist, so no need to filter)
+         * @param bool updateDisplay : indicate if we want to update buttons if not existing yet
          */
-        addCustomActionButtons: function()
+        addCustomActionButtons: function(updateDisplay = false)
         {
-            debug( 'addCustomActionButtons() ' );
-            if (!this.isSpectator) {
+            debug( 'addCustomActionButtons() ',updateDisplay);
+            if (this.isSpectator) return;
+
+            let playerActive = this.isCurrentPlayerActive();
+            let notDisplayedYet = ( $('customActions').childElementCount == 0) ;
+            if (playerActive && (!updateDisplay || notDisplayedYet && updateDisplay) ) {
                 this.clearActionButtons();
                 for(let k=1;k<= this.constants.MAX_LOAD;k++){
                     this.addActionButton('ffg_button_amount_'+k, (k), 'onClickCargoAmount','customActions');
@@ -388,6 +383,12 @@ function (dojo, declare) {
                 this.addActionButton( 'ffg_button_stopmoving', _('Confirm move(s)'), 'onStopMoving','customActions' ); 
                 $("ffg_button_stopmoving").classList.add("bgabutton_green");
                 $("ffg_button_stopmoving").classList.add("disabled");
+                this.addActionButton( 'ffg_button_endturn', _('End turn'), 'onEndTurn','customActions' ); 
+            } else if (!playerActive && !notDisplayedYet && updateDisplay ){
+                debug( 'addCustomActionButtons() : remove buttons because ', playerActive, notDisplayedYet,updateDisplay);
+                this.clearActionButtons();
+            } else {
+                debug( 'addCustomActionButtons() : no buttons update because ', playerActive, notDisplayedYet,updateDisplay);
             }
         },   
 
@@ -469,6 +470,10 @@ function (dojo, declare) {
         clearActionButtons: function() {
             debug( "clearActionButtons()" );
             dojo.empty('customActions');
+        },
+        clearRestartActionButtons() {
+            debug( "clearRestartActionButtons()" );
+            dojo.empty('restartAction');
         },
   
         /** Return User local config */
@@ -2412,12 +2417,20 @@ function (dojo, declare) {
                 }
                 
                 this.confirmationDialog(confirmMessage, () => {
-                    this.ajaxcallwrapper("endTurn", { }, () => { this.clearActionButtons(); });
+                    this.ajaxcallwrapper("endTurn", { }, () => { debug("endTurn ajaxcall end"); } );
+                    /* sometimes good, but leads to race conditions with enteringState :
+                    this.ajaxcallwrapper("endTurn", { }, () => { debug("endTurn call end"); this.
+                    clearActionButtons(); });
+                    */
                 });
                 return;
             }
             
-            this.ajaxcallwrapper("endTurn", { }, () => { this.clearActionButtons(); });
+            this.ajaxcallwrapper("endTurn", { }, () => { debug("endTurn ajaxcall end"); } );
+            /* sometimes good, but leads to race conditions with enteringState :
+            this.ajaxcallwrapper("endTurn", { }, () => { debug("endTurn call end"); this.
+            clearActionButtons(); });
+            */
         },   
         
         onCancelTurn: function( evt )
@@ -2430,7 +2443,10 @@ function (dojo, declare) {
             this.unselectCard();
             
             this.confirmationDialog(_("Are you sure you want to cancel your whole turn ?"), () => {
-                this.ajaxcallwrapperNoCheck("cancelTurn", { }, () => { this.addCustomActionButtons(); });
+                this.ajaxcallwrapperNoCheck("cancelTurn", { }, () => {
+                    debug("cancelTurn ajaxcall end");  
+                    this.addCustomActionButtons(); 
+                });
             });
             return;
         },
