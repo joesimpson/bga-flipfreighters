@@ -457,6 +457,9 @@ function (dojo, declare) {
         },
         /** Update title in BGA status bar without waiting for status change*/
         setMainTitle: function(text) {
+            //IF NOT DONE During player turn, no need to display specific messages, because it will lead to "not your turn" and could lead to loose original title
+            if(!this.isCurrentPlayerActive()) return;
+
             //First reset in order to avoid going from one fake message to another and not being able to recover the original message :
             this.resetMainTitle();
             if($('pagemaintitletext').innerHTML == text) return;
@@ -464,6 +467,9 @@ function (dojo, declare) {
             $('pagemaintitletext').innerHTML = text;
         },
         resetMainTitle: function() {
+            //IF NOT DONE During player turn, no need to display specific messages, because it will lead to "not your turn" and could lead to loose original title
+            if(!this.isCurrentPlayerActive()) return;
+
             $('pagemaintitletext').innerHTML = this.previouspagemaintitletext;
         },
         
