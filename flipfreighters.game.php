@@ -157,7 +157,11 @@ class FlipFreighters extends Table
         self::initStat( 'player', 'score_week1', 0 );  // Init a player statistics (for all players)
         self::initStat( 'player', 'score_week2', 0 );
         self::initStat( 'player', 'score_week3', 0 );
+        self::initStat( 'player', 'stat_score', 0 );
         self::initStat( 'player', 'unused_overtime', NB_OVERTIME_TOKENS );
+        self::initStat( 'player', 'stat_load_overtime', 0 );
+        self::initStat( 'player', 'stat_move_overtime', 0 );
+        //self::initStat( 'player', 'stat_suit_overtime', 0 );
         self::initStat( 'player', 'stat_player_loading', 0 );
         self::initStat( 'player', 'stat_player_moving', 0 );
         self::initStat( 'player', 'stat_total_goods', 0 );
@@ -1026,13 +1030,13 @@ class FlipFreighters extends Table
         $stateToConfirm1 = STATE_MOVE_TO_CONFIRM;
         $stateToConfirm2 = STATE_MOVE_DELIVERED_TO_CONFIRM;
         
-        $sql = "SELECT count(distinct fmove_card_id) 'nbCards', count(1) 'nbMoves' from freighter_move where fmove_player_id= '$player_id' AND fmove_state in ($stateToConfirm1, $stateToConfirm2) ";
+        $sql = "SELECT count(distinct fmove_card_id) 'nbCards', count(1) 'nbMoves', sum(fmove_overtime_used) 'overtime' from freighter_move where fmove_player_id= '$player_id' AND fmove_state in ($stateToConfirm1, $stateToConfirm2) ";
         
         $res = $this->getObjectFromDB($sql);
         if(isset($res)){
-            return $res["nbCards"];
+            return $res;
         }
-        return 0; 
+        return array('nbCards' =>0, 'nbMoves'=>0, 'overtime'=>0  ); 
     }
     function getCardUsedPowerForMoves($player_id, $card_id){
         // SUM( `fmove_position_to`- `fmove_position_from` - `fmove_overtime_used`) if we don't want to count overtime
@@ -1165,7 +1169,8 @@ class FlipFreighters extends Table
         //Update stat from BDD data before updates
         foreach($players as $player_id => $player){            
             $nb = $this->getNbCardsForMovesToConfirm($player_id);
-            if($nb>0) self::incStat( $nb, "stat_player_moving", $player_id );
+            if($nb['nbCards']>0) self::incStat( $nb['nbCards'], "stat_player_moving", $player_id );
+            if($nb['overtime']>0) self::incStat( $nb['overtime'], "stat_move_overtime", $player_id );
         }
         
         $oldState = STATE_LOAD_TO_CONFIRM;
@@ -1189,6 +1194,9 @@ class FlipFreighters extends Table
                 $player_id = $cargo["player_id"];
                 self::incStat( 1, "stat_player_loading", $player_id );
                 self::incStat( $cargo["amount"], "stat_total_goods", $player_id );
+
+                $loadOvertime = $cargo["overtime"];
+                self::incStat( $loadOvertime, "stat_load_overtime", $player_id );
             }
             foreach($listUnconfirmedTurnActions["trucks_positions"] as $i => $actions){
                 foreach($listUnconfirmedTurnActions["trucks_positions"][$i] as $j => $action){
@@ -1352,6 +1360,8 @@ class FlipFreighters extends Table
         
         $score += SCORE_BY_REMAINING_OVERTIME * $this->getPlayerAvailableOvertimeHours($player_id);
         
+        self::setStat( $score, "stat_score", $player_id );
+
         return $score;
     }
     
@@ -2160,7 +2170,15 @@ class FlipFreighters extends Table
 //        // Please add your future database scheme changes here
 //
 //
-
+        if( $from_version <= 2312141629 )
+        {
+            //Compute total score based on player score to update NEW STAT 14 stat_score
+            $newStat = 14;
+            $sql = "INSERT INTO stats (`stats_type`, `stats_player_id`, `stats_value`)
+            SELECT '$newStat', DBPREFIX_player.player_id, player_score FROM player 
+            WHERE NOT EXISTS (SELECT 1 FROM DBPREFIX_stats WHERE `stats_type`='$newStat' AND `stats_player_id`=DBPREFIX_player.player_id LIMIT 1) ;";
+            self::applyDbUpgradeToAllDB($sql);
+        }
 
     }    
 }

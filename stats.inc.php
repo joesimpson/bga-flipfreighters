@@ -83,10 +83,24 @@ $stats_type = array(
                     "name" => totranslate("Week 3 score"),
                     "type" => "int" ),
 
+        "stat_score" => array("id"=> 14,
+                    "name" => totranslate("Overall score of this player"),
+                    "type" => "int" ),
+
         "unused_overtime" => array("id"=> 13,
                     "name" => totranslate("Unused Overtime Hours"),
                     "type" => "int" ),
-                    
+        "stat_load_overtime" => array("id"=> 15,
+                    "name" => totranslate("Overtime Hours when loading"),
+                    "type" => "int" ),
+        "stat_move_overtime" => array("id"=> 16,
+                    "name" => totranslate("Overtime Hours when moving"),
+                    "type" => "int" ),
+        /* Will be difficult with current model    
+        "stat_suit_overtime" => array("id"=> 17,
+                    "name" => totranslate("Overtime Hours when changing suit"),
+                    "type" => "int" ),
+        */
         "stat_player_loading" => array("id"=> 20,
                     "name" => totranslate("Loading actions"),
                     "type" => "int" ),
