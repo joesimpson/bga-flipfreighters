@@ -29,8 +29,18 @@ $game_options = array(
     100 => array(
                 'name' => totranslate('Overtime Hours'),    
                 'values' => array(
-                            1 => array( 'name' => totranslate('Basic'), 'description' => totranslate('Overtime Hours let you either increase or decrease a card value by 1')),
-                            2 => array( 'name' => totranslate('Overtime Variant Rule'), 'description' => totranslate('In addition to changing the value of a card players may also choose to use overtime hours to change the suit of a card'), 'nobeginner' => true),
+                            1 => array( 
+                                'name' => totranslate('Basic'), 
+                                'description' => totranslate('Overtime Hours let you either increase or decrease a card value by 1'), 
+                                'tmdisplay' => totranslate('Basic'),
+                                ),
+                            
+                            2 => array( 
+                                'name' => totranslate('Overtime Variant Rule'), 
+                                'description' => totranslate('In addition to changing the value of a card players may also choose to use overtime hours to change the suit of a card'),
+                                'tmdisplay' => totranslate('Overtime Variant Rule'),
+                                'nobeginner' => true, 
+                                ),
                         ),
                 'default' => 1
             ),
@@ -38,8 +48,17 @@ $game_options = array(
     101 => array(
                 'name' => totranslate('Show discard pile'),    
                 'values' => array(
-                            1 => array( 'name' => totranslate('Enabled'), 'description' => totranslate('Players can look at already played cards in the discard pile. (Not the cards staying in the game box)')),
-                            2 => array( 'name' => totranslate('Disabled'), 'description' => totranslate('Players cannot see the discard pile')),
+                            1 => array( 
+                                'name' => totranslate('Enabled'), 
+                                'description' => totranslate('Players can look at already played cards in the discard pile. (Not the cards staying in the game box)'),
+                                'tmdisplay' => totranslate('Show discard pile'),
+                                ),
+                            2 => array( 
+                                'name' => totranslate('Disabled'), 
+                                'description' => totranslate('Players cannot see the discard pile'),
+                                'tmdisplay' => totranslate(''),
+                                'nobeginner' => true, 
+                                ),
                         ),
                 'default' => 1
             ),
