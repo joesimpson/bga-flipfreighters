@@ -119,6 +119,26 @@ function (dojo, declare) {
                 this.dontPreloadImage( 'trucks_shapes.png' );
             }
             
+            //ADD user prefs panel :
+            if (null == document.getElementById('ffg_panel_user_prefs')) {
+                let panelUserPref = this.format_block(
+                    'jstpl_panel_user_prefs',
+                    {
+                        LAYOUT_LABEL: _("Layout"),
+                        CARDS_SLIDER_LABEL: _("Layout : Modify cards ratio"),
+                        BOARD_SLIDER_LABEL: _("Layout : Modify boards size"),
+                        UI_LABEL: _("UI"),
+                        tooltipUserPrefs: 'TODO JSA TOOLTIPS',
+                    }
+                  );
+                dojo.place(panelUserPref, 'player_boards', 'first');
+                //Move the slider to their right place (they have been initialized in constructor) 
+                dojo.place('ffg_cardsSliderSize', 'ffg_cardsSliderSize_wrapper', 'last');
+                dojo.place('ffg_playerBoardSliderSize', 'ffg_playerBoardSliderSize_wrapper', 'last');
+                document.getElementById('ffg_user_settings').classList.add('ffg_no_display');
+            }
+            dojo.query('#ffg_btn_user_prefs').connect('onclick', this, 'onClickBtnUserPrefs');
+            
             this.constants  = gamedatas.constants;
             this.currentRound = gamedatas.round_number;
             this.currentTurn = gamedatas.turn_number;
@@ -574,6 +594,7 @@ function (dojo, declare) {
             localStorage.setItem("ffg_cardsRatio", a);
             this.onScreenWidthChange();
         },
+        
 
         /*
         Init board avatar with the same as displayed by BGA player panel,
@@ -2048,6 +2069,15 @@ function (dojo, declare) {
         
         */
 
+        onClickBtnUserPrefs: function (evt) {
+            debug( 'onClickBtnUserPrefs',evt );
+            
+            // Preventing default browser reaction
+            dojo.stopEvent( evt );
+            document.getElementById('ffg_block_user_prefs').classList.toggle('hidden');
+            //BGA framework func:
+            this.adaptPlayersPanels();
+        },
         /**
         Slider Handler :
         */

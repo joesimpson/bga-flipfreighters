@@ -13,10 +13,12 @@
 <div id="ffg_game_container">
 
     <div id="ffg_game_upper">
+        <!-- Moved to player panel by js -->
         <div id="ffg_user_settings">
             <i aria-hidden="true" id="ffg_icon_settings" class="fa6 fa6-gear fa6-light fa6-solid"></i>
-            <input type="range" min="5" max="30" value="10" class="ffg_slider" id="ffg_cardsSliderSize" list="ffg_slider_values">
-            <input type="range" min="5" max="100" value="60" class="ffg_slider" id="ffg_playerBoardSliderSize" list="ffg_slider_values">
+            <input type="range" min="5" max="30" value="10" class="ffg_slider" id="ffg_cardsSliderSize" name="ffg_cardsSliderSize" list="ffg_slider_values">
+            <input type="range" min="5" max="100" value="60" class="ffg_slider" id="ffg_playerBoardSliderSize" name="ffg_playerBoardSliderSize" list="ffg_slider_values">
+            
             <datalist id="ffg_slider_values">
                 <option value="5" label="5"></option>
                 <option value="10" label="10"></option>
@@ -435,6 +437,28 @@ var jstpl_tooltipIconTruck =  `<div class='ffg_tooltipIconTruck'>\${description}
 <div>
 `;
 
+//////////////////////////////////////////////////////////////////////////////
+////                   USER PREFS link in players panel                   ////
+////                   inspired by GWT by docthib                         ////
+//////////////////////////////////////////////////////////////////////////////
+var jstpl_panel_user_prefs = 
+    `<div class="player-board" id="ffg_panel_user_prefs">
+        <div class="ffg_icon_user_pref" id="ffg_btn_user_prefs">
+            <span class="fa fa-cogs"></span>
+        </div>		
+        <div id="ffg_block_user_prefs" class="hidden">
+            <div class="ffg_pref_group" id="ffg_prefGroupUI">\${UI_LABEL}</div>
+
+            <div class="ffg_pref_group" id="ffg_prefGroupLayout">\${LAYOUT_LABEL}</div>
+            <div class="ffg_panel_user_pref" id="ffg_cardsSliderSize_wrapper">		
+                <label for="ffg_cardsSliderSize">\${CARDS_SLIDER_LABEL}</label>
+            </div>
+            <div class="ffg_panel_user_pref" id="ffg_playerBoardSliderSize_wrapper">		
+                <label for="ffg_playerBoardSliderSize">\${BOARD_SLIDER_LABEL}</label>
+            </div>
+            
+        </div>
+    </div>`;
 
 </script>  
 
