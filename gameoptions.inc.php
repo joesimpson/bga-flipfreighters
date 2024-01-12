@@ -68,7 +68,7 @@ $game_preferences = array(
 
     100 => array(
             'name' => totranslate('Interface theme'),
-            'needReload' => true, // after user changes this preference game interface would auto-reload
+            'needReload' => false,
             'values' => array(
                     1 => array( 'name' => totranslate( 'Standard' ), 'cssPref' => 'ffg_theme_standard' ),
                     2 => array( 'name' => totranslate( 'Darker' ), 'cssPref' => 'ffg_theme_dark' )
@@ -78,7 +78,7 @@ $game_preferences = array(
     
     101 => array(
             'name' => totranslate('Display all players board'),
-            'needReload' => true, // after user changes this preference game interface would auto-reload
+            'needReload' => false,
             'values' => array(
                     1 => array( 'name' => totranslate( 'Disabled' ), 'cssPref' => 'ffg_display_all_no' ),
                     2 => array( 'name' => totranslate( 'Enabled' ), 'cssPref' => 'ffg_display_all_yes' )
@@ -88,7 +88,7 @@ $game_preferences = array(
     
     102 => array(
             'name' => totranslate('Font style'),
-            'needReload' => true, // after user changes this preference game interface would auto-reload
+            'needReload' => false,
             'values' => array(
                     1 => array( 'name' => totranslate( 'Designer choice' ), 'cssPref' => 'ffg_font_designer' ),
                     2 => array( 'name' => totranslate( 'Simple' ), 'cssPref' => 'ffg_font_simple' )
@@ -97,7 +97,7 @@ $game_preferences = array(
     ),
     103 => array(
             'name' => totranslate('Board text language'),
-            'needReload' => true, // after user changes this preference game interface would auto-reload
+            'needReload' => false,
             'values' => array(
                     1 => array( 'name' => totranslate( 'Designer choice' ), 'cssPref' => 'ffg_lang_original' ),
                     2 => array( 'name' => totranslate( 'Translated + adjusted to space' ), 'cssPref' => 'ffg_lang_translated_adjusted' ),
@@ -108,7 +108,7 @@ $game_preferences = array(
     
     105 => array(
             'name' => totranslate('Display route taken by trucks'),
-            'needReload' => true, // after user changes this preference game interface would auto-reload
+            'needReload' => false,
             'values' => array(
                     1 => array( 'name' => totranslate( 'Disabled' ), 'cssPref' => 'ffg_display_truck_route_no' ),
                     2 => array( 'name' => totranslate( 'Accurate' ), 'cssPref' => 'ffg_display_truck_route_accurate' ),
@@ -118,7 +118,7 @@ $game_preferences = array(
     ),
     106 => array(
             'name' => totranslate('Route color'),
-            'needReload' => true, // after user changes this preference game interface would auto-reload
+            'needReload' => false,
             'values' => array(
                     1 => array( 'name' => totranslate( 'Depends on position' ), 'cssPref' => 'ffg_display_truck_route_mutlicolors' ),
                     11 => array( 'name' => totranslate( 'Black' ), 'cssPref' => 'ffg_display_truck_route_black' ),
@@ -133,7 +133,7 @@ $game_preferences = array(
     //Leave space for future others prefs, because this one seems to be the most useless
     119 => array(
             'name' => totranslate('Truck color'),
-            'needReload' => true, // after user changes this preference game interface would auto-reload
+            'needReload' => false,
             'values' => array(
                     1 => array( 'name' => totranslate( 'Disabled' ), 'cssPref' => 'ffg_truck_shape_disabled' ),
                     2 => array( 'name' => totranslate( 'Depends on position' ), 'cssPref' => 'ffg_truck_shape_multicolors' ),
@@ -143,7 +143,7 @@ $game_preferences = array(
     ),
     120 => array(
             'name' => totranslate('Display mini truck icons'),
-            'needReload' => true, // after user changes this preference game interface would auto-reload
+            'needReload' => false,
             'values' => array(
                     1 => array( 'name' => totranslate( 'Disabled' ), 'cssPref' => 'ffg_display_truck_icon_no' ),
                     2 => array( 'name' => totranslate( 'Enabled' ), 'cssPref' => 'ffg_display_truck_icon_yes' )

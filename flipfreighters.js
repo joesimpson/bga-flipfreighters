@@ -231,6 +231,7 @@ function (dojo, declare) {
             // Setup game notifications to handle (see "setupNotifications" method below)
             this.setupNotifications();
 
+            this.initPreferencesObserver();
 
             /* OVERRIDE BGA FUNCTION 
             WHEN SCROLLING- adapting the status bar
@@ -520,6 +521,62 @@ function (dojo, declare) {
             dojo.empty('restartAction');
         },
   
+        /** INIT Listening for BGA user preference changes */
+        initPreferencesObserver() {
+            dojo.query('.preference_control, preference_fontrol').on('change', (e) => {
+              var match = e.target.id.match(/^preference_[fc]ontrol_(\d+)$/);
+              if (!match) {
+                return;
+              }
+              var pref = match[1];
+              var newValue = e.target.value;
+              this.prefs[pref].value = newValue;
+              if (this.prefs[pref].attribute) {
+                $('ebd-body').setAttribute('data-' + this.prefs[pref].attribute, newValue);
+              }
+      
+              //preference_control is in the hamburger, 
+              //preference_fontrol is in the options tab at the bottom :
+              $('preference_control_' + pref).value = newValue;
+              if ($('preference_fontrol_' + pref)) {
+                $('preference_fontrol_' + pref).value = newValue;
+              }
+              data = { pref: pref, lock: false, value: newValue, player: this.player_id };
+              //this.ajaxcallwrapperNoCheck('actChangePref', data);
+              this.onPreferenceChange(pref, newValue);
+            });
+        },
+        /*
+        * Preference polyfill
+        */
+        setPreferenceValue(number, newValue) {
+            var optionSel = 'option[value="' + newValue + '"]';
+            dojo.query(
+                '#preference_control_' + number + ' > ' + optionSel + ', #preference_fontrol_' + number + ' > ' + optionSel,
+            ).attr('selected', true);
+            var select = $('preference_control_' + number);
+            if (dojo.isIE) {
+                select.fireEvent('onchange');
+            } else {
+                var event = document.createEvent('HTMLEvents');
+                event.initEvent('change', false, true);
+                select.dispatchEvent(event);
+            }
+        },
+        /** Listening for BGA user preference changes */
+        onPreferenceChange(pref, newValue) {
+            pref = parseInt(pref);
+            //this.setPreferenceValue(pref, newValue);
+            this.changeCssPref(pref, newValue);
+        },
+        changeCssPref: function (prefId, newValue) {
+            var html = document.querySelector('html');
+            if (this.prefs[prefId] && this.prefs[prefId].values) for (var i in this.prefs[prefId].values) this.prefs[prefId].values[i].cssPref &&
+            (
+              i == newValue ? html.classList.add(this.prefs[prefId].values[i].cssPref) : html.classList.remove(this.prefs[prefId].values[i].cssPref)
+            )
+        },
+      
         /** Return User local config */
         getConfig: function(value, default_value){
             return localStorage.getItem(value) == null? default_value : localStorage.getItem(value);
