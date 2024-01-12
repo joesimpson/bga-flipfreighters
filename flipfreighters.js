@@ -86,6 +86,7 @@ function (dojo, declare) {
         {
             debug( "Starting game setup",gamedatas );
         
+            this.constants  = gamedatas.constants;
             this.OVERTIME_HOURS_LABEL = _("Overtime Hours") ;
             this.LABEL_2000_DOLLARS = _("$2000");
             this.PER_UNUSED_LABEL = _("per unused");
@@ -98,23 +99,25 @@ function (dojo, declare) {
             else {
                 //ffg_lang_translated, ffg_lang_translated_adjusted
                 this.dontPreloadImage( 'board_translatable.jpg' );
-                
-                if (this.prefs[103].value == 2 ){//.ffg_lang_translated_adjusted
-                    //BGA translation framework generates a span that I don't want to be in <svg><text> to make it fine, so let's copy the same string present in a simple div
-                    dojo.query(".ffg_board_overtime_label_adjusted_text").forEach( (i) => { 
-                        i.innerHTML = this.OVERTIME_HOURS_LABEL ;
-                    });
-                    dojo.query(".ffg_board_overtime_unused_label .ffg_label_adjusted_1").forEach( (i) => { 
-                        i.innerHTML = this.LABEL_2000_DOLLARS ;
-                    });
-                    dojo.query(".ffg_board_overtime_unused_label .ffg_label_adjusted_2").forEach( (i) => { 
-                        i.innerHTML = this.PER_UNUSED_LABEL ;
-                    });
-                    dojo.query(".ffg_board_week_label_adjusted_text").forEach( (i) => { 
-                        i.innerHTML = this.WEEK_LABEL ;
-                    });
-                }
             }
+            
+            //Do it anyway because we now can change pref on the go :
+            //if (this.prefs[103].value == 2 ){//.ffg_lang_translated_adjusted
+                //BGA translation framework generates a span that I don't want to be in <svg><text> to make it fine, so let's copy the same string present in a simple div
+                dojo.query(".ffg_board_overtime_label_adjusted_text").forEach( (i) => { 
+                    i.innerHTML = this.OVERTIME_HOURS_LABEL ;
+                });
+                dojo.query(".ffg_board_overtime_unused_label .ffg_label_adjusted_1").forEach( (i) => { 
+                    i.innerHTML = this.LABEL_2000_DOLLARS ;
+                });
+                dojo.query(".ffg_board_overtime_unused_label .ffg_label_adjusted_2").forEach( (i) => { 
+                    i.innerHTML = this.PER_UNUSED_LABEL ;
+                });
+                dojo.query(".ffg_board_week_label_adjusted_text").forEach( (i) => { 
+                    i.innerHTML = this.WEEK_LABEL ;
+                });
+            //}
+            
             if (this.prefs[119].value == 1 ){//ffg_truck_shape_disabled
                 this.dontPreloadImage( 'trucks_shapes.png' );
             }
@@ -128,7 +131,6 @@ function (dojo, declare) {
                         CARDS_SLIDER_LABEL: _("Layout : Modify cards ratio"),
                         BOARD_SLIDER_LABEL: _("Layout : Modify boards size"),
                         UI_LABEL: _("UI"),
-                        tooltipUserPrefs: 'TODO JSA TOOLTIPS',
                     }
                   );
                 dojo.place(panelUserPref, 'player_boards', 'first');
@@ -136,10 +138,25 @@ function (dojo, declare) {
                 dojo.place('ffg_cardsSliderSize', 'ffg_cardsSliderSize_wrapper', 'last');
                 dojo.place('ffg_playerBoardSliderSize', 'ffg_playerBoardSliderSize_wrapper', 'last');
                 document.getElementById('ffg_user_settings').classList.add('ffg_no_display');
+                
+                dojo.query('#ffg_btn_user_prefs').connect('onclick', this, 'onClickBtnUserPrefs');
+
+                let UIcontainer = $('ffg_prefGroupUI_wrapper');
+                let UIconfigs = this.constants.GAME_PREF_UI_GROUP;
+                if(UIconfigs) UIconfigs.forEach((prefId) => {
+                    let selectDivId = 'preference_control_' + prefId;
+                    if($(selectDivId) && $(selectDivId).parentNode) {
+                        let selectParentDiv = $(selectDivId).parentNode.parentNode;
+                        dojo.place(selectParentDiv, UIcontainer);
+                        dojo.place("<hr/>", UIcontainer,'last');
+                    }
+                    else {
+                        debug("Setup settings : missing prefId "+prefId);
+                    }
+                  });
+                
             }
-            dojo.query('#ffg_btn_user_prefs').connect('onclick', this, 'onClickBtnUserPrefs');
             
-            this.constants  = gamedatas.constants;
             this.currentRound = gamedatas.round_number;
             this.currentTurn = gamedatas.turn_number;
             
@@ -568,6 +585,9 @@ function (dojo, declare) {
             pref = parseInt(pref);
             //this.setPreferenceValue(pref, newValue);
             this.changeCssPref(pref, newValue);
+            if(pref == this.constants.GAME_PREF_DISPLAY_ALL ){
+                this.onScreenWidthChange();
+            }
         },
         changeCssPref: function (prefId, newValue) {
             var html = document.querySelector('html');

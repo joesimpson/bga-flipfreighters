@@ -297,6 +297,32 @@ html.ffg_lang_translated_adjusted{
 .ffg_panel_user_pref input[type=range] {
     width:100%;
 }
+#ffg_panel_user_prefs hr{
+    font-size: 0.1em;
+}
+/** pref from BGA preference_control_ */
+#ffg_prefGroupUI_wrapper .row-data {
+    border: none;
+    display: flex;
+    flex-flow: row;
+    justify-content: center;
+    align-items: center;
+    border-bottom: 1px solid gray; 
+}
+#ffg_prefGroupUI_wrapper .row-data .row-label {
+    width: 100%;
+    float: none;
+    color: black;
+    padding-bottom: 0px;
+    text-overflow: initial;
+    white-space: normal;
+    padding: 2px 4px 0px; 
+}
+#ffg_prefGroupUI_wrapper .row-data .row-value {
+    width: 85%;
+    margin: 0; 
+}
+
 #ffg_block_user_prefs #ffg_playerBoardSliderSize, 
 #ffg_block_user_prefs #ffg_cardsSliderSize{
     margin: 0px;

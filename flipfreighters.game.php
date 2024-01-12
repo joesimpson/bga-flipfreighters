@@ -238,6 +238,7 @@ class FlipFreighters extends Table
             'DECK_LOCATION_DISCARD_AFTER_DAY' => DECK_LOCATION_DISCARD_AFTER_DAY,
             'GAME_PREF_DISPLAY_ALL' => GAME_PREF_DISPLAY_ALL,
             'GAME_PREF_DISPLAY_ALL_NO' => GAME_PREF_DISPLAY_ALL_NO,
+            'GAME_PREF_UI_GROUP' => [100, 101, 102, 103, 105, 106, 119, 120, ],
         ); 
         
         //SOME STATS are directly displayed during the game, let's add them in the players array, as if it was in the player table:

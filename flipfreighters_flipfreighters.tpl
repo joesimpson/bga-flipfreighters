@@ -447,14 +447,17 @@ var jstpl_panel_user_prefs =
             <span class="fa fa-cogs"></span>
         </div>		
         <div id="ffg_block_user_prefs" class="hidden">
-            <div class="ffg_pref_group" id="ffg_prefGroupUI">\${UI_LABEL}</div>
-
-            <div class="ffg_pref_group" id="ffg_prefGroupLayout">\${LAYOUT_LABEL}</div>
-            <div class="ffg_panel_user_pref" id="ffg_cardsSliderSize_wrapper">		
-                <label for="ffg_cardsSliderSize">\${CARDS_SLIDER_LABEL}</label>
+            <div id="ffg_prefGroupUI_wrapper">
+                <div class="ffg_pref_group" id="ffg_prefGroupUI">\${UI_LABEL}</div>
             </div>
-            <div class="ffg_panel_user_pref" id="ffg_playerBoardSliderSize_wrapper">		
-                <label for="ffg_playerBoardSliderSize">\${BOARD_SLIDER_LABEL}</label>
+            <div id="ffg_prefGroupLayout_wrapper">
+                <div class="ffg_pref_group" id="ffg_prefGroupLayout">\${LAYOUT_LABEL}</div>
+                <div class="ffg_panel_user_pref" id="ffg_cardsSliderSize_wrapper">		
+                    <label for="ffg_cardsSliderSize">\${CARDS_SLIDER_LABEL}</label>
+                </div>
+                <div class="ffg_panel_user_pref" id="ffg_playerBoardSliderSize_wrapper">		
+                    <label for="ffg_playerBoardSliderSize">\${BOARD_SLIDER_LABEL}</label>
+                </div>
             </div>
             
         </div>
