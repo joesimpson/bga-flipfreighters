@@ -276,12 +276,16 @@ html.ffg_lang_translated_adjusted{
     font-weight:700
    }
 */
+#ffg_block_user_prefs .row-label{
+    color: inherit;
+}
 .ffg_pref_group {
     background-color:#dabd9c;
     border-radius:5px;
     font-weight:700;
     margin:5px 0;
     text-align:center;
+    color: black;
 }
 .ffg_icon_user_pref {
     cursor:pointer;
@@ -312,7 +316,6 @@ html.ffg_lang_translated_adjusted{
 #ffg_prefGroupUI_wrapper .row-data .row-label {
     width: 100%;
     float: none;
-    color: black;
     padding-bottom: 0px;
     text-overflow: initial;
     white-space: normal;
