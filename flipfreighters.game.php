@@ -176,6 +176,42 @@ class FlipFreighters extends Table
 
         /************ End of the game initialization *****/
     }
+    
+  /**
+   * STUDIO : Get the database matching a bug report (when not empty)
+   */
+  public function loadBugReportSQL(int $reportId, array $studioPlayersIds): void {
+    $this->trace("loadBugReportSQL($reportId, ".json_encode($studioPlayersIds));
+    $players = $this->getObjectListFromDb('SELECT player_id FROM player', true);
+  
+    $sql = [];
+    //This table is modified with boilerplate
+    $sql[] = "ALTER TABLE `gamelog` ADD `cancel` TINYINT(1) NOT NULL DEFAULT 0;";
+
+    // Change for your game
+    // We are setting the current state to match the start of a player's turn if it's already game over
+    $state = 12;
+    $sql[] = "UPDATE global SET global_value=$state WHERE global_id=1 AND global_value=99";
+    foreach ($players as $index => $pId) {
+      $studioPlayer = $studioPlayersIds[$index];
+  
+      // All games can keep this SQL
+      $sql[] = "UPDATE player SET player_id=$studioPlayer WHERE player_id=$pId";
+      $sql[] = "UPDATE global SET global_value=$studioPlayer WHERE global_value=$pId";
+      $sql[] = "UPDATE stats SET stats_player_id=$studioPlayer WHERE stats_player_id=$pId";
+  
+      // Add game-specific SQL update the tables for your game
+      $sql[] = "UPDATE freighter_cargo SET cargo_player_id=$studioPlayer WHERE cargo_player_id = $pId";
+      $sql[] = "UPDATE freighter_move SET fmove_player_id=$studioPlayer WHERE fmove_player_id = $pId";
+      
+    }
+  
+    foreach ($sql as $q) {
+      $this->DbQuery($q);
+    }
+  
+    $this->reloadPlayersBasicInfos();
+  }
 
     /*
         getAllDatas: 
