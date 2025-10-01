@@ -300,7 +300,7 @@ function (dojo, declare) {
                 
                 //Unflip all cards :
                 dojo.query(".ffg_card").forEach( (item) => {
-                    this.animateDiscardCard(item, item.id.split("_").lastItem);
+                    this.animateDiscardCard(item, this.lastItemInArray(item.id.split("_")));
                     
                     item.setAttribute('data_id',0); 
                     item.setAttribute('data_value',0); 
@@ -850,10 +850,10 @@ function (dojo, declare) {
                 dojo.place(this.format_block('jstpl_discard_cards_cell', dataCell), 'ffg_discard_suit_'+card.type);
                 
                 //Update deck table :
-                dojo.destroy( dojo.query(".ffg_deck_suit_"+card.type+"_"+card.type_arg).lastItem);
+                dojo.destroy( this.lastItemInArray(dojo.query(".ffg_deck_suit_"+card.type+"_"+card.type_arg)));
             }
             //Update deck table by removing day cards too !
-            this.dayCards.forEach((card) => { dojo.destroy( dojo.query(".ffg_deck_suit_"+card.type+"_"+card.type_arg).lastItem); });
+            this.dayCards.forEach((card) => { dojo.destroy( this.lastItemInArray(dojo.query(".ffg_deck_suit_"+card.type+"_"+card.type_arg)) ); });
             
             //PREPARE MODAL SIZE
             let box = $("ebd-body").getBoundingClientRect();
@@ -1740,7 +1740,7 @@ function (dojo, declare) {
                 //Instead of recalling server and create race conditions, let's reset to values of this turn :
                 this.possibleCards[card_id] = dojo.clone(this.possibleCardsBeforeOvertime [card_id]);
                 //Reset suit:
-                let row = cardDiv.id.split("_").lastItem;
+                let row = this.lastItemInArray(cardDiv.id.split("_"));
                 if(this.dayCards[row] != undefined) {
                     cardDiv.setAttribute('data_suit',this.dayCards[row].type);
                 }
@@ -1821,7 +1821,7 @@ function (dojo, declare) {
             else if(overtime_hours_delta<0){
                 //or REMOVE overtime_hours_delta TOKEN 
                 for(let k=overtime_hours_delta; k<0;k++){
-                    let nextToken = dojo.query(".ffg_current_player .ffg_overtime.ffg_positive_value").lastItem; 
+                    let nextToken = this.lastItemInArray(dojo.query(".ffg_current_player .ffg_overtime.ffg_positive_value")); 
                     if(nextToken !=undefined ){
                         dojo.removeClass(nextToken,"ffg_positive_value"); 
                         cpt++;
@@ -2033,6 +2033,12 @@ function (dojo, declare) {
             } );
             dojo.query("#ffg_round_label")[0].innerHTML = translated;
         },
+
+        lastItemInArray: function(parray){
+            if(parray === undefined) return undefined;
+            if(parray.size == 0) return undefined;
+            return parray[parray.length - 1];
+        },
         
         ///////////////////////////////////////////////////
         //// Player's action
@@ -2087,7 +2093,7 @@ function (dojo, declare) {
             let data_value= evt.currentTarget.getAttribute("data_value") ;
             let data_suit= evt.currentTarget.getAttribute("data_suit") ;
             let data_amount= evt.currentTarget.getAttribute("data_amount") ;
-            let card_row = div_id.split("_").lastItem;
+            let card_row = this.lastItemInArray(div_id.split("_"));
             let suit_reset = undefined;
             let elt = dojo.query("#ffg_card_wrapper_"+card_row+" .ffg_button_card_suit_reset")[0]; 
             if (elt != undefined) suit_reset = elt.getAttribute("data_suit"); 
@@ -2283,7 +2289,7 @@ function (dojo, declare) {
             dojo.stopEvent( evt );
             
             let div_id = evt.currentTarget.id;
-            this.selectedAmount = div_id.split("_").lastItem;
+            this.selectedAmount = this.lastItemInArray(div_id.split("_"));
             
             if( ! dojo.hasClass( div_id, 'ffg_selectable' ) )
             {
@@ -2340,7 +2346,7 @@ function (dojo, declare) {
             //Close joker selection if opened
             this.closeCargoAmountList();
             
-            if(truck_material.path_size[ truck_material.path_size.length - 1]  == position ){
+            if(this.lastItemInArray(truck_material.path_size) == position ){
                 //LAST POSITION iS ALWAYS DELIVERED
                 isDelivery = true;
             }
@@ -2488,7 +2494,7 @@ function (dojo, declare) {
             // Preventing default browser reaction
             dojo.stopEvent( evt );
             
-            this.selectedPlayerId = evt.currentTarget.id.split("_").lastItem;
+            this.selectedPlayerId = this.lastItemInArray(evt.currentTarget.id.split("_"));
             
             //Don't call server, use client datas instead to display modal with details about score
             //this.ajaxcallwrapperNoCheck("showScoringDialog", { });
@@ -2502,7 +2508,7 @@ function (dojo, declare) {
             // Preventing default browser reaction
             dojo.stopEvent( evt );
             
-            this.selectedPlayerId = evt.currentTarget.id.split("_").lastItem;
+            this.selectedPlayerId = this.lastItemInArray(evt.currentTarget.id.split("_"));
             
             this.initShowBoardDialog(this.selectedPlayerId);
             this.showBoardDialog.show();
