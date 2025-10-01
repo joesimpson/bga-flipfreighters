@@ -2152,24 +2152,32 @@ class FlipFreighters extends Table
         // For example, if the game was running with a release of your game named "140430-1345",
         // $from_version is equal to 1404301345
         
-        // Example:
-//        if( $from_version <= 1404301345 )
-//        {
-//            // ! important ! Use DBPREFIX_<table_name> for all tables
-//
-//            $sql = "ALTER TABLE DBPREFIX_xxxxxxx ....";
-//            self::applyDbUpgradeToAllDB( $sql );
-//        }
-//        if( $from_version <= 1405061421 )
-//        {
-//            // ! important ! Use DBPREFIX_<table_name> for all tables
-//
-//            $sql = "CREATE TABLE DBPREFIX_xxxxxxx ....";
-//            self::applyDbUpgradeToAllDB( $sql );
-//        }
-//        // Please add your future database scheme changes here
-//
-//
+        if( $from_version <= 2401061850 )
+        {
+            //FIX bug about truck NOT considered delivered => problem : displayed score will be wrong until end of turn
+            $oldState = STATE_MOVE_TO_CONFIRM;
+            $newState = STATE_MOVE_DELIVERED_TO_CONFIRM;
+            $sql = "UPDATE DBPREFIX_freighter_move SET `fmove_state` = $newState
+                WHERE fmove_state = $oldState 
+                AND (
+                    fmove_truck_id in ('truck1','truck2','truck5') and fmove_position_to = 5
+                    or fmove_truck_id in ('truck3','truck4') and fmove_position_to = 7
+                    or fmove_truck_id in ('truck6','truck7','truck8','truck9') and fmove_position_to = 8
+                );";
+            self::applyDbUpgradeToAllDB($sql);
+            
+            $oldState = STATE_MOVE_CONFIRMED;
+            $newState = STATE_MOVE_DELIVERED_CONFIRMED;
+            $sql = "UPDATE DBPREFIX_freighter_move SET `fmove_state` = $newState
+                WHERE fmove_state = $oldState 
+                AND (
+                    fmove_truck_id in ('truck1','truck2','truck5') and fmove_position_to = 5
+                    or fmove_truck_id in ('truck3','truck4') and fmove_position_to = 7
+                    or fmove_truck_id in ('truck6','truck7','truck8','truck9') and fmove_position_to = 8
+                );";
+            self::applyDbUpgradeToAllDB($sql);
+        }
+
         if( $from_version <= 2312141629 )
         {
             //Compute total score based on player score to update NEW STAT 14 stat_score
