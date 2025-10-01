@@ -2340,7 +2340,7 @@ function (dojo, declare) {
             //Close joker selection if opened
             this.closeCargoAmountList();
             
-            if(truck_material.path_size.lastItem == position ){
+            if(truck_material.path_size[ truck_material.path_size.length - 1]  == position ){
                 //LAST POSITION iS ALWAYS DELIVERED
                 isDelivery = true;
             }
